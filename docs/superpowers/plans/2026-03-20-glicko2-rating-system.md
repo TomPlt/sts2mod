@@ -923,7 +923,7 @@ public class Glicko2Engine
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `/home/tom/.dotnet/dotnet test tests/Sts2Analytics.Core.Tests/ --filter "Glicko2EngineTests"`
-Expected: All 9 tests PASS
+Expected: All 10 tests PASS
 
 - [ ] **Step 5: Commit**
 
