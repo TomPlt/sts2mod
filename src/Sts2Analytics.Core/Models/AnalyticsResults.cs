@@ -18,9 +18,14 @@ public record RunSummary(int TotalRuns, int Wins, int Losses, double WinRate,
 
 public record CardImpactScore(string CardId, double PickRate, double WinRateDelta, double ImpactScore);
 
-public record EloRatingResult(string CardId, string Character, string Context, double Rating, long GamesPlayed);
+public record Glicko2RatingResult(
+    string CardId, string Character, string Context,
+    double Rating, double RatingDeviation, double Volatility, int GamesPlayed);
 
-public record EloHistoryResult(double RatingBefore, double RatingAfter, string Timestamp);
+public record Glicko2HistoryResult(
+    double RatingBefore, double RatingAfter,
+    double RdBefore, double RdAfter,
+    string Timestamp);
 
 public record CardMatchupResult(string CardA, string CardB, int AWinsOverB, int BWinsOverA);
 

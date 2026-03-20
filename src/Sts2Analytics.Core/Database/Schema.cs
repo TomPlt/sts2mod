@@ -179,22 +179,29 @@ public static class Schema
             WasChosen INTEGER NOT NULL DEFAULT 0
         );
 
-        CREATE TABLE IF NOT EXISTS EloRatings (
+        CREATE TABLE IF NOT EXISTS Glicko2Ratings (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             CardId TEXT NOT NULL,
             Character TEXT NOT NULL,
             Context TEXT NOT NULL DEFAULT 'overall',
             Rating REAL NOT NULL DEFAULT 1500.0,
+            RatingDeviation REAL NOT NULL DEFAULT 350.0,
+            Volatility REAL NOT NULL DEFAULT 0.06,
             GamesPlayed INTEGER NOT NULL DEFAULT 0,
+            LastUpdatedRunId INTEGER,
             UNIQUE(CardId, Character, Context)
         );
 
-        CREATE TABLE IF NOT EXISTS EloHistory (
+        CREATE TABLE IF NOT EXISTS Glicko2History (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            EloRatingId INTEGER NOT NULL REFERENCES EloRatings(Id),
+            Glicko2RatingId INTEGER NOT NULL REFERENCES Glicko2Ratings(Id),
             RunId INTEGER NOT NULL REFERENCES Runs(Id),
             RatingBefore REAL NOT NULL DEFAULT 0,
             RatingAfter REAL NOT NULL DEFAULT 0,
+            RdBefore REAL NOT NULL DEFAULT 0,
+            RdAfter REAL NOT NULL DEFAULT 0,
+            VolatilityBefore REAL NOT NULL DEFAULT 0,
+            VolatilityAfter REAL NOT NULL DEFAULT 0,
             Timestamp TEXT NOT NULL DEFAULT ''
         );
 
@@ -203,7 +210,7 @@ public static class Schema
         CREATE INDEX IF NOT EXISTS IX_CardChoices_CardId ON CardChoices(CardId);
         CREATE INDEX IF NOT EXISTS IX_RelicChoices_FloorId ON RelicChoices(FloorId);
         CREATE INDEX IF NOT EXISTS IX_FinalDecks_RunId ON FinalDecks(RunId);
-        CREATE INDEX IF NOT EXISTS IX_EloRatings_CardId ON EloRatings(CardId);
-        CREATE INDEX IF NOT EXISTS IX_EloHistory_EloRatingId ON EloHistory(EloRatingId);
+        CREATE INDEX IF NOT EXISTS IX_Glicko2Ratings_CardId ON Glicko2Ratings(CardId);
+        CREATE INDEX IF NOT EXISTS IX_Glicko2History_Glicko2RatingId ON Glicko2History(Glicko2RatingId);
         """;
 }
