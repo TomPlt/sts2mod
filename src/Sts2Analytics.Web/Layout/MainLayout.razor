@@ -1,38 +1,54 @@
 @inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h3>STS2 Analytics</h3>
+<div class="oracle-shell">
+    <aside class="oracle-nav">
+        <div class="nav-brand">
+            <div class="brand-sigil"></div>
+            <div class="brand-text">
+                <span class="brand-title">Spire Oracle</span>
+                <span class="brand-sub">Analytics</span>
+            </div>
         </div>
-        <nav class="sidebar-nav">
-            <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
-                Overview
+
+        <nav class="nav-links">
+            <div class="nav-section-label">Dashboard</div>
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="nav-icon">&#x25C8;</span> Overview
             </NavLink>
-            <NavLink class="nav-item" href="cards">
-                Cards
+
+            <div class="nav-section-label">Collection</div>
+            <NavLink class="nav-link" href="cards">
+                <span class="nav-icon">&#x2660;</span> Cards
             </NavLink>
-            <NavLink class="nav-item" href="relics">
-                Relics
+            <NavLink class="nav-link" href="relics">
+                <span class="nav-icon">&#x2666;</span> Relics
             </NavLink>
-            <NavLink class="nav-item" href="elo">
-                Elo
+            <NavLink class="nav-link" href="elo">
+                <span class="nav-icon">&#x2191;</span> Elo Rankings
             </NavLink>
-            <NavLink class="nav-item" href="runs">
-                Runs
+            <NavLink class="nav-link" href="cards/matchups">
+                <span class="nav-icon">&#x2694;</span> Matchups
             </NavLink>
-            <NavLink class="nav-item" href="paths">
-                Paths
+
+            <div class="nav-section-label">Runs</div>
+            <NavLink class="nav-link" href="runs">
+                <span class="nav-icon">&#x25B6;</span> History
             </NavLink>
-            <NavLink class="nav-item" href="economy">
-                Economy
+            <NavLink class="nav-link" href="paths">
+                <span class="nav-icon">&#x2637;</span> Pathing
             </NavLink>
-            <NavLink class="nav-item" href="combat">
-                Combat
+
+            <div class="nav-section-label">Combat</div>
+            <NavLink class="nav-link" href="combat">
+                <span class="nav-icon">&#x2620;</span> Encounters
+            </NavLink>
+            <NavLink class="nav-link" href="economy">
+                <span class="nav-icon">&#x25C9;</span> Economy
             </NavLink>
         </nav>
-    </div>
-    <main class="content">
+    </aside>
+
+    <main class="oracle-main">
         <RadzenComponents />
         @Body
     </main>

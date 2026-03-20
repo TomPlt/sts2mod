@@ -1,58 +1,132 @@
-.page {
+.oracle-shell {
     display: flex;
     min-height: 100vh;
+    position: relative;
+    z-index: 1;
 }
 
-.sidebar {
-    width: 220px;
-    background: #1a1a2e;
-    padding: 1rem 0;
+/* ---- Sidebar ---- */
+
+.oracle-nav {
+    width: 200px;
+    background: var(--void-1);
+    border-right: 1px solid var(--surface-border);
     flex-shrink: 0;
-    border-right: 1px solid #2a2a4a;
-}
-
-.sidebar-brand {
-    padding: 0.5rem 1.25rem 1.5rem;
-    border-bottom: 1px solid #2a2a4a;
-}
-
-.sidebar-brand h3 {
-    margin: 0;
-    color: #4fc3f7;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.sidebar-nav {
     display: flex;
     flex-direction: column;
-    padding: 0.75rem 0;
-}
-
-.nav-item {
-    display: block;
-    padding: 0.6rem 1.25rem;
-    color: #b0b0c8;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background 0.15s, color 0.15s;
-}
-
-.nav-item:hover {
-    background: #2a2a4a;
-    color: #e0e0f0;
-}
-
-.nav-item.active {
-    background: #2a2a4a;
-    color: #4fc3f7;
-    border-left: 3px solid #4fc3f7;
-}
-
-.content {
-    flex: 1;
-    padding: 2rem;
-    background: #16213e;
-    color: #e0e0e0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
     overflow-y: auto;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.brand-sigil {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--ember);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.brand-sigil::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--ember-dim);
+    border-radius: 50%;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.brand-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+}
+
+.brand-sub {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+/* Nav links */
+
+.nav-links {
+    padding: 0.5rem 0;
+    flex: 1;
+}
+
+.nav-section-label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    padding: 1rem 1rem 0.35rem;
+    font-weight: 500;
+}
+
+::deep .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 400;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+}
+
+::deep .nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(212, 168, 106, 0.03);
+}
+
+::deep .nav-link.active {
+    color: var(--ember-bright);
+    background: rgba(212, 85, 42, 0.06);
+    border-left-color: var(--ember);
+}
+
+.nav-icon {
+    font-size: 0.75rem;
+    width: 1.1rem;
+    text-align: center;
+    opacity: 0.6;
+}
+
+::deep .nav-link.active .nav-icon {
+    opacity: 1;
+}
+
+/* ---- Main content ---- */
+
+.oracle-main {
+    flex: 1;
+    padding: var(--gap-lg) var(--gap-xl);
+    min-height: 100vh;
+    max-width: 1200px;
+}
+
+@media (max-width: 1400px) {
+    .oracle-main { padding: var(--gap-lg); }
 }

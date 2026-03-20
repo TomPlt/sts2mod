@@ -1,200 +1,319 @@
 @page "/"
 @inject DataService Data
 
-<PageTitle>STS2 Analytics</PageTitle>
-
-<h2>Overview</h2>
+<PageTitle>Spire Oracle — Overview</PageTitle>
 
 @if (_data == null)
 {
-    <p>Loading...</p>
+    <p class="dim-text">Consulting the oracle...</p>
 }
 else
 {
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>@_data.Summary?.TotalRuns</h3>
-            <p>Total Runs</p>
+    <h2>Overview</h2>
+
+    <!-- Hero stat cards -->
+    <div class="stats-row">
+        <div class="stat-card ember">
+            <div class="stat-value">@_data.Summary?.TotalRuns</div>
+            <div class="stat-label">Total Runs</div>
         </div>
-        <div class="stat-card">
-            <h3>@_data.Summary?.Wins</h3>
-            <p>Wins</p>
+        <div class="stat-card win">
+            <div class="stat-value">@_data.Summary?.Wins</div>
+            <div class="stat-label">Victories</div>
         </div>
-        <div class="stat-card">
-            <h3>@_data.Summary?.Losses</h3>
-            <p>Losses</p>
+        <div class="stat-card loss">
+            <div class="stat-value">@_data.Summary?.Losses</div>
+            <div class="stat-label">Defeats</div>
         </div>
-        <div class="stat-card">
-            <h3>@(_data.Summary?.WinRate.ToString("P1"))</h3>
-            <p>Win Rate</p>
+        <div class="stat-card frost">
+            <div class="stat-value">@(_data.Summary?.WinRate.ToString("P1"))</div>
+            <div class="stat-label">Win Rate</div>
         </div>
     </div>
 
-    <div class="charts-row">
-        <div class="chart-panel">
-            <h3>Runs by Character</h3>
-            <RadzenChart Style="height: 300px;">
-                <RadzenPieSeries Data="@_characterData" CategoryProperty="Character" ValueProperty="Count" Title="Runs by Character" />
-            </RadzenChart>
+    <!-- Character breakdown -->
+    <div class="grid-2">
+        <div class="panel">
+            <h3>Win Rate by Character</h3>
+            @if (_characterStats != null)
+            {
+                @foreach (var c in _characterStats)
+                {
+                    <div class="char-row">
+                        <span class="char-tag @c.CssClass">@c.Name</span>
+                        <div class="char-bar-track">
+                            <div class="char-bar-fill" style="width: @(c.WinRate * 100)%"></div>
+                        </div>
+                        <span class="char-rate mono">@c.WinRate.ToString("P0")</span>
+                        <span class="dim-text" style="font-size: 0.75rem;">@c.Runs runs</span>
+                    </div>
+                }
+            }
         </div>
 
-        <div class="chart-panel">
-            <h3>Elite Kills vs Win Rate</h3>
-            <RadzenChart Style="height: 300px;">
-                <RadzenBarSeries Data="@_eliteData" CategoryProperty="Label" ValueProperty="WinRate" Title="Win Rate" />
+        <div class="panel">
+            <h3>Elite Count vs Win Rate</h3>
+            <RadzenChart Style="height: 220px;">
+                <RadzenBarSeries Data="@_eliteData" CategoryProperty="Label" ValueProperty="WinRate" Title="Win %" />
                 <RadzenCategoryAxis />
                 <RadzenValueAxis Min="0" Max="1" FormatString="{0:P0}" />
             </RadzenChart>
         </div>
     </div>
 
-    <h3>Recent Runs</h3>
-    <RadzenDataGrid Data="@_recentRuns" TItem="RunExport" AllowSorting="true" Style="margin-bottom: 2rem;">
-        <Columns>
-            <RadzenDataGridColumn TItem="RunExport" Property="Character" Title="Character" Width="200px">
-                <Template Context="run">@FormatName(run.Character)</Template>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RunExport" Property="Ascension" Title="Asc" Width="60px" />
-            <RadzenDataGridColumn TItem="RunExport" Property="Win" Title="Result" Width="80px">
-                <Template Context="run">
-                    <span style="color: @(run.Win ? "#66bb6a" : "#ef5350")">@(run.Win ? "Win" : "Loss")</span>
-                </Template>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RunExport" Property="Seed" Title="Seed" Width="140px" />
-            <RadzenDataGridColumn TItem="RunExport" Property="GameMode" Title="Mode" Width="100px" />
-        </Columns>
-    </RadzenDataGrid>
-
-    <div class="charts-row">
-        <div class="chart-panel">
-            <h3>Top Card Win Rate Deltas</h3>
-            <RadzenDataGrid Data="@_topCards" TItem="CardWinRate" AllowSorting="true" PageSize="10" AllowPaging="true" Style="margin-bottom: 1rem;">
-                <Columns>
-                    <RadzenDataGridColumn TItem="CardWinRate" Property="CardId" Title="Card" Width="200px">
-                        <Template Context="c">@FormatName(c.CardId)</Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="CardWinRate" Property="WinRateDelta" Title="Delta" FormatString="{0:+0.0%;-0.0%}" Width="80px" />
-                    <RadzenDataGridColumn TItem="CardWinRate" Property="TimesPicked" Title="Picked" Width="70px" />
-                </Columns>
-            </RadzenDataGrid>
+    <!-- Top cards side by side -->
+    <div class="grid-2">
+        <div class="panel">
+            <h3>Highest Elo Cards</h3>
+            @if (_topElo != null)
+            {
+                <table class="oracle-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 2rem">#</th>
+                            <th>Card</th>
+                            <th style="text-align: right">Elo</th>
+                            <th style="text-align: right">Games</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ var rank = 1; }
+                        @foreach (var e in _topElo)
+                        {
+                            <tr class="@(e.CardId == "SKIP" ? "skip-highlight" : "")">
+                                <td class="dim-text">@rank</td>
+                                <td>@FormatName(e.CardId)</td>
+                                <td style="text-align: right">
+                                    <span class="elo-badge @GetEloBadgeClass(e.Rating)">@e.Rating.ToString("F0")</span>
+                                </td>
+                                <td class="dim-text" style="text-align: right">@e.GamesPlayed</td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
 
-        <div class="chart-panel">
-            <h3>Top Elo Ratings</h3>
-            <RadzenDataGrid Data="@_topElo" TItem="EloRatingResult" AllowSorting="true" PageSize="10" AllowPaging="true" Style="margin-bottom: 1rem;">
-                <Columns>
-                    <RadzenDataGridColumn TItem="EloRatingResult" Property="CardId" Title="Card" Width="200px">
-                        <Template Context="e">@FormatName(e.CardId)</Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="EloRatingResult" Property="Rating" Title="Rating" FormatString="{0:F0}" Width="80px" />
-                    <RadzenDataGridColumn TItem="EloRatingResult" Property="GamesPlayed" Title="Games" Width="70px" />
-                </Columns>
-            </RadzenDataGrid>
+        <div class="panel">
+            <h3>Best Win Rate Delta</h3>
+            @if (_topCards != null)
+            {
+                <table class="oracle-table">
+                    <thead>
+                        <tr>
+                            <th>Card</th>
+                            <th style="text-align: right">Delta</th>
+                            <th style="text-align: right">Pick%</th>
+                            <th style="text-align: right">Picked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in _topCards)
+                        {
+                            <tr>
+                                <td>@FormatName(c.CardId)</td>
+                                <td style="text-align: right">
+                                    <span class="delta @(c.WinRateDelta >= 0 ? "positive" : "negative")">
+                                        @(c.WinRateDelta >= 0 ? "+" : "")@c.WinRateDelta.ToString("P1")
+                                    </span>
+                                </td>
+                                <td class="dim-text" style="text-align: right">
+                                    @((_data.CardPickRates.FirstOrDefault(p => p.CardId == c.CardId)?.PickRate ?? 0).ToString("P0"))
+                                </td>
+                                <td class="dim-text" style="text-align: right">@c.TimesPicked</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
+    </div>
+
+    <!-- Recent runs -->
+    <div class="panel">
+        <h3>Recent Runs</h3>
+        <table class="oracle-table">
+            <thead>
+                <tr>
+                    <th>Character</th>
+                    <th>Asc</th>
+                    <th>Result</th>
+                    <th>Seed</th>
+                    <th>Mode</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (_recentRuns != null)
+                {
+                    @foreach (var r in _recentRuns)
+                    {
+                        <tr>
+                            <td><span class="char-tag @GetCharClass(r.Character)">@FormatName(r.Character)</span></td>
+                            <td class="mono">@r.Ascension</td>
+                            <td><span class="result-pill @(r.Win ? "win" : "loss")">@(r.Win ? "Victory" : "Defeat")</span></td>
+                            <td class="mono dim-text">@r.Seed</td>
+                            <td class="dim-text">@r.GameMode</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 }
 
 @code {
     private ExportData? _data;
-    private List<CharacterCount>? _characterData;
-    private List<EliteWinRate>? _eliteData;
+    private List<CharacterStat>? _characterStats;
+    private List<EliteBar>? _eliteData;
     private List<RunExport>? _recentRuns;
     private List<CardWinRate>? _topCards;
     private List<EloRatingResult>? _topElo;
 
-    public record CharacterCount(string Character, int Count);
-    public record EliteWinRate(string Label, double WinRate);
+    record CharacterStat(string Name, string CssClass, int Runs, double WinRate);
+    record EliteBar(string Label, double WinRate);
 
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
 
-        _characterData = _data.Summary?.RunsByCharacter?
-            .Select(kvp => new CharacterCount(FormatName(kvp.Key), kvp.Value))
-            .ToList() ?? [];
+        // Character stats with win rates
+        _characterStats = _data.Runs
+            .GroupBy(r => r.Character)
+            .Select(g =>
+            {
+                var name = FormatName(g.Key);
+                var css = GetCharClass(g.Key);
+                var wins = g.Count(r => r.Win);
+                return new CharacterStat(name, css, g.Count(), (double)wins / g.Count());
+            })
+            .OrderByDescending(c => c.WinRate)
+            .ToList();
 
         _eliteData = _data.EliteCorrelation
             .OrderBy(e => e.EliteCount)
-            .Select(e => new EliteWinRate($"{e.EliteCount} elites", e.WinRate))
+            .Select(e => new EliteBar($"{e.EliteCount} elites", e.WinRate))
             .ToList();
 
         _recentRuns = _data.Runs
             .OrderByDescending(r => r.Id)
-            .Take(20)
+            .Take(15)
             .ToList();
 
         _topCards = _data.CardWinRates
             .Where(c => c.TimesPicked >= 3)
             .OrderByDescending(c => c.WinRateDelta)
-            .Take(20)
+            .Take(10)
             .ToList();
 
         _topElo = _data.EloRatings
+            .Where(e => e.Context == "overall")
             .OrderByDescending(e => e.Rating)
-            .Take(20)
+            .Take(12)
             .ToList();
     }
 
-    private static string FormatName(string id)
+    static string FormatName(string id)
     {
-        // Strip prefix like "CHARACTER.", "CARD.", "RELIC."
         var dot = id.IndexOf('.');
         var name = dot >= 0 ? id[(dot + 1)..] : id;
-        return name.Replace('_', ' ').ToLowerInvariant()
-            .Split(' ')
-            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
-            .Aggregate((a, b) => a + " " + b);
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
     }
+
+    static string GetCharClass(string id) => id.ToLower() switch
+    {
+        var s when s.Contains("ironclad") => "ironclad",
+        var s when s.Contains("silent") => "silent",
+        var s when s.Contains("defect") => "defect",
+        var s when s.Contains("necrobinder") => "necrobinder",
+        var s when s.Contains("regent") => "regent",
+        _ => ""
+    };
+
+    static string GetEloBadgeClass(double rating) => rating switch
+    {
+        >= 1650 => "high",
+        >= 1500 => "mid",
+        _ => "low"
+    };
 }
 
 <style>
-    .stats-grid {
+    /* Character bar chart */
+    .char-row {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0;
     }
 
-    .stat-card {
-        background: #1a1a2e;
-        padding: 1.5rem;
-        border-radius: 8px;
-        text-align: center;
+    .char-row .char-tag {
+        min-width: 7rem;
+    }
+
+    .char-bar-track {
         flex: 1;
-        min-width: 140px;
-        border: 1px solid #2a2a4a;
+        height: 6px;
+        background: var(--void-3);
+        border-radius: 3px;
+        overflow: hidden;
     }
 
-    .stat-card h3 {
-        font-size: 2rem;
-        margin: 0;
-        color: #4fc3f7;
+    .char-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--ember-dim), var(--ember));
+        transition: width 0.6s ease;
     }
 
-    .stat-card p {
-        margin: 0.5rem 0 0;
-        color: #aaa;
+    .char-rate {
+        min-width: 2.5rem;
+        text-align: right;
+        font-size: 0.8rem;
+        color: var(--text-primary);
     }
 
-    .charts-row {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
+    /* Custom table */
+    .oracle-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
     }
 
-    .chart-panel {
-        flex: 1;
-        min-width: 300px;
-        background: #1a1a2e;
-        border-radius: 8px;
-        padding: 1rem;
-        border: 1px solid #2a2a4a;
+    .oracle-table thead th {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 500;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+        padding: 0.5rem 0.5rem;
+        border-bottom: 1px solid var(--surface-border);
+        text-align: left;
     }
 
-    .chart-panel h3 {
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-        color: #b0b0c8;
+    .oracle-table tbody td {
+        padding: 0.4rem 0.5rem;
+        border-bottom: 1px solid rgba(212, 168, 106, 0.03);
+    }
+
+    .oracle-table tbody tr:hover td {
+        background: rgba(212, 168, 106, 0.02);
+    }
+
+    .skip-highlight td {
+        background: rgba(212, 85, 42, 0.04) !important;
+    }
+
+    .skip-highlight td:first-child::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        background: var(--ember);
+        border-radius: 50%;
+        margin-right: 0.3rem;
+        vertical-align: middle;
     }
 </style>
