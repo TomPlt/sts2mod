@@ -1,5 +1,7 @@
 @page "/cards"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Card Explorer - STS2 Analytics</PageTitle>
 
@@ -11,6 +13,13 @@
 }
 else
 {
+    @if (Filter.HasAscensionFilter)
+    {
+        <div class="filter-note">
+            <span>Note: Card analytics are aggregated across all ascension levels.</span>
+        </div>
+    }
+
     <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
         <label>Min Games:</label>
         <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
@@ -42,6 +51,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Filter.OnChange += OnFilterChanged;
         _data = await Data.GetDataAsync();
 
         var eloLookup = _data.EloRatings
@@ -74,6 +84,16 @@ else
         _filteredCards = _allCards.Where(c => c.Games >= _minGames).ToList();
     }
 
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
+
+    private void OnFilterChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     private static string FormatName(string id)
     {
         var dot = id.IndexOf('.');
@@ -84,3 +104,15 @@ else
             .Aggregate((a, b) => a + " " + b);
     }
 }
+
+<style>
+    .filter-note {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        background: rgba(91, 184, 212, 0.06);
+        border: 1px solid rgba(91, 184, 212, 0.12);
+        border-radius: 4px;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: var(--gap-md);
+    }
+</style>

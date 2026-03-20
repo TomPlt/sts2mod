@@ -1,0 +1,137 @@
+@inject FilterState Filter
+@inject DataService Data
+@implements IDisposable
+
+<div class="global-filter-bar">
+    <div class="filter-group">
+        <label class="filter-label">Ascension</label>
+        <select class="filter-select" value="@_ascensionPreset" @onchange="OnAscensionPresetChanged">
+            <option value="">All</option>
+            <option value="0">0</option>
+            <option value="1-10">1 - 10</option>
+            <option value="11-20">11 - 20</option>
+            @for (var i = 0; i <= 20; i++)
+            {
+                <option value="@i-@i">Asc @i</option>
+            }
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label class="filter-label">Character</label>
+        <select class="filter-select" value="@(Filter.Character ?? "")" @onchange="OnCharacterChanged">
+            <option value="">All</option>
+            @foreach (var c in _characters)
+            {
+                <option value="@c">@FormatName(c)</option>
+            }
+        </select>
+    </div>
+</div>
+
+@code {
+    private List<string> _characters = [];
+    private string _ascensionPreset = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Data.GetDataAsync();
+        _characters = data.Runs
+            .Select(r => r.Character)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+    }
+
+    private void OnAscensionPresetChanged(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString() ?? "";
+        _ascensionPreset = val;
+
+        if (string.IsNullOrEmpty(val))
+        {
+            Filter.AscensionMin = null;
+            Filter.AscensionMax = null;
+        }
+        else if (val == "0")
+        {
+            Filter.AscensionMin = 0;
+            Filter.AscensionMax = 0;
+        }
+        else if (val.Contains('-'))
+        {
+            var parts = val.Split('-');
+            Filter.AscensionMin = int.Parse(parts[0]);
+            Filter.AscensionMax = int.Parse(parts[1]);
+        }
+
+        Filter.NotifyChanged();
+    }
+
+    private void OnCharacterChanged(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString();
+        Filter.Character = string.IsNullOrEmpty(val) ? null : val;
+        Filter.NotifyChanged();
+    }
+
+    static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
+    }
+
+    public void Dispose() { }
+}
+
+<style>
+    .global-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: var(--gap-md);
+        background: var(--void-1);
+        border: 1px solid var(--surface-border);
+        border-radius: 6px;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .filter-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-dim);
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .filter-select {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        outline: none;
+        min-width: 6rem;
+    }
+
+    .filter-select:focus {
+        border-color: var(--ember-dim);
+    }
+
+    .filter-select option {
+        background: var(--void-2);
+        color: var(--text-primary);
+    }
+</style>

@@ -1,5 +1,7 @@
 @page "/"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Spire Oracle — Overview</PageTitle>
 
@@ -14,19 +16,19 @@ else
     <!-- Hero stat cards -->
     <div class="stats-row">
         <div class="stat-card ember">
-            <div class="stat-value">@_data.Summary?.TotalRuns</div>
+            <div class="stat-value">@_totalRuns</div>
             <div class="stat-label">Total Runs</div>
         </div>
         <div class="stat-card win">
-            <div class="stat-value">@_data.Summary?.Wins</div>
+            <div class="stat-value">@_wins</div>
             <div class="stat-label">Victories</div>
         </div>
         <div class="stat-card loss">
-            <div class="stat-value">@_data.Summary?.Losses</div>
+            <div class="stat-value">@_losses</div>
             <div class="stat-label">Defeats</div>
         </div>
         <div class="stat-card frost">
-            <div class="stat-value">@(_data.Summary?.WinRate.ToString("P1"))</div>
+            <div class="stat-value">@(_totalRuns > 0 ? ((double)_wins / _totalRuns).ToString("P1") : "0.0%")</div>
             <div class="stat-label">Win Rate</div>
         </div>
     </div>
@@ -169,6 +171,9 @@ else
     private List<RunExport>? _recentRuns;
     private List<CardWinRate>? _topCards;
     private List<EloRatingResult>? _topElo;
+    private int _totalRuns;
+    private int _wins;
+    private int _losses;
 
     record CharacterStat(string Name, string CssClass, int Runs, double WinRate);
     record EliteBar(string Label, double WinRate);
@@ -176,16 +181,35 @@ else
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        Recompute();
+    }
+
+    private void OnFilterChanged()
+    {
+        Recompute();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Recompute()
+    {
+        if (_data is null) return;
+
+        var filteredRuns = _data.Runs.Where(Filter.MatchesRun).ToList();
+
+        _totalRuns = filteredRuns.Count;
+        _wins = filteredRuns.Count(r => r.Win);
+        _losses = _totalRuns - _wins;
 
         // Character stats with win rates
-        _characterStats = _data.Runs
+        _characterStats = filteredRuns
             .GroupBy(r => r.Character)
             .Select(g =>
             {
                 var name = FormatName(g.Key);
                 var css = GetCharClass(g.Key);
                 var wins = g.Count(r => r.Win);
-                return new CharacterStat(name, css, g.Count(), (double)wins / g.Count());
+                return new CharacterStat(name, css, g.Count(), g.Count() > 0 ? (double)wins / g.Count() : 0);
             })
             .OrderByDescending(c => c.WinRate)
             .ToList();
@@ -195,7 +219,7 @@ else
             .Select(e => new EliteBar($"{e.EliteCount} elites", e.WinRate))
             .ToList();
 
-        _recentRuns = _data.Runs
+        _recentRuns = filteredRuns
             .OrderByDescending(r => r.Id)
             .Take(15)
             .ToList();
@@ -211,6 +235,11 @@ else
             .OrderByDescending(e => e.Rating)
             .Take(12)
             .ToList();
+    }
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
     }
 
     static string FormatName(string id)

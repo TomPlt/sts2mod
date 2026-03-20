@@ -1,5 +1,7 @@
 @page "/elo"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Spire Oracle — Elo Rankings</PageTitle>
 
@@ -21,10 +23,12 @@ else
         </div>
     }
 
-    <div style="margin-bottom: var(--gap-md); display: flex; gap: 1rem; align-items: center;">
-        <RadzenDropDown @bind-Value="_selectedCharacter" Data="@_characters" Style="width: 200px;"
-                        Placeholder="All Characters" AllowClear="true" Change="@(_ => ApplyFilter())" />
-    </div>
+    @if (Filter.HasAscensionFilter)
+    {
+        <div class="filter-note">
+            <span>Note: Elo rankings are aggregated across all ascension levels.</span>
+        </div>
+    }
 
     <div class="panel" style="padding: 0; overflow: hidden;">
         <table class="oracle-table elo-table">
@@ -71,8 +75,6 @@ else
     private bool _loading = true;
     private ExportData? _data;
     private EloRatingResult? _skipRating;
-    private string? _selectedCharacter;
-    private List<string> _characters = [];
     private List<EloRow> _allRatings = [];
     private List<EloRow> _filteredRatings = [];
     private double _minElo = 1300;
@@ -88,14 +90,15 @@ else
         _skipRating = _data.EloRatings
             .FirstOrDefault(e => e.CardId == "SKIP" && e.Context == "overall");
 
-        _characters = _data.Runs
-            .Select(r => r.Character)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
-
+        Filter.OnChange += OnFilterChanged;
         BuildRatings();
         _loading = false;
+    }
+
+    private void OnFilterChanged()
+    {
+        ApplyFilter();
+        InvokeAsync(StateHasChanged);
     }
 
     private void BuildRatings()
@@ -121,15 +124,20 @@ else
 
     private void ApplyFilter()
     {
-        if (string.IsNullOrEmpty(_selectedCharacter))
+        if (Filter.Character is null)
         {
             _filteredRatings = _allRatings;
+            if (_allRatings.Count > 0)
+            {
+                _maxElo = _allRatings.Max(r => r.Elo);
+                _minElo = _allRatings.Min(r => r.Elo);
+            }
         }
         else
         {
             // Switch to per-character context
             var charRatings = _data!.EloRatings
-                .Where(e => e.Context == _selectedCharacter)
+                .Where(e => e.Context == Filter.Character)
                 .OrderByDescending(e => e.Rating)
                 .Select((e, i) => new EloRow(i + 1, e.CardId, FormatName(e.CardId), e.Rating, e.GamesPlayed))
                 .ToList();
@@ -146,6 +154,11 @@ else
     }
 
     private void ShowMore() => _showCount += 40;
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
 
     static string FormatName(string id)
     {
@@ -226,5 +239,15 @@ else
 
     .show-more:hover {
         color: var(--ember-bright);
+    }
+
+    .filter-note {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        background: rgba(91, 184, 212, 0.06);
+        border: 1px solid rgba(91, 184, 212, 0.12);
+        border-radius: 4px;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: var(--gap-md);
     }
 </style>

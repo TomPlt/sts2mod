@@ -1,5 +1,7 @@
 @page "/runs"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Run History - STS2 Analytics</PageTitle>
 
@@ -11,12 +13,6 @@
 }
 else
 {
-    <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
-        <label>Character:</label>
-        <RadzenDropDown @bind-Value="_selectedCharacter" Data="@_characters" Style="width: 200px;"
-                        Placeholder="All Characters" AllowClear="true" Change="@(_ => ApplyFilter())" />
-    </div>
-
     <RadzenDataGrid Data="@_filteredRuns" TItem="RunRow" AllowSorting="true" AllowPaging="true" PageSize="25"
                     Style="margin-bottom: 2rem;">
         <Columns>
@@ -35,24 +31,31 @@ else
 
 @code {
     private bool _loading = true;
-    private string? _selectedCharacter;
-    private List<string> _characters = [];
-    private List<RunRow> _allRuns = [];
+    private ExportData? _data;
     private List<RunRow> _filteredRuns = [];
 
     public record RunRow(string Character, int Ascension, bool Win, string Result, string Seed, string GameMode);
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await Data.GetDataAsync();
+        _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        ApplyFilter();
+        _loading = false;
+    }
 
-        _characters = data.Runs
-            .Select(r => FormatName(r.Character))
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
+    private void OnFilterChanged()
+    {
+        ApplyFilter();
+        InvokeAsync(StateHasChanged);
+    }
 
-        _allRuns = data.Runs
+    private void ApplyFilter()
+    {
+        if (_data is null) return;
+
+        _filteredRuns = _data.Runs
+            .Where(Filter.MatchesRun)
             .OrderByDescending(r => r.Id)
             .Select(r => new RunRow(
                 FormatName(r.Character),
@@ -62,16 +65,11 @@ else
                 r.Seed,
                 r.GameMode
             )).ToList();
-
-        ApplyFilter();
-        _loading = false;
     }
 
-    private void ApplyFilter()
+    public void Dispose()
     {
-        _filteredRuns = string.IsNullOrEmpty(_selectedCharacter)
-            ? _allRuns
-            : _allRuns.Where(r => r.Character == _selectedCharacter).ToList();
+        Filter.OnChange -= OnFilterChanged;
     }
 
     private static string FormatName(string id)

@@ -1,5 +1,7 @@
 @page "/relics"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Relic Explorer - STS2 Analytics</PageTitle>
 
@@ -11,6 +13,13 @@
 }
 else
 {
+    @if (Filter.HasAscensionFilter)
+    {
+        <div class="filter-note">
+            <span>Note: Relic analytics are aggregated across all ascension levels.</span>
+        </div>
+    }
+
     <RadzenDataGrid Data="@_relics" TItem="RelicRow" AllowSorting="true" AllowPaging="true" PageSize="25"
                     Style="margin-bottom: 2rem;">
         <Columns>
@@ -33,6 +42,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Filter.OnChange += OnFilterChanged;
         var data = await Data.GetDataAsync();
 
         var pickLookup = data.RelicPickRates.ToDictionary(p => p.RelicId, p => p);
@@ -53,6 +63,16 @@ else
         _loading = false;
     }
 
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
+
+    private void OnFilterChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     private static string FormatName(string id)
     {
         var dot = id.IndexOf('.');
@@ -63,3 +83,15 @@ else
             .Aggregate((a, b) => a + " " + b);
     }
 }
+
+<style>
+    .filter-note {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        background: rgba(91, 184, 212, 0.06);
+        border: 1px solid rgba(91, 184, 212, 0.12);
+        border-radius: 4px;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: var(--gap-md);
+    }
+</style>
