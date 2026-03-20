@@ -1,0 +1,304 @@
+@page "/elo"
+@inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
+
+<PageTitle>Spire Oracle — Card Ratings</PageTitle>
+
+@if (_loading)
+{
+    <p class="dim-text">Consulting the oracle...</p>
+}
+else
+{
+    <h2>Card Ratings</h2>
+
+    @if (_skipRating != null)
+    {
+        <div class="skip-reference">
+            <div class="skip-label">Skip Baseline</div>
+            <div class="skip-elo mono">@_skipRating.Rating.ToString("F0") <span class="skip-rd">±@_skipRating.Rd.ToString("F0")</span></div>
+            <div class="skip-note">Cards above this line are worth picking. Cards below — skip.</div>
+        </div>
+    }
+
+    <div class="act-filter">
+        <button class="@(_actFilter == null ? "active" : "")" @onclick="() => SetActFilter(null)">All Acts</button>
+        <button class="@(_actFilter == 1 ? "active" : "")" @onclick="() => SetActFilter(1)">Act 1</button>
+        <button class="@(_actFilter == 2 ? "active" : "")" @onclick="() => SetActFilter(2)">Act 2</button>
+        <button class="@(_actFilter == 3 ? "active" : "")" @onclick="() => SetActFilter(3)">Act 3</button>
+    </div>
+
+    @if (Filter.HasAscensionFilter)
+    {
+        <div class="filter-note">
+            <span>Note: Ratings are aggregated across all ascension levels.</span>
+        </div>
+    }
+
+    <div class="panel" style="padding: 0; overflow: hidden;">
+        <table class="oracle-table elo-table">
+            <thead>
+                <tr>
+                    <th style="width: 3rem; text-align: center;">#</th>
+                    <th>Card</th>
+                    <th style="width: 7rem; text-align: right;">Rating</th>
+                    <th style="width: 4rem; text-align: right;">±</th>
+                    <th style="width: 5rem; text-align: right;">Games</th>
+                    <th style="width: 12rem;">Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in _filteredRatings.Take(_showCount))
+                {
+                    <tr class="@(row.CardId == "SKIP" ? "skip-highlight" : "") @(row.LowConfidence ? "low-confidence" : "")">
+                        <td style="text-align: center;" class="dim-text mono">@row.Rank</td>
+                        <td style="font-weight: 500;">@row.Name</td>
+                        <td style="text-align: right;">
+                            <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
+                        </td>
+                        <td style="text-align: right;" class="dim-text mono">@row.Rd.ToString("F0")</td>
+                        <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                        <td>
+                            <div class="elo-bar-track">
+                                <div class="elo-bar-fill @(row.CardId == "SKIP" ? "skip" : "") @(row.LowConfidence ? "low-conf" : "")"
+                                     style="width: @(Math.Clamp((row.Rating - _minRating) / (_maxRating - _minRating) * 100, 2, 100))%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (_filteredRatings.Count > _showCount)
+        {
+            <div class="show-more" @onclick="ShowMore">
+                Show more (@(_filteredRatings.Count - _showCount) remaining)
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private RatingRow? _skipRating;
+    private List<RatingRow> _allRatings = [];
+    private List<RatingRow> _filteredRatings = [];
+    private double _minRating = 1300;
+    private double _maxRating = 1800;
+    private int _showCount = 40;
+    private int? _actFilter;
+
+    record RatingRow(int Rank, string CardId, string Name, double Rating, double Rd, int Games, bool LowConfidence);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        BuildRatings();
+        _loading = false;
+    }
+
+    private void OnFilterChanged()
+    {
+        ApplyFilter();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetActFilter(int? act)
+    {
+        _actFilter = act;
+        ApplyFilter();
+    }
+
+    private void BuildRatings()
+    {
+        if (_data is null) return;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (_data is null) return;
+
+        string context;
+        if (_actFilter is not null && Filter.Character is not null)
+            context = $"{Filter.Character}_ACT{_actFilter}";
+        else if (Filter.Character is not null)
+            context = Filter.Character;
+        else if (_actFilter is not null)
+            context = "overall";
+        else
+            context = "overall";
+
+        var ratings = _data.Glicko2Ratings
+            .Where(e => e.Context == context)
+            .OrderByDescending(e => e.Rating)
+            .ToList();
+
+        _skipRating = ratings
+            .Where(e => e.CardId == "SKIP")
+            .Select(e => new RatingRow(0, e.CardId, "SKIP", e.Rating, e.RatingDeviation, e.GamesPlayed, e.RatingDeviation > 200))
+            .FirstOrDefault();
+
+        _allRatings = ratings.Select((e, i) => new RatingRow(
+            i + 1, e.CardId, FormatName(e.CardId), e.Rating, e.RatingDeviation, e.GamesPlayed, e.RatingDeviation > 200
+        )).ToList();
+
+        if (_allRatings.Count > 0)
+        {
+            _maxRating = _allRatings.Max(r => r.Rating);
+            _minRating = _allRatings.Min(r => r.Rating);
+        }
+
+        _filteredRatings = _allRatings;
+        _showCount = 40;
+    }
+
+    private void ShowMore() => _showCount += 40;
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
+
+    static string FormatName(string id)
+    {
+        var plusIdx = id.IndexOf('+');
+        var suffix = "";
+        var baseId = id;
+        if (plusIdx >= 0)
+        {
+            suffix = " " + id[plusIdx..];
+            baseId = id[..plusIdx];
+        }
+
+        var dot = baseId.IndexOf('.');
+        var name = dot >= 0 ? baseId[(dot + 1)..] : baseId;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)) + suffix;
+    }
+
+    static string GetRatingBadgeClass(double rating) => rating switch
+    {
+        >= 1650 => "high",
+        >= 1500 => "mid",
+        _ => "low"
+    };
+}
+
+<style>
+    .skip-reference {
+        background: rgba(212, 85, 42, 0.06);
+        border: 1px solid rgba(212, 85, 42, 0.15);
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        margin-bottom: var(--gap-lg);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .skip-label {
+        font-family: 'Cinzel', serif;
+        font-size: 0.8rem;
+        color: var(--ember-bright);
+        white-space: nowrap;
+    }
+
+    .skip-elo {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: var(--ember-glow);
+    }
+
+    .skip-rd {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+    }
+
+    .skip-note {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        flex: 1;
+    }
+
+    .act-filter {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: var(--gap-md);
+    }
+
+    .act-filter button {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.3rem 0.75rem;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .act-filter button.active {
+        background: rgba(212, 85, 42, 0.15);
+        border-color: var(--ember);
+        color: var(--ember-bright);
+    }
+
+    .act-filter button:hover:not(.active) {
+        border-color: var(--text-dim);
+        color: var(--text);
+    }
+
+    .elo-table tbody td { font-size: 0.85rem; }
+
+    .low-confidence td { opacity: 0.5; }
+
+    .elo-bar-track {
+        height: 4px;
+        background: var(--void-3);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .elo-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--frost-dim), var(--frost));
+        transition: width 0.4s ease;
+    }
+
+    .elo-bar-fill.skip {
+        background: linear-gradient(90deg, var(--ember-dim), var(--ember));
+    }
+
+    .elo-bar-fill.low-conf {
+        opacity: 0.4;
+    }
+
+    .show-more {
+        text-align: center;
+        padding: 0.6rem;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        border-top: 1px solid var(--surface-border);
+        transition: color 0.15s;
+    }
+
+    .show-more:hover {
+        color: var(--ember-bright);
+    }
+
+    .filter-note {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        background: rgba(91, 184, 212, 0.06);
+        border: 1px solid rgba(91, 184, 212, 0.12);
+        border-radius: 4px;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: var(--gap-md);
+    }
+</style>

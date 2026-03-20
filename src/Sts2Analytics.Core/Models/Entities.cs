@@ -186,22 +186,29 @@ public record AncientChoiceEntity
     public bool WasChosen { get; init; }
 }
 
-public record EloRatingEntity
+public record Glicko2RatingEntity
 {
     public long Id { get; init; }
     public string CardId { get; init; } = "";
     public string Character { get; init; } = "";
     public string Context { get; init; } = "overall";
     public double Rating { get; init; } = 1500.0;
+    public double RatingDeviation { get; init; } = 350.0;
+    public double Volatility { get; init; } = 0.06;
     public int GamesPlayed { get; init; }
+    public long? LastUpdatedRunId { get; init; }
 }
 
-public record EloHistoryEntity
+public record Glicko2HistoryEntity
 {
     public long Id { get; init; }
-    public long EloRatingId { get; init; }
+    public long Glicko2RatingId { get; init; }
     public long RunId { get; init; }
     public double RatingBefore { get; init; }
     public double RatingAfter { get; init; }
+    public double RdBefore { get; init; }
+    public double RdAfter { get; init; }
+    public double VolatilityBefore { get; init; }
+    public double VolatilityAfter { get; init; }
     public string Timestamp { get; init; } = "";
 }

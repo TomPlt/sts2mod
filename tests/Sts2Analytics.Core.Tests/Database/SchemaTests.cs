@@ -33,8 +33,8 @@ public class SchemaTests
         Assert.Contains("CardRemovals", tables);
         Assert.Contains("CardEnchantments", tables);
         Assert.Contains("AncientChoices", tables);
-        Assert.Contains("EloRatings", tables);
-        Assert.Contains("EloHistory", tables);
+        Assert.Contains("Glicko2Ratings", tables);
+        Assert.Contains("Glicko2History", tables);
     }
 
     [Fact]

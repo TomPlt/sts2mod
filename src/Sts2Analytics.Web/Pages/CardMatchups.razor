@@ -96,7 +96,7 @@ else
     {
         _data = await Data.GetDataAsync();
 
-        _cardOptions = _data.EloRatings
+        _cardOptions = _data.Glicko2Ratings
             .Where(e => e.Context == "overall" && e.GamesPlayed >= 5)
             .OrderBy(e => FormatName(e.CardId))
             .Select(e => new CardOption(e.CardId, FormatName(e.CardId)))
@@ -105,8 +105,8 @@ else
         _loading = false;
     }
 
-    private EloRatingResult? GetCard(string? id) =>
-        id == null ? null : _data?.EloRatings.FirstOrDefault(e => e.CardId == id && e.Context == "overall");
+    private Glicko2RatingResult? GetCard(string? id) =>
+        id == null ? null : _data?.Glicko2Ratings.FirstOrDefault(e => e.CardId == id && e.Context == "overall");
 
     private CardWinRate? GetWinRate(string id) =>
         _data?.CardWinRates.FirstOrDefault(c => c.CardId == id);

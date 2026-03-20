@@ -7,18 +7,20 @@ using Sts2Analytics.Core.Parsing;
 
 namespace Sts2Analytics.Cli.Commands;
 
-public static class EloCommand
+public static class RatingCommand
 {
     public static Command Create()
     {
         var dbOption = new Option<string?>("--db") { Description = "Database path" };
         var topOption = new Option<int>("--top") { Description = "Number of results", DefaultValueFactory = _ => 20 };
         var characterOption = new Option<string?>("--character") { Description = "Filter by character" };
+        var actOption = new Option<int?>("--act") { Description = "Filter by act (1, 2, or 3)" };
+        var minGamesOption = new Option<int>("--min-games") { Description = "Minimum games played", DefaultValueFactory = _ => 0 };
         var matchupOption = new Option<string[]?>("--matchup") { Description = "Head-to-head: --matchup CARD_A CARD_B", Arity = new ArgumentArity(2, 2) };
 
-        var cmd = new Command("elo", "Show Elo leaderboard or card matchups")
+        var cmd = new Command("elo", "Show Glicko-2 rating leaderboard or card matchups")
         {
-            dbOption, topOption, characterOption, matchupOption
+            dbOption, topOption, characterOption, actOption, minGamesOption, matchupOption
         };
 
         cmd.SetAction(parseResult =>
@@ -26,22 +28,23 @@ public static class EloCommand
             var dbPath = parseResult.GetValue(dbOption) ?? SavePathDetector.GetDefaultDbPath();
             var top = parseResult.GetValue(topOption);
             var character = parseResult.GetValue(characterOption);
+            var act = parseResult.GetValue(actOption);
+            var minGames = parseResult.GetValue(minGamesOption);
             var matchup = parseResult.GetValue(matchupOption);
 
             using var conn = new SqliteConnection($"Data Source={dbPath}");
             conn.Open();
 
-            // Check if EloRatings table has data; if empty, process all runs first
-            var eloCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM EloRatings") ?? 0;
-            if (eloCount == 0)
+            var ratingCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM Glicko2Ratings") ?? 0;
+            if (ratingCount == 0)
             {
-                Console.WriteLine("No Elo data found. Processing all runs...");
-                var engine = new EloEngine(conn);
+                Console.WriteLine("No rating data found. Processing all runs...");
+                var engine = new Glicko2Engine(conn);
                 engine.ProcessAllRuns();
-                Console.WriteLine("Elo processing complete.");
+                Console.WriteLine("Rating processing complete.");
             }
 
-            var analytics = new EloAnalytics(conn);
+            var analytics = new Glicko2Analytics(conn);
 
             if (matchup is { Length: 2 })
             {
@@ -53,28 +56,46 @@ public static class EloCommand
                 Console.WriteLine($"  {result.CardB} picked over {result.CardA}: {result.BWinsOverA} times");
                 var total = result.AWinsOverB + result.BWinsOverA;
                 if (total > 0)
-                {
                     Console.WriteLine($"  {result.CardA} pick rate in matchup: {(double)result.AWinsOverB / total:P1}");
-                }
                 Console.WriteLine();
                 return;
             }
 
             var filter = character != null ? new AnalyticsFilter(Character: character) : null;
-            var ratings = analytics.GetCardEloRatings(filter);
+            var ratings = analytics.GetRatings(filter);
 
-            // Filter to "overall" context unless character specified
-            var context = character ?? "overall";
-            var filtered = ratings.Where(r => r.Context == context).OrderByDescending(r => r.Rating).ToList();
+            string context;
+            if (act is not null && character is not null)
+                context = $"{character}_ACT{act}";
+            else if (character is not null)
+                context = character;
+            else
+                context = "overall";
+
+            var filtered = ratings
+                .Where(r => r.Context == context)
+                .Where(r => r.GamesPlayed >= minGames)
+                .OrderByDescending(r => r.Rating)
+                .ToList();
 
             Console.WriteLine();
-            Console.WriteLine($"=== Elo Leaderboard ({context}) ===");
-            Console.WriteLine($"{"#",-5} {"Card",-35} {"Elo",7} {"Matchups",9}");
+            Console.WriteLine($"=== Rating Leaderboard ({context}) ===");
+            Console.WriteLine($"{"#",-5} {"Card",-35} {"Rating",7} {"±",5} {"Games",6} {"Trend",5}");
+
+            var ratingIds = conn.Query<(long Id, string CardId, string Context)>(
+                "SELECT Id, CardId, Context FROM Glicko2Ratings WHERE Context = @Context",
+                new { Context = context }).ToDictionary(r => r.CardId, r => r.Id);
 
             var rank = 1;
             foreach (var rating in filtered.Take(top))
             {
-                Console.WriteLine($"{rank,-5} {rating.CardId,-35} {rating.Rating,7:F0} {rating.GamesPlayed,9}");
+                var trend = ratingIds.TryGetValue(rating.CardId, out var ratingId)
+                    ? analytics.GetTrend(ratingId)
+                    : 0;
+                var trendChar = trend switch { 1 => "▲", -1 => "▼", _ => "─" };
+                var rd = rating.RatingDeviation;
+
+                Console.WriteLine($"{rank,-5} {rating.CardId,-35} {rating.Rating,7:F0} {rd,5:F0} {rating.GamesPlayed,6} {trendChar,5}");
                 rank++;
             }
             Console.WriteLine();
