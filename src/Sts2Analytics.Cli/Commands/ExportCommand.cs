@@ -44,16 +44,16 @@ public static class ExportCommand
             var relicWinRates = relicAnalytics.GetRelicWinRates();
             var relicPickRates = relicAnalytics.GetRelicPickRates();
 
-            // Elo ratings
-            var eloCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM EloRatings") ?? 0;
-            if (eloCount == 0)
+            // Glicko-2 ratings
+            var g2Count = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM Glicko2Ratings") ?? 0;
+            if (g2Count == 0)
             {
-                Console.WriteLine("Processing Elo ratings...");
-                var engine = new EloEngine(conn);
+                Console.WriteLine("Processing Glicko-2 ratings...");
+                var engine = new Glicko2Engine(conn);
                 engine.ProcessAllRuns();
             }
-            var eloAnalytics = new EloAnalytics(conn);
-            var eloRatings = eloAnalytics.GetCardEloRatings();
+            var g2Analytics = new Glicko2Analytics(conn);
+            var glicko2Ratings = g2Analytics.GetRatings();
 
             // Combat analytics
             var combatAnalytics = new CombatAnalytics(conn);
@@ -89,7 +89,7 @@ public static class ExportCommand
                 cardPickRates,
                 relicWinRates,
                 relicPickRates,
-                eloRatings,
+                glicko2Ratings,
                 runs = runsList,
                 damageByEncounter,
                 eliteCorrelation
@@ -105,7 +105,7 @@ public static class ExportCommand
             File.WriteAllText(output, json);
 
             Console.WriteLine($"Exported to: {Path.GetFullPath(output)}");
-            Console.WriteLine($"  {cardWinRates.Count} cards, {relicWinRates.Count} relics, {eloRatings.Count} Elo ratings, {runs.Count} runs");
+            Console.WriteLine($"  {cardWinRates.Count} cards, {relicWinRates.Count} relics, {glicko2Ratings.Count} ratings, {runs.Count} runs");
         });
 
         return cmd;

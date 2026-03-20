@@ -11,7 +11,7 @@ public class ExportData
     public List<CardPickRate> CardPickRates { get; set; } = [];
     public List<RelicWinRate> RelicWinRates { get; set; } = [];
     public List<RelicPickRate> RelicPickRates { get; set; } = [];
-    public List<EloRatingResult> EloRatings { get; set; } = [];
+    public List<Glicko2RatingResult> Glicko2Ratings { get; set; } = [];
     public List<RunExport> Runs { get; set; } = [];
     public List<DamageByEncounter> DamageByEncounter { get; set; } = [];
     public List<EliteCorrelation> EliteCorrelation { get; set; } = [];

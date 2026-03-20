@@ -54,7 +54,7 @@ else
         Filter.OnChange += OnFilterChanged;
         _data = await Data.GetDataAsync();
 
-        var eloLookup = _data.EloRatings
+        var eloLookup = _data.Glicko2Ratings
             .Where(e => e.Context == "overall")
             .ToDictionary(e => e.CardId, e => e);
 
