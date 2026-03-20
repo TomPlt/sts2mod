@@ -83,7 +83,7 @@ public record Room
 public record PlayerFloorStats
 {
     [JsonPropertyName("player_id")]
-    public int PlayerId { get; init; }
+    public long PlayerId { get; init; }
 
     [JsonPropertyName("current_hp")]
     public int CurrentHp { get; init; }
@@ -266,7 +266,7 @@ public record AncientChoiceEntry
 public record PlayerData
 {
     [JsonPropertyName("id")]
-    public int Id { get; init; }
+    public long Id { get; init; }
 
     [JsonPropertyName("character")]
     public string Character { get; init; } = "";

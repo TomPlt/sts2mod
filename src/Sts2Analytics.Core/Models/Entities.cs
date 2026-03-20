@@ -32,7 +32,7 @@ public record FloorEntity
     public string? EncounterId { get; init; }
     public string? RoomType { get; init; }
     public int TurnsTaken { get; init; }
-    public int PlayerId { get; init; }
+    public long PlayerId { get; init; }
     public int CurrentHp { get; init; }
     public int MaxHp { get; init; }
     public int DamageTaken { get; init; }
