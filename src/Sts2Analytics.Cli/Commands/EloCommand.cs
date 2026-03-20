@@ -69,12 +69,12 @@ public static class EloCommand
 
             Console.WriteLine();
             Console.WriteLine($"=== Elo Leaderboard ({context}) ===");
-            Console.WriteLine($"{"#",-5} {"Card",-35} {"Elo",7} {"Games",7}");
+            Console.WriteLine($"{"#",-5} {"Card",-35} {"Elo",7} {"Matchups",9}");
 
             var rank = 1;
             foreach (var rating in filtered.Take(top))
             {
-                Console.WriteLine($"{rank,-5} {rating.CardId,-35} {rating.Rating,7:F0} {rating.GamesPlayed,7}");
+                Console.WriteLine($"{rank,-5} {rating.CardId,-35} {rating.Rating,7:F0} {rating.GamesPlayed,9}");
                 rank++;
             }
             Console.WriteLine();
