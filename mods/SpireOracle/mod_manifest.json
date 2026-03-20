@@ -1,0 +1,10 @@
+{
+  "id": "SpireOracle",
+  "name": "Spire Oracle",
+  "author": "sts2mod",
+  "description": "Card analytics overlay — Elo ratings, pick rates, and recommendations on reward screens",
+  "version": "0.1.0",
+  "has_dll": true,
+  "has_pck": false,
+  "affects_gameplay": false
+}

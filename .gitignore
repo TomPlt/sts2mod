@@ -37,5 +37,6 @@ Thumbs.db
 ## Project
 *.db
 data.json
+lib/
 .superpowers/
 .worktrees/
