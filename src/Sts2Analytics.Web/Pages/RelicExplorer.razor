@@ -1,0 +1,65 @@
+@page "/relics"
+@inject DataService Data
+
+<PageTitle>Relic Explorer - STS2 Analytics</PageTitle>
+
+<h2>Relic Explorer</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenDataGrid Data="@_relics" TItem="RelicRow" AllowSorting="true" AllowPaging="true" PageSize="25"
+                    Style="margin-bottom: 2rem;">
+        <Columns>
+            <RadzenDataGridColumn TItem="RelicRow" Property="Name" Title="Relic" Width="200px" />
+            <RadzenDataGridColumn TItem="RelicRow" Property="PickRate" Title="Pick%" FormatString="{0:P1}" Width="80px" />
+            <RadzenDataGridColumn TItem="RelicRow" Property="WinRatePicked" Title="Win%(picked)" FormatString="{0:P1}" Width="110px" />
+            <RadzenDataGridColumn TItem="RelicRow" Property="WinRateSkipped" Title="Win%(skipped)" FormatString="{0:P1}" Width="110px" />
+            <RadzenDataGridColumn TItem="RelicRow" Property="Delta" Title="Delta" FormatString="{0:+0.0%;-0.0%}" Width="80px"
+                                  SortOrder="SortOrder.Descending" />
+            <RadzenDataGridColumn TItem="RelicRow" Property="TimesPicked" Title="Picked" Width="70px" />
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    private bool _loading = true;
+    private List<RelicRow> _relics = [];
+
+    public record RelicRow(string Name, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, int TimesPicked);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Data.GetDataAsync();
+
+        var pickLookup = data.RelicPickRates.ToDictionary(p => p.RelicId, p => p);
+
+        _relics = data.RelicWinRates.Select(rw =>
+        {
+            pickLookup.TryGetValue(rw.RelicId, out var pick);
+            return new RelicRow(
+                FormatName(rw.RelicId),
+                pick?.PickRate ?? 0,
+                rw.WinRateWhenPicked,
+                rw.WinRateWhenSkipped,
+                rw.WinRateWhenPicked - rw.WinRateWhenSkipped,
+                rw.TimesPicked
+            );
+        }).ToList();
+
+        _loading = false;
+    }
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}

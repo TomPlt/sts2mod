@@ -1,0 +1,115 @@
+@page "/economy"
+@inject DataService Data
+
+<PageTitle>Economy - STS2 Analytics</PageTitle>
+
+<h2>Economy</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div style="background: #1a1a2e; border-radius: 8px; padding: 1.5rem; border: 1px solid #2a2a4a; margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 1rem; color: #b0b0c8;">Gold Economy Overview</h3>
+        <p style="color: #aaa; margin: 0;">
+            Economy analytics track gold spending patterns across runs. As more data is collected,
+            this page will show shop purchase breakdowns, gold efficiency metrics, and card removal impact analysis.
+        </p>
+    </div>
+
+    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        <div class="stat-card">
+            <h3>@_totalRuns</h3>
+            <p>Runs Tracked</p>
+        </div>
+        <div class="stat-card">
+            <h3>@_winRate.ToString("P1")</h3>
+            <p>Overall Win Rate</p>
+        </div>
+        <div class="stat-card">
+            <h3>@_cardCount</h3>
+            <p>Unique Cards Seen</p>
+        </div>
+        <div class="stat-card">
+            <h3>@_relicCount</h3>
+            <p>Unique Relics Seen</p>
+        </div>
+    </div>
+
+    @if (_topRemovals.Count > 0)
+    {
+        <h3 style="color: #b0b0c8;">Top Cards by Pick Rate (Potential Shop Targets)</h3>
+        <RadzenDataGrid Data="@_topRemovals" TItem="CardPickRate" AllowSorting="true" AllowPaging="true" PageSize="15"
+                        Style="margin-bottom: 2rem;">
+            <Columns>
+                <RadzenDataGridColumn TItem="CardPickRate" Property="CardId" Title="Card" Width="200px">
+                    <Template Context="c">@FormatName(c.CardId)</Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="CardPickRate" Property="PickRate" Title="Pick Rate" FormatString="{0:P1}" Width="100px" />
+                <RadzenDataGridColumn TItem="CardPickRate" Property="TimesOffered" Title="Offered" Width="80px" />
+                <RadzenDataGridColumn TItem="CardPickRate" Property="TimesPicked" Title="Picked" Width="80px" />
+            </Columns>
+        </RadzenDataGrid>
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private int _totalRuns;
+    private double _winRate;
+    private int _cardCount;
+    private int _relicCount;
+    private List<CardPickRate> _topRemovals = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Data.GetDataAsync();
+
+        _totalRuns = data.Summary?.TotalRuns ?? 0;
+        _winRate = data.Summary?.WinRate ?? 0;
+        _cardCount = data.CardWinRates.Count;
+        _relicCount = data.RelicWinRates.Count;
+
+        _topRemovals = data.CardPickRates
+            .OrderByDescending(c => c.PickRate)
+            .Take(20)
+            .ToList();
+
+        _loading = false;
+    }
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}
+
+<style>
+    .stat-card {
+        background: #1a1a2e;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        flex: 1;
+        min-width: 140px;
+        border: 1px solid #2a2a4a;
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        margin: 0;
+        color: #4fc3f7;
+    }
+
+    .stat-card p {
+        margin: 0.5rem 0 0;
+        color: #aaa;
+    }
+</style>

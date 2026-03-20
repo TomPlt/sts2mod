@@ -1,0 +1,86 @@
+@page "/cards"
+@inject DataService Data
+
+<PageTitle>Card Explorer - STS2 Analytics</PageTitle>
+
+<h2>Card Explorer</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+        <label>Min Games:</label>
+        <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
+    </div>
+
+    <RadzenDataGrid Data="@_filteredCards" TItem="CardRow" AllowSorting="true" AllowPaging="true" PageSize="25"
+                    Style="margin-bottom: 2rem;">
+        <Columns>
+            <RadzenDataGridColumn TItem="CardRow" Property="Name" Title="Card" Width="200px" />
+            <RadzenDataGridColumn TItem="CardRow" Property="Elo" Title="Elo" FormatString="{0:F0}" Width="80px"
+                                  SortOrder="SortOrder.Descending" />
+            <RadzenDataGridColumn TItem="CardRow" Property="PickRate" Title="Pick%" FormatString="{0:P1}" Width="80px" />
+            <RadzenDataGridColumn TItem="CardRow" Property="WinRatePicked" Title="Win%(picked)" FormatString="{0:P1}" Width="110px" />
+            <RadzenDataGridColumn TItem="CardRow" Property="WinRateSkipped" Title="Win%(skipped)" FormatString="{0:P1}" Width="110px" />
+            <RadzenDataGridColumn TItem="CardRow" Property="Delta" Title="Delta" FormatString="{0:+0.0%;-0.0%}" Width="80px" />
+            <RadzenDataGridColumn TItem="CardRow" Property="Games" Title="Games" Width="70px" />
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private int _minGames = 3;
+    private List<CardRow> _allCards = [];
+    private List<CardRow> _filteredCards = [];
+
+    public record CardRow(string Name, double Elo, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, long Games);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+
+        var eloLookup = _data.EloRatings
+            .Where(e => e.Context == "overall")
+            .ToDictionary(e => e.CardId, e => e);
+
+        var pickLookup = _data.CardPickRates.ToDictionary(p => p.CardId, p => p);
+
+        _allCards = _data.CardWinRates.Select(cw =>
+        {
+            eloLookup.TryGetValue(cw.CardId, out var elo);
+            pickLookup.TryGetValue(cw.CardId, out var pick);
+            return new CardRow(
+                FormatName(cw.CardId),
+                elo?.Rating ?? 0,
+                pick?.PickRate ?? 0,
+                cw.WinRateWhenPicked,
+                cw.WinRateWhenSkipped,
+                cw.WinRateDelta,
+                elo?.GamesPlayed ?? cw.TimesPicked + cw.TimesSkipped
+            );
+        }).ToList();
+
+        ApplyFilter();
+        _loading = false;
+    }
+
+    private void ApplyFilter()
+    {
+        _filteredCards = _allCards.Where(c => c.Games >= _minGames).ToList();
+    }
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}

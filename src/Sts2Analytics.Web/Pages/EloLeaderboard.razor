@@ -1,0 +1,112 @@
+@page "/elo"
+@inject DataService Data
+
+<PageTitle>Elo Leaderboard - STS2 Analytics</PageTitle>
+
+<h2>Elo Leaderboard</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
+        <label>Character:</label>
+        <RadzenDropDown @bind-Value="_selectedCharacter" Data="@_characters" Style="width: 200px;"
+                        Placeholder="All Characters" AllowClear="true" Change="@(_ => ApplyFilter())" />
+    </div>
+
+    <RadzenDataGrid Data="@_filteredRatings" TItem="EloRow" AllowSorting="true" AllowPaging="true" PageSize="25"
+                    Style="margin-bottom: 2rem;" RowRender="@OnRowRender">
+        <Columns>
+            <RadzenDataGridColumn TItem="EloRow" Property="Rank" Title="#" Width="60px" />
+            <RadzenDataGridColumn TItem="EloRow" Property="Name" Title="Card" Width="200px" />
+            <RadzenDataGridColumn TItem="EloRow" Property="Character" Title="Character" Width="120px" />
+            <RadzenDataGridColumn TItem="EloRow" Property="Elo" Title="Elo" FormatString="{0:F0}" Width="80px"
+                                  SortOrder="SortOrder.Descending" />
+            <RadzenDataGridColumn TItem="EloRow" Property="Games" Title="Games" Width="80px" />
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private string? _selectedCharacter;
+    private List<string> _characters = [];
+    private List<EloRow> _allRatings = [];
+    private List<EloRow> _filteredRatings = [];
+
+    public record EloRow(int Rank, string CardId, string Name, string Character, double Elo, long Games);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+
+        _characters = _data.EloRatings
+            .Where(e => e.Context == "overall" && !string.IsNullOrEmpty(e.Character))
+            .Select(e => e.Character)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        BuildRatings();
+        _loading = false;
+    }
+
+    private void BuildRatings()
+    {
+        if (_data is null) return;
+        var ratings = _data.EloRatings
+            .Where(e => e.Context == "overall")
+            .OrderByDescending(e => e.Rating)
+            .ToList();
+
+        _allRatings = ratings.Select((e, i) => new EloRow(
+            i + 1,
+            e.CardId,
+            FormatName(e.CardId),
+            string.IsNullOrEmpty(e.Character) ? "All" : FormatName(e.Character),
+            e.Rating,
+            e.GamesPlayed
+        )).ToList();
+
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (string.IsNullOrEmpty(_selectedCharacter))
+        {
+            _filteredRatings = _allRatings;
+        }
+        else
+        {
+            var formatted = FormatName(_selectedCharacter);
+            _filteredRatings = _allRatings
+                .Where(r => r.Character == formatted)
+                .Select((r, i) => r with { Rank = i + 1 })
+                .ToList();
+        }
+    }
+
+    private void OnRowRender(RowRenderEventArgs<EloRow> args)
+    {
+        if (args.Data.CardId.Equals("SKIP", StringComparison.OrdinalIgnoreCase) ||
+            args.Data.Name.Equals("Skip", StringComparison.OrdinalIgnoreCase))
+        {
+            args.Attributes.Add("style", "background-color: #2a2a4a;");
+        }
+    }
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}

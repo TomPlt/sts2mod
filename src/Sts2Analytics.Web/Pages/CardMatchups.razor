@@ -1,0 +1,155 @@
+@page "/cards/matchups"
+@inject DataService Data
+
+<PageTitle>Card Matchups - STS2 Analytics</PageTitle>
+
+<h2>Card Matchups</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: flex-end;">
+        <div>
+            <label style="display: block; margin-bottom: 0.25rem;">Card A</label>
+            <RadzenDropDown @bind-Value="_cardAId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                            Style="width: 280px;" Placeholder="Select card..." />
+        </div>
+        <div style="padding-bottom: 0.5rem; font-size: 1.5rem; font-weight: bold;">vs</div>
+        <div>
+            <label style="display: block; margin-bottom: 0.25rem;">Card B</label>
+            <RadzenDropDown @bind-Value="_cardBId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                            Style="width: 280px;" Placeholder="Select card..." />
+        </div>
+    </div>
+
+    @if (_cardAId != null && _cardBId != null)
+    {
+        var a = GetCard(_cardAId);
+        var b = GetCard(_cardBId);
+        @if (a != null && b != null)
+        {
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <div class="matchup-card">
+                    <h3>@FormatName(a.CardId)</h3>
+                    <div class="matchup-stat"><span>Elo Rating</span><strong>@a.Rating.ToString("F0")</strong></div>
+                    <div class="matchup-stat"><span>Games Played</span><strong>@a.GamesPlayed</strong></div>
+                    @{ var aWr = GetWinRate(a.CardId); }
+                    @if (aWr != null)
+                    {
+                        <div class="matchup-stat"><span>Win% (picked)</span><strong>@aWr.WinRateWhenPicked.ToString("P1")</strong></div>
+                        <div class="matchup-stat"><span>Win% (skipped)</span><strong>@aWr.WinRateWhenSkipped.ToString("P1")</strong></div>
+                        <div class="matchup-stat"><span>Delta</span><strong>@aWr.WinRateDelta.ToString("+0.0%;-0.0%")</strong></div>
+                    }
+                </div>
+
+                <div class="matchup-card">
+                    <h3>@FormatName(b.CardId)</h3>
+                    <div class="matchup-stat"><span>Elo Rating</span><strong>@b.Rating.ToString("F0")</strong></div>
+                    <div class="matchup-stat"><span>Games Played</span><strong>@b.GamesPlayed</strong></div>
+                    @{ var bWr = GetWinRate(b.CardId); }
+                    @if (bWr != null)
+                    {
+                        <div class="matchup-stat"><span>Win% (picked)</span><strong>@bWr.WinRateWhenPicked.ToString("P1")</strong></div>
+                        <div class="matchup-stat"><span>Win% (skipped)</span><strong>@bWr.WinRateWhenSkipped.ToString("P1")</strong></div>
+                        <div class="matchup-stat"><span>Delta</span><strong>@bWr.WinRateDelta.ToString("+0.0%;-0.0%")</strong></div>
+                    }
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #1a1a2e; border-radius: 8px; border: 1px solid #2a2a4a;">
+                <h3 style="margin: 0 0 0.5rem; color: #b0b0c8;">Comparison</h3>
+                @{
+                    var eloDiff = a.Rating - b.Rating;
+                    var leader = eloDiff >= 0 ? FormatName(a.CardId) : FormatName(b.CardId);
+                }
+                <p><strong>@leader</strong> leads by <strong>@Math.Abs(eloDiff).ToString("F0")</strong> Elo points.</p>
+                @if (aWr != null && bWr != null)
+                {
+                    var deltaDiff = aWr.WinRateDelta - bWr.WinRateDelta;
+                    var deltaLeader = deltaDiff >= 0 ? FormatName(a.CardId) : FormatName(b.CardId);
+                    <p><strong>@deltaLeader</strong> has a higher win rate delta by <strong>@Math.Abs(deltaDiff).ToString("P1")</strong>.</p>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <p style="color: #aaa;">Select two cards above to compare their stats.</p>
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private List<CardOption> _cardOptions = [];
+    private string? _cardAId;
+    private string? _cardBId;
+
+    public record CardOption(string Id, string Name);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+
+        _cardOptions = _data.EloRatings
+            .Where(e => e.Context == "overall" && e.GamesPlayed >= 5)
+            .OrderBy(e => FormatName(e.CardId))
+            .Select(e => new CardOption(e.CardId, FormatName(e.CardId)))
+            .ToList();
+
+        _loading = false;
+    }
+
+    private EloRatingResult? GetCard(string? id) =>
+        id == null ? null : _data?.EloRatings.FirstOrDefault(e => e.CardId == id && e.Context == "overall");
+
+    private CardWinRate? GetWinRate(string id) =>
+        _data?.CardWinRates.FirstOrDefault(c => c.CardId == id);
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}
+
+<style>
+    .matchup-card {
+        flex: 1;
+        min-width: 250px;
+        background: #1a1a2e;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border: 1px solid #2a2a4a;
+    }
+
+    .matchup-card h3 {
+        margin: 0 0 1rem;
+        color: #4fc3f7;
+        font-size: 1.3rem;
+    }
+
+    .matchup-stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid #2a2a4a;
+    }
+
+    .matchup-stat span {
+        color: #aaa;
+    }
+
+    .matchup-stat strong {
+        color: #e0e0e0;
+    }
+</style>

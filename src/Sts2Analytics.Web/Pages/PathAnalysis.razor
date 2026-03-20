@@ -1,0 +1,83 @@
+@page "/paths"
+@inject DataService Data
+
+<PageTitle>Path Analysis - STS2 Analytics</PageTitle>
+
+<h2>Path Analysis</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #b0b0c8;">Elite Count vs Win Rate</h3>
+        <RadzenChart Style="height: 350px;">
+            <RadzenBarSeries Data="@_eliteData" CategoryProperty="Label" ValueProperty="WinRate" Title="Win Rate" />
+            <RadzenCategoryAxis />
+            <RadzenValueAxis Min="0" Max="1" FormatString="{0:P0}" />
+        </RadzenChart>
+    </div>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        @foreach (var e in _eliteCorrelation)
+        {
+            <div class="stat-card">
+                <h3>@e.EliteCount</h3>
+                <p>Elites Killed</p>
+                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">
+                    <div>@e.TotalRuns runs</div>
+                    <div>@e.Wins wins</div>
+                    <div style="color: #4fc3f7;">@e.WinRate.ToString("P1") win rate</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool _loading = true;
+    private List<EliteCorrelation> _eliteCorrelation = [];
+    private List<EliteChartRow> _eliteData = [];
+
+    public record EliteChartRow(string Label, double WinRate);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Data.GetDataAsync();
+
+        _eliteCorrelation = data.EliteCorrelation
+            .OrderBy(e => e.EliteCount)
+            .ToList();
+
+        _eliteData = _eliteCorrelation
+            .Select(e => new EliteChartRow($"{e.EliteCount} elites", e.WinRate))
+            .ToList();
+
+        _loading = false;
+    }
+}
+
+<style>
+    .stat-card {
+        background: #1a1a2e;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        flex: 1;
+        min-width: 120px;
+        border: 1px solid #2a2a4a;
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        margin: 0;
+        color: #4fc3f7;
+    }
+
+    .stat-card p {
+        margin: 0.5rem 0 0;
+        color: #aaa;
+    }
+</style>

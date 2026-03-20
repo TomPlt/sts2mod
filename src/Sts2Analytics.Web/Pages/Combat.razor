@@ -1,0 +1,57 @@
+@page "/combat"
+@inject DataService Data
+
+<PageTitle>Combat - STS2 Analytics</PageTitle>
+
+<h2>Combat</h2>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3 style="color: #b0b0c8;">Damage by Encounter</h3>
+
+    <RadzenDataGrid Data="@_encounters" TItem="EncounterRow" AllowSorting="true" AllowPaging="true" PageSize="25"
+                    Style="margin-bottom: 2rem;">
+        <Columns>
+            <RadzenDataGridColumn TItem="EncounterRow" Property="Name" Title="Encounter" Width="250px" />
+            <RadzenDataGridColumn TItem="EncounterRow" Property="AvgDamage" Title="Avg Damage" FormatString="{0:F1}" Width="120px"
+                                  SortOrder="SortOrder.Descending" />
+            <RadzenDataGridColumn TItem="EncounterRow" Property="Fights" Title="Fights" Width="80px" />
+        </Columns>
+    </RadzenDataGrid>
+}
+
+@code {
+    private bool _loading = true;
+    private List<EncounterRow> _encounters = [];
+
+    public record EncounterRow(string Name, double AvgDamage, int Fights);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await Data.GetDataAsync();
+
+        _encounters = data.DamageByEncounter
+            .OrderByDescending(d => d.AvgDamage)
+            .Select(d => new EncounterRow(
+                FormatName(d.EncounterId),
+                d.AvgDamage,
+                d.SampleSize
+            )).ToList();
+
+        _loading = false;
+    }
+
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return name.Replace('_', ' ').ToLowerInvariant()
+            .Split(' ')
+            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
+            .Aggregate((a, b) => a + " " + b);
+    }
+}
