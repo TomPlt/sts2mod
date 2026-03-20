@@ -1,3 +1,39 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-@Body
+<div class="page">
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h3>STS2 Analytics</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
+                Overview
+            </NavLink>
+            <NavLink class="nav-item" href="cards">
+                Cards
+            </NavLink>
+            <NavLink class="nav-item" href="relics">
+                Relics
+            </NavLink>
+            <NavLink class="nav-item" href="elo">
+                Elo
+            </NavLink>
+            <NavLink class="nav-item" href="runs">
+                Runs
+            </NavLink>
+            <NavLink class="nav-item" href="paths">
+                Paths
+            </NavLink>
+            <NavLink class="nav-item" href="economy">
+                Economy
+            </NavLink>
+            <NavLink class="nav-item" href="combat">
+                Combat
+            </NavLink>
+        </nav>
+    </div>
+    <main class="content">
+        <RadzenComponents />
+        @Body
+    </main>
+</div>
