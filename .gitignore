@@ -38,3 +38,4 @@ Thumbs.db
 *.db
 data.json
 .superpowers/
+.worktrees/
