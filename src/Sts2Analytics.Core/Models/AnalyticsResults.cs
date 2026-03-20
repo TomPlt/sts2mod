@@ -17,3 +17,9 @@ public record RunSummary(int TotalRuns, int Wins, int Losses, double WinRate,
     Dictionary<string, int> RunsByCharacter);
 
 public record CardImpactScore(string CardId, double PickRate, double WinRateDelta, double ImpactScore);
+
+public record EloRatingResult(string CardId, string Character, string Context, double Rating, int GamesPlayed);
+
+public record EloHistoryResult(double RatingBefore, double RatingAfter, string Timestamp);
+
+public record CardMatchupResult(string CardA, string CardB, int AWinsOverB, int BWinsOverA);
