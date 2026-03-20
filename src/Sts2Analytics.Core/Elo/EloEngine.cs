@@ -90,8 +90,8 @@ public class EloEngine
                     // In a losing run, the picked choice (winner) LOSES
                     bool winnerActuallyWins = run.Win != 0;
 
-                    // Process for "overall" context
-                    ProcessMatchup(winner, loser, run.Character, "overall", winnerActuallyWins, runId, run.StartTime, transaction);
+                    // Process for "overall" context (all characters share one rating pool)
+                    ProcessMatchup(winner, loser, "ALL", "overall", winnerActuallyWins, runId, run.StartTime, transaction);
 
                     // Process for per-character context
                     ProcessMatchup(winner, loser, run.Character, run.Character, winnerActuallyWins, runId, run.StartTime, transaction);
