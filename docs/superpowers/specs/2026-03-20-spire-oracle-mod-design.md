@@ -15,12 +15,27 @@ mods/SpireOracle/
 
 No `.pck` required — UI is created programmatically via Godot nodes, no custom assets.
 
+### mod_manifest.json
+
+```json
+{
+  "name": "SpireOracle",
+  "version": "0.1.0",
+  "author": "sts2mod",
+  "description": "Card analytics overlay — Elo ratings, pick rates, and recommendations on reward screens"
+}
+```
+
+> Note: Exact manifest schema may have additional required fields — confirm during Phase A decompilation research.
+
 ## Data Source
 
 The CLI `export --mod` command outputs a slimmed-down JSON file:
 
 ```json
 {
+  "version": 1,
+  "exportedAt": "2026-03-20T15:30:00Z",
   "skipElo": 1710.0,
   "cards": [
     {
@@ -39,20 +54,34 @@ The CLI `export --mod` command outputs a slimmed-down JSON file:
 ```csharp
 record CardStats(string CardId, double Elo, double PickRate,
     double WinRatePicked, double WinRateSkipped, double Delta);
-record OverlayData(double SkipElo, List<CardStats> Cards);
+record OverlayData(int Version, string ExportedAt, double SkipElo, List<CardStats> Cards);
 ```
 
 **Lookup:** Cards matched by game ID (e.g., `CARD.OFFERING`). Cards not in the data get no overlay.
 
+### CLI `--mod` Export Implementation
+
+The `export --mod` command builds `OverlayData` by:
+
+1. Query `EloRatings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'` → `skipElo`
+2. Query `CardAnalytics.GetCardWinRates()` → join with `CardAnalytics.GetCardPickRates()` by CardId
+3. Query `EloAnalytics.GetCardEloRatings()` → filter to `Context = 'overall'`
+4. Join all three by CardId into `CardStats` records
+5. Cards that appear in Elo but not in win rates (or vice versa) are included with available data, zeros for missing fields
+6. Serialize as JSON with `version: 1` and `exportedAt` timestamp
+
+Optional `--character` flag scopes to per-character Elo context instead of "overall".
+
 ## Entry Point
 
 `[ModInitializer]` class with `ModLoaded()`:
-1. Determine mod directory path (where the DLL lives)
+1. Determine mod directory path — Phase A research item: check if the game provides a mod path API, otherwise use `Assembly.GetExecutingAssembly().Location` or `AppContext.BaseDirectory`
 2. Read and deserialize `data.json` into `OverlayData`
-3. Build a `Dictionary<string, CardStats>` for O(1) lookup
-4. Apply Harmony patches
-5. Register F2 hotkey listener
-6. If `data.json` is missing or invalid, log a warning and disable overlays (don't crash)
+3. Check `version` field for compatibility
+4. Build a `Dictionary<string, CardStats>` for O(1) lookup
+5. Apply Harmony patches
+6. Add `OverlayToggleNode` to the scene tree for F2 handling
+7. If `data.json` is missing or invalid, log a warning and disable overlays (don't crash)
 
 ## Card Reward Overlay
 
@@ -88,7 +117,9 @@ Panel style: dark background (rgba black 0.95), ember border, monospace grid lay
 
 ## F2 Toggle
 
-F2 hotkey cycles:
+Implemented via `OverlayToggle : Node` added to the scene tree during `ModLoaded()`. This node overrides `_UnhandledInput(InputEvent)` to listen for F2 — no Harmony patch needed for input.
+
+F2 cycles:
 - **On** (default): badges + pills + hover details + skip line
 - **Off**: no overlay, vanilla experience
 
@@ -100,13 +131,14 @@ State persists for the session (not saved to disk).
 1. Card reward screen class name and namespace
 2. Method that populates/displays the 3 card reward choices
 3. Card UI node type and structure (Godot Control hierarchy)
-4. How card hover/focus state is detected
-5. Input handling system (for F2 key binding)
+4. How card hover/focus state is detected — is it signal-based (`mouse_entered`/`mouse_exited`), a focus system, or a custom hover manager?
+5. How the game resolves mod directories — is there an API to get the mod's root path?
+6. Exact `mod_manifest.json` schema — any additional required fields?
 
 **Patch strategy:**
 - Postfix patch on the card reward display method to inject overlay UI nodes
 - Each card node gets child nodes added: Elo badge (Label in a Panel), recommendation pill (Label in a Panel)
-- Hover detail panel added as a sibling or child that toggles visibility on focus
+- Hover detail panel: connect to the card's `mouse_entered`/`mouse_exited` signals (or equivalent discovered in Phase A) to toggle visibility
 - Skip line reference added to the reward screen container
 
 **Safety:** All patches check for null/missing data. If a card ID isn't in the analytics data, that card gets no overlay. If the reward screen structure is unexpected, patches fail silently.
@@ -121,12 +153,12 @@ src/Sts2Analytics.Mod/
 │   ├── OverlayData.cs          # Data models (CardStats, OverlayData)
 │   └── DataLoader.cs           # JSON loading + dictionary building
 ├── Patches/
-│   ├── CardRewardPatch.cs      # Harmony patch for reward screen
-│   └── InputPatch.cs           # F2 hotkey handling
+│   └── CardRewardPatch.cs      # Harmony patch for reward screen
 └── UI/
     ├── EloBadge.cs             # Creates Elo badge Godot node
     ├── RecommendationPill.cs   # Creates pick/skip pill node
-    └── DetailPanel.cs          # Creates hover detail panel node
+    ├── DetailPanel.cs          # Creates hover detail panel node
+    └── OverlayToggle.cs        # Node added to scene tree, handles F2 input
 ```
 
 **Does NOT reference Sts2Analytics.Core** — the mod is standalone. Only dependencies are:
@@ -134,6 +166,8 @@ src/Sts2Analytics.Mod/
 - `Lib.Harmony` (2.4.2)
 - `Godot.NET.Sdk`
 - `System.Text.Json` (built-in)
+
+**Build output:** Assembly name is `SpireOracle.dll` (set `<AssemblyName>SpireOracle</AssemblyName>` in csproj). Build output copies to `mods/SpireOracle/` for testing.
 
 ## CLI Changes
 
