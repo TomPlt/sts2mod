@@ -36,3 +36,11 @@ public record DamageByEncounter(string EncounterId, double AvgDamage, int Sample
 public record TurnsByEncounter(string EncounterId, double AvgTurns, int SampleSize);
 public record DeathFloor(int ActIndex, int FloorIndex, string? EncounterId, int DeathCount);
 public record HpThreshold(int FloorIndex, int HpBucket, int TotalRuns, int Wins, double WinRate);
+
+public record ModCardStats(
+    string CardId, double Elo, double PickRate,
+    double WinRatePicked, double WinRateSkipped, double Delta);
+
+public record ModOverlayData(
+    int Version, string ExportedAt, double SkipElo,
+    List<ModCardStats> Cards);
