@@ -4,6 +4,7 @@
     <AssemblyName>SpireOracle</AssemblyName>
     <RootNamespace>SpireOracle</RootNamespace>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
