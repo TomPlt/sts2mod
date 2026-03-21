@@ -64,4 +64,11 @@ public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
     Dictionary<string, double> SkipEloByAct,
     List<ModCardStats> Cards,
-    List<ModAncientStats>? AncientChoices = null);
+    List<ModAncientStats>? AncientChoices = null,
+    List<MapIntelCharacter>? MapIntel = null);
+
+public record MapIntelPool(string Pool, double AvgDamage, int SampleSize, List<string> Encounters);
+
+public record MapIntelAct(int ActIndex, List<MapIntelPool> Pools);
+
+public record MapIntelCharacter(string Character, List<MapIntelAct> Acts);
