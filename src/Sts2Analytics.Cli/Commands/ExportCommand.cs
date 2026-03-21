@@ -71,6 +71,31 @@ public static class ExportCommand
             // Path analytics
             var pathAnalytics = new PathAnalytics(conn);
             var eliteCorrelation = pathAnalytics.GetEliteCountCorrelation();
+            var eliteCorrelationByAct = pathAnalytics.GetEliteCountCorrelationByAct();
+
+            // Raw card choices for client-side filtering
+            var cardChoices = conn.Query("""
+                SELECT cc.CardId, cc.WasPicked, f.RunId
+                FROM CardChoices cc
+                JOIN Floors f ON cc.FloorId = f.Id
+                """).Select(r => new
+            {
+                cardId = (string)r.CardId,
+                wasPicked = (long)r.WasPicked != 0,
+                runId = (long)r.RunId
+            }).ToList();
+
+            // Raw relic choices for client-side filtering
+            var relicChoices = conn.Query("""
+                SELECT rc.RelicId, rc.WasPicked, f.RunId
+                FROM RelicChoices rc
+                JOIN Floors f ON rc.FloorId = f.Id
+                """).Select(r => new
+            {
+                relicId = (string)r.RelicId,
+                wasPicked = (long)r.WasPicked != 0,
+                runId = (long)r.RunId
+            }).ToList();
 
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode FROM Runs ORDER BY Id").ToList();
@@ -99,9 +124,12 @@ public static class ExportCommand
                 relicWinRates,
                 relicPickRates,
                 glicko2Ratings,
+                cardChoices,
+                relicChoices,
                 runs = runsList,
                 damageByEncounter,
-                eliteCorrelation
+                eliteCorrelation,
+                eliteCorrelationByAct
             };
 
             var options = new JsonSerializerOptions
@@ -149,9 +177,23 @@ public static class ExportCommand
             .ToDictionary(c => c.CardId);
 
         var g2Analytics = new Glicko2Analytics(conn);
-        var eloRatings = g2Analytics.GetRatings()
+        var allRatings = g2Analytics.GetRatings();
+        var eloRatings = allRatings
             .Where(e => e.Context == "overall")
             .ToDictionary(e => e.CardId);
+
+        // Build per-act rating lookup: (cardId, actContext) -> rating
+        var actRatings = allRatings
+            .Where(e => e.Context.Contains("_ACT"))
+            .ToLookup(e => e.CardId);
+
+        // Skip Elo per act
+        var skipEloByAct = new Dictionary<string, double>();
+        foreach (var r in allRatings.Where(e => e.CardId == "SKIP" && e.Context.Contains("_ACT")))
+        {
+            var actNum = r.Context[(r.Context.LastIndexOf("ACT") + 3)..];
+            skipEloByAct[$"act{actNum}"] = r.Rating;
+        }
 
         // Collect all card IDs
         var allCardIds = cardWinRates.Keys
@@ -168,13 +210,25 @@ public static class ExportCommand
             var winPicked = cardWinRates.TryGetValue(id, out var w) ? w.WinRateWhenPicked : 0.0;
             var winSkipped = w?.WinRateWhenSkipped ?? 0.0;
             var delta = w?.WinRateDelta ?? 0.0;
-            return new ModCardStats(id, elo, pickRate, winPicked, winSkipped, delta);
+
+            // Per-act ratings for this card (any character context with _ACT suffix)
+            var cardActRatings = actRatings[id].ToList();
+            double act1 = 0, act2 = 0, act3 = 0;
+            foreach (var ar in cardActRatings)
+            {
+                if (ar.Context.EndsWith("_ACT1")) act1 = Math.Max(act1, ar.Rating);
+                else if (ar.Context.EndsWith("_ACT2")) act2 = Math.Max(act2, ar.Rating);
+                else if (ar.Context.EndsWith("_ACT3")) act3 = Math.Max(act3, ar.Rating);
+            }
+
+            return new ModCardStats(id, elo, pickRate, winPicked, winSkipped, delta, act1, act2, act3);
         }).ToList();
 
         var overlayData = new ModOverlayData(
-            Version: 1,
+            Version: 2,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
+            SkipEloByAct: skipEloByAct,
             Cards: cards);
 
         var options = new JsonSerializerOptions

@@ -1,5 +1,7 @@
 @page "/cards/matchups"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Card Matchups - STS2 Analytics</PageTitle>
 
@@ -87,6 +89,7 @@ else
     private bool _loading = true;
     private ExportData? _data;
     private List<CardOption> _cardOptions = [];
+    private Dictionary<string, CardWinRate> _filteredWinRates = new();
     private string? _cardAId;
     private string? _cardBId;
 
@@ -95,21 +98,49 @@ else
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        Recompute();
+        _loading = false;
+    }
 
+    private void Recompute()
+    {
+        if (_data is null) return;
+
+        var eloContext = Filter.Character ?? "overall";
         _cardOptions = _data.Glicko2Ratings
-            .Where(e => e.Context == "overall" && e.GamesPlayed >= 5)
+            .Where(e => e.Context == eloContext && e.GamesPlayed >= 5)
             .OrderBy(e => FormatName(e.CardId))
             .Select(e => new CardOption(e.CardId, FormatName(e.CardId)))
             .ToList();
 
-        _loading = false;
+        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data.Runs, Filter);
+        _filteredWinRates = (_data.CardChoices.Count > 0 && Filter.HasAnyFilter
+            ? ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap)
+            : _data.CardWinRates)
+            .ToDictionary(c => c.CardId);
     }
 
-    private Glicko2RatingResult? GetCard(string? id) =>
-        id == null ? null : _data?.Glicko2Ratings.FirstOrDefault(e => e.CardId == id && e.Context == "overall");
+    private void OnFilterChanged()
+    {
+        Recompute();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
+
+    private Glicko2RatingResult? GetCard(string? id)
+    {
+        if (id == null || _data is null) return null;
+        var context = Filter.Character ?? "overall";
+        return _data.Glicko2Ratings.FirstOrDefault(e => e.CardId == id && e.Context == context);
+    }
 
     private CardWinRate? GetWinRate(string id) =>
-        _data?.CardWinRates.FirstOrDefault(c => c.CardId == id);
+        _filteredWinRates.GetValueOrDefault(id);
 
     private static string FormatName(string id)
     {

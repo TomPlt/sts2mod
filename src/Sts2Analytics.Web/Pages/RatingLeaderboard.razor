@@ -29,10 +29,10 @@ else
         <button class="@(_actFilter == 3 ? "active" : "")" @onclick="() => SetActFilter(3)">Act 3</button>
     </div>
 
-    @if (Filter.HasAscensionFilter)
+    @if (_usingWinRateFallback)
     {
         <div class="filter-note">
-            <span>Note: Ratings are aggregated across all ascension levels.</span>
+            <span>Showing win-rate-delta ranking (Glicko-2 ratings are not computed per ascension). Score = 1500 + delta×500.</span>
         </div>
     }
 
@@ -90,13 +90,15 @@ else
     private int _showCount = 40;
     private int? _actFilter;
 
+    private bool _usingWinRateFallback;
+
     record RatingRow(int Rank, string CardId, string Name, double Rating, double Rd, long Games, bool LowConfidence);
 
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
         Filter.OnChange += OnFilterChanged;
-        BuildRatings();
+        ApplyFilter();
         _loading = false;
     }
 
@@ -112,15 +114,19 @@ else
         ApplyFilter();
     }
 
-    private void BuildRatings()
-    {
-        if (_data is null) return;
-        ApplyFilter();
-    }
-
     private void ApplyFilter()
     {
         if (_data is null) return;
+
+        // When ascension filter is active, Glicko-2 ratings can't be sliced —
+        // fall back to win-rate-delta ranking from raw card choices
+        if (Filter.HasAscensionFilter && _data.CardChoices.Count > 0)
+        {
+            ApplyWinRateFallback();
+            return;
+        }
+
+        _usingWinRateFallback = false;
 
         string context;
         if (_actFilter is not null && Filter.Character is not null)
@@ -145,6 +151,37 @@ else
         _allRatings = ratings.Select((e, i) => new RatingRow(
             i + 1, e.CardId, FormatName(e.CardId), e.Rating, e.RatingDeviation, e.GamesPlayed, e.RatingDeviation > 200
         )).ToList();
+
+        if (_allRatings.Count > 0)
+        {
+            _maxRating = _allRatings.Max(r => r.Rating);
+            _minRating = _allRatings.Min(r => r.Rating);
+        }
+
+        _filteredRatings = _allRatings;
+        _showCount = 40;
+    }
+
+    private void ApplyWinRateFallback()
+    {
+        _usingWinRateFallback = true;
+        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data!.Runs, Filter);
+        var winRates = ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap);
+
+        // Use win rate delta as the score, scaled to rating-like range for display
+        var sorted = winRates
+            .Where(c => c.TimesPicked + c.TimesSkipped >= 3)
+            .OrderByDescending(c => c.WinRateDelta)
+            .ToList();
+
+        _skipRating = null;
+        _allRatings = sorted.Select((c, i) =>
+        {
+            // Map delta (-1..+1) to a 1000-2000 scale for visual consistency
+            var pseudoRating = 1500 + c.WinRateDelta * 500;
+            var games = (long)(c.TimesPicked + c.TimesSkipped);
+            return new RatingRow(i + 1, c.CardId, FormatName(c.CardId), pseudoRating, 0, games, games < 5);
+        }).ToList();
 
         if (_allRatings.Count > 0)
         {

@@ -27,67 +27,36 @@ public static class OverlayFactory
         eloBadgeStyle.CornerRadiusBottomRight = 4;
         eloBadgeStyle.CornerRadiusTopLeft = 4;
         eloBadgeStyle.CornerRadiusTopRight = 4;
-        eloBadgeStyle.ContentMarginLeft = 8;
-        eloBadgeStyle.ContentMarginRight = 8;
-        eloBadgeStyle.ContentMarginTop = 4;
-        eloBadgeStyle.ContentMarginBottom = 4;
+        eloBadgeStyle.ContentMarginLeft = 14;
+        eloBadgeStyle.ContentMarginRight = 14;
+        eloBadgeStyle.ContentMarginTop = 6;
+        eloBadgeStyle.ContentMarginBottom = 6;
         eloBadge.AddThemeStyleboxOverride("panel", eloBadgeStyle);
 
         var eloLabel = new Label();
         eloLabel.Text = $"{stats.Elo:F0}";
-        eloLabel.AddThemeFontSizeOverride("font_size", 14);
+        eloLabel.AddThemeFontSizeOverride("font_size", 28);
         eloLabel.AddThemeColorOverride("font_color", Colors.White);
         eloBadge.AddChild(eloLabel);
 
-        eloBadge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-        eloBadge.Position = new Vector2(-60, 4);
-        cardHolder.AddChild(eloBadge);
+        // --- Info strip below card (Elo + Recommendation in one row) ---
+        var strip = new HBoxContainer();
+        strip.Name = "SpireOracleStrip";
+        strip.AddToGroup(OverlayGroup);
+        strip.AddThemeConstantOverride("separation", 10);
+        strip.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
+        strip.AnchorTop = 1f;
+        strip.Position = new Vector2(-30, 240);
+        strip.Alignment = BoxContainer.AlignmentMode.Center;
 
-        // --- Recommendation Pill (bottom-center) ---
-        var pill = new PanelContainer();
-        pill.Name = "SpireOraclePill";
-        pill.AddToGroup(OverlayGroup);
+        // Elo badge inside the strip
+        eloBadge.SetAnchorsPreset(Control.LayoutPreset.Center);
+        eloBadge.Position = Vector2.Zero;
+        strip.AddChild(eloBadge);
 
-        var pillStyle = new StyleBoxFlat();
-        pillStyle.CornerRadiusBottomLeft = 8;
-        pillStyle.CornerRadiusBottomRight = 8;
-        pillStyle.CornerRadiusTopLeft = 8;
-        pillStyle.CornerRadiusTopRight = 8;
-        pillStyle.ContentMarginLeft = 12;
-        pillStyle.ContentMarginRight = 12;
-        pillStyle.ContentMarginTop = 4;
-        pillStyle.ContentMarginBottom = 4;
+        // No pill — just the Elo badge under the card
 
-        var pillLabel = new Label();
-        pillLabel.AddThemeFontSizeOverride("font_size", 13);
-
-        if (stats.Elo > skipElo + 50)
-        {
-            pillStyle.BgColor = new Color(0.15f, 0.5f, 0.15f); // green
-            pillLabel.Text = "\u25b2 PICK";
-            pillLabel.AddThemeColorOverride("font_color", new Color(0.7f, 1.0f, 0.7f));
-        }
-        else if (stats.Elo < skipElo - 50)
-        {
-            pillStyle.BgColor = new Color(0.5f, 0.15f, 0.15f); // red
-            pillLabel.Text = "\u25bc SKIP";
-            pillLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.7f, 0.7f));
-        }
-        else
-        {
-            pillStyle.BgColor = new Color(0.5f, 0.4f, 0.1f); // gold
-            pillLabel.Text = "\u2014 OK";
-            pillLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.9f, 0.6f));
-        }
-
-        pill.AddThemeStyleboxOverride("panel", pillStyle);
-        pill.AddChild(pillLabel);
-
-        pill.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
-        pill.AnchorTop = 1f;
-        pill.Position = new Vector2(0, -30);
-        pill.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-        cardHolder.AddChild(pill);
+        cardHolder.AddChild(strip);
 
         // --- Detail Panel (below card, hidden by default) ---
         var detail = new PanelContainer();
@@ -115,17 +84,21 @@ public static class OverlayFactory
         var vbox = new VBoxContainer();
         vbox.AddThemeConstantOverride("separation", 2);
 
-        AddStatRow(vbox, "Elo", $"{stats.Elo:F0}");
+        AddStatRow(vbox, "Rating", $"{stats.Elo:F0}");
+        AddStatRow(vbox, "Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0}" : "—");
+        AddStatRow(vbox, "Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0}" : "—");
+        AddStatRow(vbox, "Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0}" : "—");
         AddStatRow(vbox, "Pick Rate", $"{stats.PickRate:P1}");
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
-        AddStatRow(vbox, "Delta", $"{stats.Delta:+0.0;-0.0;0.0}");
+        AddStatRow(vbox, "Delta", $"{stats.Delta:+0.0%;-0.0%;0.0%}");
 
         detail.AddChild(vbox);
 
+        detail.CustomMinimumSize = new Vector2(280, 0);
         detail.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
         detail.AnchorTop = 1f;
-        detail.Position = new Vector2(0, 10);
+        detail.Position = new Vector2(-20, 15);
         cardHolder.AddChild(detail);
     }
 
@@ -135,14 +108,14 @@ public static class OverlayFactory
 
         var nameLabel = new Label();
         nameLabel.Text = label;
-        nameLabel.AddThemeFontSizeOverride("font_size", 11);
+        nameLabel.AddThemeFontSizeOverride("font_size", 20);
         nameLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
         nameLabel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         row.AddChild(nameLabel);
 
         var valueLabel = new Label();
         valueLabel.Text = value;
-        valueLabel.AddThemeFontSizeOverride("font_size", 11);
+        valueLabel.AddThemeFontSizeOverride("font_size", 20);
         valueLabel.AddThemeColorOverride("font_color", Colors.White);
         row.AddChild(valueLabel);
 

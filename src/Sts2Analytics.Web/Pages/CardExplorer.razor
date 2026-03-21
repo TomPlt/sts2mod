@@ -13,13 +13,6 @@
 }
 else
 {
-    @if (Filter.HasAscensionFilter)
-    {
-        <div class="filter-note">
-            <span>Note: Card analytics are aggregated across all ascension levels.</span>
-        </div>
-    }
-
     <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
         <label>Min Games:</label>
         <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
@@ -47,36 +40,55 @@ else
     private List<CardRow> _allCards = [];
     private List<CardRow> _filteredCards = [];
 
-    public record CardRow(string Name, double Elo, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, long Games);
+    public record CardRow(string Id, string Name, double Elo, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, long Games);
 
     protected override async Task OnInitializedAsync()
     {
         Filter.OnChange += OnFilterChanged;
         _data = await Data.GetDataAsync();
+        Recompute();
+        _loading = false;
+    }
 
+    private void Recompute()
+    {
+        if (_data is null) return;
+
+        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data.Runs, Filter);
+
+        var winRates = _data.CardChoices.Count > 0
+            ? ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap).ToDictionary(c => c.CardId)
+            : _data.CardWinRates.ToDictionary(c => c.CardId);
+
+        var pickRates = _data.CardChoices.Count > 0
+            ? ClientAnalytics.ComputeCardPickRates(_data.CardChoices, runIds).ToDictionary(c => c.CardId)
+            : _data.CardPickRates.ToDictionary(c => c.CardId);
+
+        var eloContext = Filter.Character ?? "overall";
         var eloLookup = _data.Glicko2Ratings
-            .Where(e => e.Context == "overall")
+            .Where(e => e.Context == eloContext)
             .ToDictionary(e => e.CardId, e => e);
 
-        var pickLookup = _data.CardPickRates.ToDictionary(p => p.CardId, p => p);
+        var allCardIds = winRates.Keys.Union(pickRates.Keys).ToList();
 
-        _allCards = _data.CardWinRates.Select(cw =>
+        _allCards = allCardIds.Select(id =>
         {
-            eloLookup.TryGetValue(cw.CardId, out var elo);
-            pickLookup.TryGetValue(cw.CardId, out var pick);
+            winRates.TryGetValue(id, out var cw);
+            eloLookup.TryGetValue(id, out var elo);
+            pickRates.TryGetValue(id, out var pick);
             return new CardRow(
-                FormatName(cw.CardId),
+                id,
+                FormatName(id),
                 elo?.Rating ?? 0,
                 pick?.PickRate ?? 0,
-                cw.WinRateWhenPicked,
-                cw.WinRateWhenSkipped,
-                cw.WinRateDelta,
-                elo?.GamesPlayed ?? cw.TimesPicked + cw.TimesSkipped
+                cw?.WinRateWhenPicked ?? 0,
+                cw?.WinRateWhenSkipped ?? 0,
+                cw?.WinRateDelta ?? 0,
+                elo?.GamesPlayed ?? (cw != null ? cw.TimesPicked + cw.TimesSkipped : 0)
             );
         }).ToList();
 
         ApplyFilter();
-        _loading = false;
     }
 
     private void ApplyFilter()
@@ -91,6 +103,7 @@ else
 
     private void OnFilterChanged()
     {
+        Recompute();
         InvokeAsync(StateHasChanged);
     }
 

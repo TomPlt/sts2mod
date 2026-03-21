@@ -11,35 +11,75 @@
 }
 else
 {
-    <div style="margin-bottom: 2rem;">
+    @if (_eliteByAct.Count > 0)
+    {
+        <h3 style="color: #b0b0c8;">Elites Killed by Act vs Win Rate</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">
+            Per-act breakdown removes survivorship bias — more total elites just means a longer run.
+        </p>
+
+        @foreach (var actGroup in _eliteByAct)
+        {
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: #4fc3f7; margin-bottom: 0.5rem;">Act @actGroup.Key</h4>
+                <RadzenChart Style="height: 250px;">
+                    <RadzenBarSeries Data="@actGroup.Value" CategoryProperty="Label" ValueProperty="WinRate" Title="Win Rate" />
+                    <RadzenCategoryAxis />
+                    <RadzenValueAxis Min="0" Max="1" FormatString="{0:P0}" />
+                </RadzenChart>
+
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                    @foreach (var e in _eliteByActRaw[actGroup.Key])
+                    {
+                        <div class="stat-card">
+                            <h3>@e.EliteCount</h3>
+                            <p>Elites</p>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">
+                                <div>@e.TotalRuns runs</div>
+                                <div>@e.Wins wins</div>
+                                <div style="color: #4fc3f7;">@e.WinRate.ToString("P1") win rate</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
         <h3 style="color: #b0b0c8;">Elite Count vs Win Rate</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">
+            Note: total elites correlates with run length. Re-export data to see per-act breakdown.
+        </p>
         <RadzenChart Style="height: 350px;">
             <RadzenBarSeries Data="@_eliteData" CategoryProperty="Label" ValueProperty="WinRate" Title="Win Rate" />
             <RadzenCategoryAxis />
             <RadzenValueAxis Min="0" Max="1" FormatString="{0:P0}" />
         </RadzenChart>
-    </div>
 
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-        @foreach (var e in _eliteCorrelation)
-        {
-            <div class="stat-card">
-                <h3>@e.EliteCount</h3>
-                <p>Elites Killed</p>
-                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">
-                    <div>@e.TotalRuns runs</div>
-                    <div>@e.Wins wins</div>
-                    <div style="color: #4fc3f7;">@e.WinRate.ToString("P1") win rate</div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+            @foreach (var e in _eliteCorrelation)
+            {
+                <div class="stat-card">
+                    <h3>@e.EliteCount</h3>
+                    <p>Elites Killed</p>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">
+                        <div>@e.TotalRuns runs</div>
+                        <div>@e.Wins wins</div>
+                        <div style="color: #4fc3f7;">@e.WinRate.ToString("P1") win rate</div>
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
 }
 
 @code {
     private bool _loading = true;
     private List<EliteCorrelation> _eliteCorrelation = [];
     private List<EliteChartRow> _eliteData = [];
+    private SortedDictionary<int, List<EliteChartRow>> _eliteByAct = [];
+    private SortedDictionary<int, List<EliteCorrelationByAct>> _eliteByActRaw = [];
 
     public record EliteChartRow(string Label, double WinRate);
 
@@ -54,6 +94,22 @@ else
         _eliteData = _eliteCorrelation
             .Select(e => new EliteChartRow($"{e.EliteCount} elites", e.WinRate))
             .ToList();
+
+        // Per-act breakdown
+        if (data.EliteCorrelationByAct.Count > 0)
+        {
+            var grouped = data.EliteCorrelationByAct
+                .OrderBy(e => e.Act).ThenBy(e => e.EliteCount)
+                .GroupBy(e => e.Act);
+
+            _eliteByAct = new SortedDictionary<int, List<EliteChartRow>>(
+                grouped.ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => new EliteChartRow($"{e.EliteCount} elites", e.WinRate)).ToList()));
+
+            _eliteByActRaw = new SortedDictionary<int, List<EliteCorrelationByAct>>(
+                grouped.ToDictionary(g => g.Key, g => g.ToList()));
+        }
 
         _loading = false;
     }

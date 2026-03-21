@@ -10,9 +10,18 @@ public static class DataLoader
 {
     private static Dictionary<string, CardStats>? _cards;
     private static double _skipElo;
+    private static Dictionary<string, double>? _skipEloByAct;
 
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
+
+    public static double GetSkipEloForAct(int actIndex)
+    {
+        var key = $"act{actIndex + 1}";
+        if (_skipEloByAct != null && _skipEloByAct.TryGetValue(key, out var elo))
+            return elo;
+        return _skipElo;
+    }
 
     public static bool Load(string modPath)
     {
@@ -35,6 +44,7 @@ public static class DataLoader
             }
 
             _skipElo = data.SkipElo;
+            _skipEloByAct = data.SkipEloByAct;
             _cards = new Dictionary<string, CardStats>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var card in data.Cards)

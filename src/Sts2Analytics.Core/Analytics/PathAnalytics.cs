@@ -47,6 +47,42 @@ public class PathAnalytics
         }).ToList();
     }
 
+    public List<EliteCorrelationByAct> GetEliteCountCorrelationByAct(AnalyticsFilter? filter = null)
+    {
+        var (where, parameters) = BuildWhereClause(filter);
+
+        var sql = $"""
+            SELECT
+                sub.ActIndex AS Act,
+                sub.EliteCount,
+                COUNT(*) AS TotalRuns,
+                SUM(CASE WHEN r.Win = 1 THEN 1 ELSE 0 END) AS Wins
+            FROM (
+                SELECT f.RunId, f.ActIndex, COUNT(*) AS EliteCount
+                FROM Floors f
+                WHERE f.MapPointType = 'elite'
+                GROUP BY f.RunId, f.ActIndex
+            ) sub
+            JOIN Runs r ON sub.RunId = r.Id
+            {where}
+            GROUP BY sub.ActIndex, sub.EliteCount
+            ORDER BY sub.ActIndex, sub.EliteCount
+            """;
+
+        var rows = _connection.Query(sql, parameters).ToList();
+
+        return rows.Select(row =>
+        {
+            int act = (int)(long)row.Act;
+            int eliteCount = (int)(long)row.EliteCount;
+            int totalRuns = (int)(long)row.TotalRuns;
+            int wins = (int)(long)row.Wins;
+            double winRate = totalRuns > 0 ? (double)wins / totalRuns : 0.0;
+
+            return new EliteCorrelationByAct(act, eliteCount, totalRuns, wins, winRate);
+        }).ToList();
+    }
+
     public List<PathPatternWinRate> GetPathPatternWinRates(AnalyticsFilter? filter = null)
     {
         var (where, parameters) = BuildWhereClause(filter);

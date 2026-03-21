@@ -13,13 +13,6 @@
 }
 else
 {
-    @if (Filter.HasAscensionFilter)
-    {
-        <div class="filter-note">
-            <span>Note: Relic analytics are aggregated across all ascension levels.</span>
-        </div>
-    }
-
     <RadzenDataGrid Data="@_relics" TItem="RelicRow" AllowSorting="true" AllowPaging="true" PageSize="25"
                     Style="margin-bottom: 2rem;">
         <Columns>
@@ -36,6 +29,7 @@ else
 
 @code {
     private bool _loading = true;
+    private ExportData? _data;
     private List<RelicRow> _relics = [];
 
     public record RelicRow(string Name, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, int TimesPicked);
@@ -43,24 +37,40 @@ else
     protected override async Task OnInitializedAsync()
     {
         Filter.OnChange += OnFilterChanged;
-        var data = await Data.GetDataAsync();
+        _data = await Data.GetDataAsync();
+        Recompute();
+        _loading = false;
+    }
 
-        var pickLookup = data.RelicPickRates.ToDictionary(p => p.RelicId, p => p);
+    private void Recompute()
+    {
+        if (_data is null) return;
 
-        _relics = data.RelicWinRates.Select(rw =>
+        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data.Runs, Filter);
+
+        var winRates = _data.RelicChoices.Count > 0
+            ? ClientAnalytics.ComputeRelicWinRates(_data.RelicChoices, runIds, winMap).ToDictionary(r => r.RelicId)
+            : _data.RelicWinRates.ToDictionary(r => r.RelicId);
+
+        var pickRates = _data.RelicChoices.Count > 0
+            ? ClientAnalytics.ComputeRelicPickRates(_data.RelicChoices, runIds).ToDictionary(r => r.RelicId)
+            : _data.RelicPickRates.ToDictionary(r => r.RelicId);
+
+        var allIds = winRates.Keys.Union(pickRates.Keys).ToList();
+
+        _relics = allIds.Select(id =>
         {
-            pickLookup.TryGetValue(rw.RelicId, out var pick);
+            winRates.TryGetValue(id, out var rw);
+            pickRates.TryGetValue(id, out var pick);
             return new RelicRow(
-                FormatName(rw.RelicId),
+                FormatName(id),
                 pick?.PickRate ?? 0,
-                rw.WinRateWhenPicked,
-                rw.WinRateWhenSkipped,
-                rw.WinRateWhenPicked - rw.WinRateWhenSkipped,
-                rw.TimesPicked
+                rw?.WinRateWhenPicked ?? 0,
+                rw?.WinRateWhenSkipped ?? 0,
+                (rw?.WinRateWhenPicked ?? 0) - (rw?.WinRateWhenSkipped ?? 0),
+                rw?.TimesPicked ?? 0
             );
         }).ToList();
-
-        _loading = false;
     }
 
     public void Dispose()
@@ -70,6 +80,7 @@ else
 
     private void OnFilterChanged()
     {
+        Recompute();
         InvokeAsync(StateHasChanged);
     }
 

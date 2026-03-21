@@ -34,6 +34,7 @@ public record PotionUsageTiming(string PotionId, string RoomType, int TimesUsed)
 public record PotionWasteRate(string PotionId, int TimesUsed, int TimesDiscarded, double WasteRate);
 public record PathPatternWinRate(string PathSignature, int TotalRuns, int Wins, double WinRate);
 public record EliteCorrelation(int EliteCount, int TotalRuns, int Wins, double WinRate);
+public record EliteCorrelationByAct(int Act, int EliteCount, int TotalRuns, int Wins, double WinRate);
 public record GoldEfficiency(string Category, int TotalSpent, int RunCount, double WinRate);
 public record ShopPurchasePattern(string Category, int Count);
 public record CardRemovalImpact(string CardId, int TimesRemoved, int WinsAfterRemoval, double WinRate);
@@ -44,8 +45,10 @@ public record HpThreshold(int FloorIndex, int HpBucket, int TotalRuns, int Wins,
 
 public record ModCardStats(
     string CardId, double Elo, double PickRate,
-    double WinRatePicked, double WinRateSkipped, double Delta);
+    double WinRatePicked, double WinRateSkipped, double Delta,
+    double EloAct1, double EloAct2, double EloAct3);
 
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
+    Dictionary<string, double> SkipEloByAct,
     List<ModCardStats> Cards);

@@ -224,14 +224,21 @@ else
             .Take(15)
             .ToList();
 
-        _topCards = _data.CardWinRates
+        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data.Runs, Filter);
+
+        var cardWinRates = _data.CardChoices.Count > 0 && Filter.HasAnyFilter
+            ? ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap)
+            : _data.CardWinRates;
+
+        _topCards = cardWinRates
             .Where(c => c.TimesPicked >= 3)
             .OrderByDescending(c => c.WinRateDelta)
             .Take(10)
             .ToList();
 
+        var eloContext = Filter.Character ?? "overall";
         _topElo = _data.Glicko2Ratings
-            .Where(e => e.Context == "overall")
+            .Where(e => e.Context == eloContext)
             .OrderByDescending(e => e.Rating)
             .Take(12)
             .ToList();
