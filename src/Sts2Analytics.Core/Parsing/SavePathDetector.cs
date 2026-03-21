@@ -30,12 +30,15 @@ public static class SavePathDetector
 
         foreach (var steamIdDir in Directory.GetDirectories(sts2Dir))
         {
-            foreach (var profileDir in Directory.GetDirectories(steamIdDir, "profile*"))
-            {
-                var historyDir = Path.Combine(profileDir, "saves", "history");
-                if (Directory.Exists(historyDir))
-                    results.Add(historyDir);
-            }
+            // Only profile1 (main profile)
+            var profile1 = Path.Combine(steamIdDir, "profile1", "saves", "history");
+            if (Directory.Exists(profile1))
+                results.Add(profile1);
+
+            // Also modded profile1
+            var moddedProfile1 = Path.Combine(steamIdDir, "modded", "profile1", "saves", "history");
+            if (Directory.Exists(moddedProfile1))
+                results.Add(moddedProfile1);
         }
     }
 

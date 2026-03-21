@@ -17,7 +17,7 @@ public static class RatingCommand
         var actOption = new Option<int?>("--act") { Description = "Filter by act (1, 2, or 3)" };
         var minGamesOption = new Option<int>("--min-games") { Description = "Minimum games played", DefaultValueFactory = _ => 0 };
         var matchupOption = new Option<string[]?>("--matchup") { Description = "Head-to-head: --matchup CARD_A CARD_B", Arity = new ArgumentArity(2, 2) };
-        var playerOption = new Option<bool>("--player", "Show personal player ratings instead of card ratings");
+        var playerOption = new Option<bool>("--player") { Description = "Show personal player ratings instead of card ratings" };
 
         var cmd = new Command("elo", "Show Glicko-2 rating leaderboard or card matchups")
         {
