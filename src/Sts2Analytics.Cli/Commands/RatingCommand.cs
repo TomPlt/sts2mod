@@ -17,10 +17,11 @@ public static class RatingCommand
         var actOption = new Option<int?>("--act") { Description = "Filter by act (1, 2, or 3)" };
         var minGamesOption = new Option<int>("--min-games") { Description = "Minimum games played", DefaultValueFactory = _ => 0 };
         var matchupOption = new Option<string[]?>("--matchup") { Description = "Head-to-head: --matchup CARD_A CARD_B", Arity = new ArgumentArity(2, 2) };
+        var playerOption = new Option<bool>("--player", "Show personal player ratings instead of card ratings");
 
         var cmd = new Command("elo", "Show Glicko-2 rating leaderboard or card matchups")
         {
-            dbOption, topOption, characterOption, actOption, minGamesOption, matchupOption
+            dbOption, topOption, characterOption, actOption, minGamesOption, matchupOption, playerOption
         };
 
         cmd.SetAction(parseResult =>
@@ -31,9 +32,34 @@ public static class RatingCommand
             var act = parseResult.GetValue(actOption);
             var minGames = parseResult.GetValue(minGamesOption);
             var matchup = parseResult.GetValue(matchupOption);
+            var player = parseResult.GetValue(playerOption);
 
             using var conn = new SqliteConnection($"Data Source={dbPath}");
             conn.Open();
+
+            if (player)
+            {
+                var playerEngine = new PlayerRatingEngine(conn);
+                playerEngine.ProcessAllRuns();
+
+                var playerRatings = conn.Query(
+                    "SELECT Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM PlayerRatings ORDER BY Rating DESC")
+                    .ToList();
+
+                Console.WriteLine();
+                Console.WriteLine("  Player Ratings");
+                Console.WriteLine("  ─────────────────────────────────────────────");
+                Console.WriteLine($"  {"Context",-15} {"Rating",8} {"±RD",6} {"Games",7}");
+                Console.WriteLine("  ─────────────────────────────────────────────");
+
+                foreach (var r in playerRatings)
+                {
+                    Console.WriteLine($"  {(string)r.Context,-15} {(double)r.Rating,8:F0} {(double)r.RatingDeviation,6:F0} {(long)r.GamesPlayed,7}");
+                }
+
+                Console.WriteLine();
+                return;
+            }
 
             var ratingCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM Glicko2Ratings") ?? 0;
             if (ratingCount == 0)
