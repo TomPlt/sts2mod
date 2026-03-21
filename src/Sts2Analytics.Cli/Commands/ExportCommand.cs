@@ -97,6 +97,25 @@ public static class ExportCommand
                 runId = (long)r.RunId
             }).ToList();
 
+            // Player ratings
+            var playerRatingData = conn.Query(
+                "SELECT Context, Rating, RatingDeviation, GamesPlayed FROM PlayerRatings")
+                .ToList();
+
+            // Player rating history
+            var playerHistoryData = conn.Query("""
+                SELECT pr.Context, ph.RunId, ph.RatingBefore, ph.RatingAfter,
+                       ph.Opponent, ph.Outcome
+                FROM PlayerRatingHistory ph
+                JOIN PlayerRatings pr ON ph.PlayerRatingId = pr.Id
+                ORDER BY ph.RunId DESC
+                """).ToList();
+
+            // Blind spots
+            var blindSpotExportData = conn.Query(
+                "SELECT CardId, Context, BlindSpotType, Score, PickRate, ExpectedPickRate, WinRateDelta, GamesAnalyzed FROM BlindSpots")
+                .ToList();
+
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
@@ -129,7 +148,10 @@ public static class ExportCommand
                 runs = runsList,
                 damageByEncounter,
                 eliteCorrelation,
-                eliteCorrelationByAct
+                eliteCorrelationByAct,
+                playerRatings = playerRatingData,
+                playerRatingHistory = playerHistoryData,
+                blindSpots = blindSpotExportData
             };
 
             var options = new JsonSerializerOptions
