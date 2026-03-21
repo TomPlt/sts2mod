@@ -133,8 +133,30 @@ public static class OverlayFactory
 
         if (!string.IsNullOrEmpty(stats.BlindSpot))
         {
-            var bsType = stats.BlindSpot == "over_pick" ? "Over-pick" : "Under-pick";
-            AddStatRow(vbox, "Blind Spot", $"{bsType} (score: {stats.BlindSpotScore:F2})");
+            // Separator
+            var sep = new HSeparator();
+            sep.AddThemeConstantOverride("separation", 6);
+            vbox.AddChild(sep);
+
+            var isOverPick = stats.BlindSpot == "over_pick";
+            var bsColor = isOverPick
+                ? new Color(0.94f, 0.27f, 0.27f) // red
+                : new Color(0.96f, 0.62f, 0.04f); // amber
+            var bsType = isOverPick ? "OVER-PICK" : "UNDER-PICK";
+            var bsHint = isOverPick
+                ? "You pick this too often — it hurts your win rate"
+                : "You skip this too often — picking it wins more";
+
+            AddColoredStatRow(vbox, "Blind Spot", bsType, bsColor);
+            AddStatRow(vbox, "Your Pick%", $"{stats.BlindSpotPickRate:P0}");
+            AddStatRow(vbox, "Win Delta", $"{stats.BlindSpotWinRateDelta:+0.0%;-0.0%;0.0%}");
+
+            var hintLabel = new Label();
+            hintLabel.Text = bsHint;
+            hintLabel.AddThemeFontSizeOverride("font_size", 16);
+            hintLabel.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.6f));
+            hintLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            vbox.AddChild(hintLabel);
         }
 
         detail.AddChild(vbox);
@@ -144,6 +166,26 @@ public static class OverlayFactory
         detail.AnchorTop = 1f;
         detail.Position = new Vector2(-20, 15);
         cardHolder.AddChild(detail);
+    }
+
+    private static void AddColoredStatRow(VBoxContainer parent, string label, string value, Color valueColor)
+    {
+        var row = new HBoxContainer();
+
+        var nameLabel = new Label();
+        nameLabel.Text = label;
+        nameLabel.AddThemeFontSizeOverride("font_size", 20);
+        nameLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
+        nameLabel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+        row.AddChild(nameLabel);
+
+        var valueLabel = new Label();
+        valueLabel.Text = value;
+        valueLabel.AddThemeFontSizeOverride("font_size", 20);
+        valueLabel.AddThemeColorOverride("font_color", valueColor);
+        row.AddChild(valueLabel);
+
+        parent.AddChild(row);
     }
 
     private static void AddStatRow(VBoxContainer parent, string label, string value)
