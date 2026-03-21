@@ -46,7 +46,9 @@ public record HpThreshold(int FloorIndex, int HpBucket, int TotalRuns, int Wins,
 public record ModCardStats(
     string CardId, double Elo, double Rd, double PickRate,
     double WinRatePicked, double WinRateSkipped, double Delta,
-    double EloAct1, double RdAct1, double EloAct2, double RdAct2, double EloAct3, double RdAct3);
+    double EloAct1, double RdAct1, double EloAct2, double RdAct2, double EloAct3, double RdAct3,
+    string? BlindSpot = null, double BlindSpotScore = 0,
+    double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0);
 
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
