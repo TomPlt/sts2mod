@@ -38,7 +38,7 @@ else
             <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                 <div class="matchup-card">
                     <h3>@FormatName(a.CardId)</h3>
-                    <div class="matchup-stat"><span>Elo Rating</span><strong>@a.Rating.ToString("F0")</strong></div>
+                    <div class="matchup-stat"><span>Glicko-2 Rating</span><strong>@a.Rating.ToString("F0")</strong></div>
                     <div class="matchup-stat"><span>Games Played</span><strong>@a.GamesPlayed</strong></div>
                     @{ var aWr = GetWinRate(a.CardId); }
                     @if (aWr != null)
@@ -51,7 +51,7 @@ else
 
                 <div class="matchup-card">
                     <h3>@FormatName(b.CardId)</h3>
-                    <div class="matchup-stat"><span>Elo Rating</span><strong>@b.Rating.ToString("F0")</strong></div>
+                    <div class="matchup-stat"><span>Glicko-2 Rating</span><strong>@b.Rating.ToString("F0")</strong></div>
                     <div class="matchup-stat"><span>Games Played</span><strong>@b.GamesPlayed</strong></div>
                     @{ var bWr = GetWinRate(b.CardId); }
                     @if (bWr != null)
@@ -69,7 +69,7 @@ else
                     var eloDiff = a.Rating - b.Rating;
                     var leader = eloDiff >= 0 ? FormatName(a.CardId) : FormatName(b.CardId);
                 }
-                <p><strong>@leader</strong> leads by <strong>@Math.Abs(eloDiff).ToString("F0")</strong> Elo points.</p>
+                <p><strong>@leader</strong> leads by <strong>@Math.Abs(eloDiff).ToString("F0")</strong> Glicko-2 points.</p>
                 @if (aWr != null && bWr != null)
                 {
                     var deltaDiff = aWr.WinRateDelta - bWr.WinRateDelta;

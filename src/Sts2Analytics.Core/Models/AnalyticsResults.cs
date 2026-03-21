@@ -44,9 +44,9 @@ public record DeathFloor(int ActIndex, int FloorIndex, string? EncounterId, int 
 public record HpThreshold(int FloorIndex, int HpBucket, int TotalRuns, int Wins, double WinRate);
 
 public record ModCardStats(
-    string CardId, double Elo, double PickRate,
+    string CardId, double Elo, double Rd, double PickRate,
     double WinRatePicked, double WinRateSkipped, double Delta,
-    double EloAct1, double EloAct2, double EloAct3);
+    double EloAct1, double RdAct1, double EloAct2, double RdAct2, double EloAct3, double RdAct3);
 
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,

@@ -6,13 +6,17 @@ namespace SpireOracle.Data;
 public record CardStats(
     [property: JsonPropertyName("cardId")] string CardId,
     [property: JsonPropertyName("elo")] double Elo,
-    [property: JsonPropertyName("pickRate")] double PickRate,
-    [property: JsonPropertyName("winRatePicked")] double WinRatePicked,
-    [property: JsonPropertyName("winRateSkipped")] double WinRateSkipped,
-    [property: JsonPropertyName("delta")] double Delta,
+    [property: JsonPropertyName("rd")] double Rd = 350,
+    [property: JsonPropertyName("pickRate")] double PickRate = 0,
+    [property: JsonPropertyName("winRatePicked")] double WinRatePicked = 0,
+    [property: JsonPropertyName("winRateSkipped")] double WinRateSkipped = 0,
+    [property: JsonPropertyName("delta")] double Delta = 0,
     [property: JsonPropertyName("eloAct1")] double EloAct1 = 0,
+    [property: JsonPropertyName("rdAct1")] double RdAct1 = 350,
     [property: JsonPropertyName("eloAct2")] double EloAct2 = 0,
-    [property: JsonPropertyName("eloAct3")] double EloAct3 = 0);
+    [property: JsonPropertyName("rdAct2")] double RdAct2 = 350,
+    [property: JsonPropertyName("eloAct3")] double EloAct3 = 0,
+    [property: JsonPropertyName("rdAct3")] double RdAct3 = 350);
 
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,

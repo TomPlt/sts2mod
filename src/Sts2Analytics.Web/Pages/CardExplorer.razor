@@ -13,16 +13,23 @@
 }
 else
 {
-    <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center;">
-        <label>Min Games:</label>
-        <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
+    <div class="card-filter-bar">
+        <div class="filter-group">
+            <label>Min Games:</label>
+            <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
+        </div>
+        <div class="upgrade-filter">
+            <button class="@(_upgradeFilter == 0 ? "active" : "")" @onclick="() => SetUpgradeFilter(0)">All</button>
+            <button class="@(_upgradeFilter == 1 ? "active" : "")" @onclick="() => SetUpgradeFilter(1)">Base</button>
+            <button class="@(_upgradeFilter == 2 ? "active" : "")" @onclick="() => SetUpgradeFilter(2)">Upgraded</button>
+        </div>
     </div>
 
     <RadzenDataGrid Data="@_filteredCards" TItem="CardRow" AllowSorting="true" AllowPaging="true" PageSize="25"
                     Style="margin-bottom: 2rem;">
         <Columns>
             <RadzenDataGridColumn TItem="CardRow" Property="Name" Title="Card" Width="200px" />
-            <RadzenDataGridColumn TItem="CardRow" Property="Elo" Title="Elo" FormatString="{0:F0}" Width="80px"
+            <RadzenDataGridColumn TItem="CardRow" Property="Elo" Title="Rating" FormatString="{0:F0}" Width="80px"
                                   SortOrder="SortOrder.Descending" />
             <RadzenDataGridColumn TItem="CardRow" Property="PickRate" Title="Pick%" FormatString="{0:P1}" Width="80px" />
             <RadzenDataGridColumn TItem="CardRow" Property="WinRatePicked" Title="Win%(picked)" FormatString="{0:P1}" Width="110px" />
@@ -37,6 +44,7 @@ else
     private bool _loading = true;
     private ExportData? _data;
     private int _minGames = 3;
+    private int _upgradeFilter; // 0=all, 1=base, 2=upgraded
     private List<CardRow> _allCards = [];
     private List<CardRow> _filteredCards = [];
 
@@ -91,9 +99,23 @@ else
         ApplyFilter();
     }
 
+    private void SetUpgradeFilter(int f)
+    {
+        _upgradeFilter = f;
+        ApplyFilter();
+    }
+
     private void ApplyFilter()
     {
-        _filteredCards = _allCards.Where(c => c.Games >= _minGames).ToList();
+        _filteredCards = _allCards
+            .Where(c => c.Games >= _minGames)
+            .Where(c => _upgradeFilter switch
+            {
+                1 => !c.Id.Contains('+'),
+                2 => c.Id.Contains('+'),
+                _ => true
+            })
+            .ToList();
     }
 
     public void Dispose()
@@ -119,13 +141,43 @@ else
 }
 
 <style>
-    .filter-note {
+    .card-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .upgrade-filter {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .upgrade-filter button {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.25rem 0.6rem;
         font-size: 0.75rem;
         color: var(--text-dim);
-        background: rgba(91, 184, 212, 0.06);
-        border: 1px solid rgba(91, 184, 212, 0.12);
-        border-radius: 4px;
-        padding: 0.4rem 0.75rem;
-        margin-bottom: var(--gap-md);
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .upgrade-filter button.active {
+        background: rgba(212, 85, 42, 0.15);
+        border-color: var(--ember);
+        color: var(--ember-bright);
+    }
+
+    .upgrade-filter button:hover:not(.active) {
+        border-color: var(--text-dim);
+        color: var(--text);
     }
 </style>

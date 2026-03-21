@@ -84,10 +84,10 @@ public static class OverlayFactory
         var vbox = new VBoxContainer();
         vbox.AddThemeConstantOverride("separation", 2);
 
-        AddStatRow(vbox, "Rating", $"{stats.Elo:F0}");
-        AddStatRow(vbox, "Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0}" : "—");
-        AddStatRow(vbox, "Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0}" : "—");
-        AddStatRow(vbox, "Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0}" : "—");
+        AddStatRow(vbox, "Rating", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+        AddStatRow(vbox, "Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
+        AddStatRow(vbox, "Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
+        AddStatRow(vbox, "Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
         AddStatRow(vbox, "Pick Rate", $"{stats.PickRate:P1}");
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");

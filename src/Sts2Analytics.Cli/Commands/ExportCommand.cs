@@ -206,6 +206,7 @@ public static class ExportCommand
         var cards = allCardIds.Select(id =>
         {
             var elo = eloRatings.TryGetValue(id, out var e) ? e.Rating : 0.0;
+            var rd = e?.RatingDeviation ?? 350.0;
             var pickRate = cardPickRates.TryGetValue(id, out var p) ? p.PickRate : 0.0;
             var winPicked = cardWinRates.TryGetValue(id, out var w) ? w.WinRateWhenPicked : 0.0;
             var winSkipped = w?.WinRateWhenSkipped ?? 0.0;
@@ -213,15 +214,15 @@ public static class ExportCommand
 
             // Per-act ratings for this card (any character context with _ACT suffix)
             var cardActRatings = actRatings[id].ToList();
-            double act1 = 0, act2 = 0, act3 = 0;
+            double act1 = 0, rdAct1 = 350, act2 = 0, rdAct2 = 350, act3 = 0, rdAct3 = 350;
             foreach (var ar in cardActRatings)
             {
-                if (ar.Context.EndsWith("_ACT1")) act1 = Math.Max(act1, ar.Rating);
-                else if (ar.Context.EndsWith("_ACT2")) act2 = Math.Max(act2, ar.Rating);
-                else if (ar.Context.EndsWith("_ACT3")) act3 = Math.Max(act3, ar.Rating);
+                if (ar.Context.EndsWith("_ACT1")) { if (ar.Rating > act1) { act1 = ar.Rating; rdAct1 = ar.RatingDeviation; } }
+                else if (ar.Context.EndsWith("_ACT2")) { if (ar.Rating > act2) { act2 = ar.Rating; rdAct2 = ar.RatingDeviation; } }
+                else if (ar.Context.EndsWith("_ACT3")) { if (ar.Rating > act3) { act3 = ar.Rating; rdAct3 = ar.RatingDeviation; } }
             }
 
-            return new ModCardStats(id, elo, pickRate, winPicked, winSkipped, delta, act1, act2, act3);
+            return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3);
         }).ToList();
 
         var overlayData = new ModOverlayData(

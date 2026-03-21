@@ -27,6 +27,12 @@ else
         <button class="@(_actFilter == 1 ? "active" : "")" @onclick="() => SetActFilter(1)">Act 1</button>
         <button class="@(_actFilter == 2 ? "active" : "")" @onclick="() => SetActFilter(2)">Act 2</button>
         <button class="@(_actFilter == 3 ? "active" : "")" @onclick="() => SetActFilter(3)">Act 3</button>
+
+        <span class="filter-divider"></span>
+
+        <button class="@(_upgradeFilter == UpgradeFilter.All ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.All)">All</button>
+        <button class="@(_upgradeFilter == UpgradeFilter.BaseOnly ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.BaseOnly)">Base</button>
+        <button class="@(_upgradeFilter == UpgradeFilter.UpgradedOnly ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.UpgradedOnly)">Upgraded</button>
     </div>
 
     @if (_usingWinRateFallback)
@@ -42,10 +48,16 @@ else
                 <tr>
                     <th style="width: 3rem; text-align: center;">#</th>
                     <th>Card</th>
-                    <th style="width: 7rem; text-align: right;">Rating</th>
-                    <th style="width: 4rem; text-align: right;">±</th>
-                    <th style="width: 5rem; text-align: right;">Games</th>
-                    <th style="width: 12rem;">Confidence</th>
+                    <th style="width: 6rem; text-align: right;">Rating</th>
+                    <th style="width: 3.5rem; text-align: right;">±</th>
+                    @if (_actFilter == null && !_usingWinRateFallback)
+                    {
+                        <th style="width: 5rem; text-align: right;" class="act-col">Act 1</th>
+                        <th style="width: 5rem; text-align: right;" class="act-col">Act 2</th>
+                        <th style="width: 5rem; text-align: right;" class="act-col">Act 3</th>
+                    }
+                    <th style="width: 4rem; text-align: right;">Games</th>
+                    <th style="width: 10rem;">Confidence</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +70,42 @@ else
                             <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
                         </td>
                         <td style="text-align: right;" class="dim-text mono">@row.Rd.ToString("F0")</td>
+                        @if (_actFilter == null && !_usingWinRateFallback)
+                        {
+                            <td style="text-align: right;">
+                                @{ var a1 = GetActRatings(row.CardId).Act1; }
+                                @if (a1 > 0)
+                                {
+                                    <span class="act-rating @GetActTrendClass(a1, row.Rating)">@a1.ToString("F0")</span>
+                                }
+                                else
+                                {
+                                    <span class="dim-text">—</span>
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                @{ var a2 = GetActRatings(row.CardId).Act2; }
+                                @if (a2 > 0)
+                                {
+                                    <span class="act-rating @GetActTrendClass(a2, row.Rating)">@a2.ToString("F0")</span>
+                                }
+                                else
+                                {
+                                    <span class="dim-text">—</span>
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                @{ var a3 = GetActRatings(row.CardId).Act3; }
+                                @if (a3 > 0)
+                                {
+                                    <span class="act-rating @GetActTrendClass(a3, row.Rating)">@a3.ToString("F0")</span>
+                                }
+                                else
+                                {
+                                    <span class="dim-text">—</span>
+                                }
+                            </td>
+                        }
                         <td style="text-align: right;" class="dim-text mono">@row.Games</td>
                         <td>
                             <div class="elo-bar-track">
@@ -89,10 +137,16 @@ else
     private double _maxRating = 1800;
     private int _showCount = 40;
     private int? _actFilter;
-
+    private UpgradeFilter _upgradeFilter = UpgradeFilter.All;
     private bool _usingWinRateFallback;
 
+    enum UpgradeFilter { All, BaseOnly, UpgradedOnly }
+
+    // Per-act rating lookup: cardId -> (act1, act2, act3)
+    private Dictionary<string, ActRatings> _actRatingLookup = new();
+
     record RatingRow(int Rank, string CardId, string Name, double Rating, double Rd, long Games, bool LowConfidence);
+    record ActRatings(double Act1, double Act2, double Act3);
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,12 +168,42 @@ else
         ApplyFilter();
     }
 
+    private void SetUpgradeFilter(UpgradeFilter f)
+    {
+        _upgradeFilter = f;
+        ApplyUpgradeFilter();
+    }
+
+    private static bool IsUpgraded(string cardId) => cardId.Contains('+');
+
+    private void ApplyUpgradeFilter()
+    {
+        _filteredRatings = _upgradeFilter switch
+        {
+            UpgradeFilter.BaseOnly => _allRatings.Where(r => !IsUpgraded(r.CardId)).ToList(),
+            UpgradeFilter.UpgradedOnly => _allRatings.Where(r => IsUpgraded(r.CardId)).ToList(),
+            _ => _allRatings
+        };
+
+        // Re-rank after filtering
+        for (var i = 0; i < _filteredRatings.Count; i++)
+        {
+            _filteredRatings[i] = _filteredRatings[i] with { Rank = i + 1 };
+        }
+
+        if (_filteredRatings.Count > 0)
+        {
+            _maxRating = _filteredRatings.Max(r => r.Rating);
+            _minRating = _filteredRatings.Min(r => r.Rating);
+        }
+
+        _showCount = 40;
+    }
+
     private void ApplyFilter()
     {
         if (_data is null) return;
 
-        // When ascension filter is active, Glicko-2 ratings can't be sliced —
-        // fall back to win-rate-delta ranking from raw card choices
         if (Filter.HasAscensionFilter && _data.CardChoices.Count > 0)
         {
             ApplyWinRateFallback();
@@ -158,17 +242,48 @@ else
             _minRating = _allRatings.Min(r => r.Rating);
         }
 
-        _filteredRatings = _allRatings;
-        _showCount = 40;
+        // Build per-act lookup
+        BuildActRatingLookup();
+
+        ApplyUpgradeFilter();
     }
+
+    private void BuildActRatingLookup()
+    {
+        if (_data is null) return;
+
+        // Determine act context prefix based on character filter
+        var charPrefix = Filter.Character ?? "";
+
+        _actRatingLookup = _data.Glicko2Ratings
+            .Where(e => e.Context.Contains("_ACT"))
+            .Where(e => string.IsNullOrEmpty(charPrefix) || e.Context.StartsWith(charPrefix))
+            .GroupBy(e => e.CardId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    double a1 = 0, a2 = 0, a3 = 0;
+                    foreach (var r in g)
+                    {
+                        if (r.Context.EndsWith("_ACT1")) a1 = Math.Max(a1, r.Rating);
+                        else if (r.Context.EndsWith("_ACT2")) a2 = Math.Max(a2, r.Rating);
+                        else if (r.Context.EndsWith("_ACT3")) a3 = Math.Max(a3, r.Rating);
+                    }
+                    return new ActRatings(a1, a2, a3);
+                });
+    }
+
+    private ActRatings GetActRatings(string cardId) =>
+        _actRatingLookup.GetValueOrDefault(cardId, new ActRatings(0, 0, 0));
 
     private void ApplyWinRateFallback()
     {
         _usingWinRateFallback = true;
+        _actRatingLookup = new();
         var (runIds, winMap) = ClientAnalytics.FilterRuns(_data!.Runs, Filter);
         var winRates = ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap);
 
-        // Use win rate delta as the score, scaled to rating-like range for display
         var sorted = winRates
             .Where(c => c.TimesPicked + c.TimesSkipped >= 3)
             .OrderByDescending(c => c.WinRateDelta)
@@ -177,7 +292,6 @@ else
         _skipRating = null;
         _allRatings = sorted.Select((c, i) =>
         {
-            // Map delta (-1..+1) to a 1000-2000 scale for visual consistency
             var pseudoRating = 1500 + c.WinRateDelta * 500;
             var games = (long)(c.TimesPicked + c.TimesSkipped);
             return new RatingRow(i + 1, c.CardId, FormatName(c.CardId), pseudoRating, 0, games, games < 5);
@@ -189,8 +303,7 @@ else
             _minRating = _allRatings.Min(r => r.Rating);
         }
 
-        _filteredRatings = _allRatings;
-        _showCount = 40;
+        ApplyUpgradeFilter();
     }
 
     private void ShowMore() => _showCount += 40;
@@ -223,6 +336,17 @@ else
         >= 1500 => "mid",
         _ => "low"
     };
+
+    static string GetActTrendClass(double actRating, double overallRating)
+    {
+        var diff = actRating - overallRating;
+        return diff switch
+        {
+            > 50 => "act-up",
+            < -50 => "act-down",
+            _ => "act-neutral"
+        };
+    }
 }
 
 <style>
@@ -289,9 +413,38 @@ else
         color: var(--text);
     }
 
+    .filter-divider {
+        width: 1px;
+        height: 1.2rem;
+        background: var(--surface-border);
+        margin: 0 0.25rem;
+    }
+
     .elo-table tbody td { font-size: 0.85rem; }
 
     .low-confidence td { opacity: 0.5; }
+
+    .act-col {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+    }
+
+    .act-rating {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 0.8rem;
+    }
+
+    .act-up {
+        color: #4caf50;
+    }
+
+    .act-down {
+        color: #ef5350;
+    }
+
+    .act-neutral {
+        color: var(--text-dim);
+    }
 
     .elo-bar-track {
         height: 4px;
