@@ -34,6 +34,10 @@ public class ExportData
     public List<PlayerRatingHistoryExport> PlayerRatingHistory { get; set; } = [];
     public List<BlindSpotExport> BlindSpots { get; set; } = [];
     public List<AncientRatingExport> AncientRatings { get; set; } = [];
+    public List<RestSiteDecisionExport> RestSiteDecisions { get; set; } = [];
+    public List<RestSiteHpBucketExport> RestSiteHpBuckets { get; set; } = [];
+    public List<RestSiteUpgradeExport> RestSiteUpgrades { get; set; } = [];
+    public List<RestSiteActExport> RestSiteActBreakdown { get; set; } = [];
 }
 
 public class CardChoiceExport
@@ -88,6 +92,42 @@ public class BlindSpotExport
     public double ExpectedPickRate { get; set; }
     public double WinRateDelta { get; set; }
     public int GamesAnalyzed { get; set; }
+}
+
+public class RestSiteDecisionExport
+{
+    public string Choice { get; set; } = "";
+    public int Count { get; set; }
+    public int Wins { get; set; }
+    public double WinRate { get; set; }
+}
+
+public class RestSiteHpBucketExport
+{
+    public string Choice { get; set; } = "";
+    public int HpBucketMin { get; set; }
+    public int HpBucketMax { get; set; }
+    public int Count { get; set; }
+    public int Wins { get; set; }
+    public double WinRate { get; set; }
+}
+
+public class RestSiteUpgradeExport
+{
+    public string CardId { get; set; } = "";
+    public int TimesUpgraded { get; set; }
+    public int Wins { get; set; }
+    public double WinRate { get; set; }
+}
+
+public class RestSiteActExport
+{
+    public int Act { get; set; }
+    public string Choice { get; set; } = "";
+    public int Count { get; set; }
+    public int Wins { get; set; }
+    public double WinRate { get; set; }
+    public double AvgHpPercent { get; set; }
 }
 
 public class AncientRatingExport

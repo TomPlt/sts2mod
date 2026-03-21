@@ -73,6 +73,13 @@ public static class ExportCommand
             var eliteCorrelation = pathAnalytics.GetEliteCountCorrelation();
             var eliteCorrelationByAct = pathAnalytics.GetEliteCountCorrelationByAct();
 
+            // Rest site analytics
+            var restSiteAnalytics = new RestSiteAnalytics(conn);
+            var restSiteDecisions = restSiteAnalytics.GetDecisionWinRates();
+            var restSiteHpBuckets = restSiteAnalytics.GetDecisionsByHpBucket();
+            var restSiteUpgrades = restSiteAnalytics.GetUpgradeImpact();
+            var restSiteActBreakdown = restSiteAnalytics.GetActBreakdown();
+
             // Raw card choices for client-side filtering
             var cardChoices = conn.Query("""
                 SELECT cc.CardId, cc.WasPicked, f.RunId
@@ -157,7 +164,11 @@ public static class ExportCommand
                 playerRatings = playerRatingData,
                 playerRatingHistory = playerHistoryData,
                 blindSpots = blindSpotExportData,
-                ancientRatings = ancientRatingExport
+                ancientRatings = ancientRatingExport,
+                restSiteDecisions,
+                restSiteHpBuckets,
+                restSiteUpgrades,
+                restSiteActBreakdown
             };
 
             var options = new JsonSerializerOptions
