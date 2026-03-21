@@ -116,6 +116,11 @@ public static class ExportCommand
                 "SELECT CardId, Context, BlindSpotType, Score, PickRate, ExpectedPickRate, WinRateDelta, GamesAnalyzed FROM BlindSpots")
                 .ToList();
 
+            // Ancient choice ratings
+            var ancientRatingExport = conn.Query(
+                "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM AncientGlicko2Ratings")
+                .ToList();
+
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
@@ -151,7 +156,8 @@ public static class ExportCommand
                 eliteCorrelationByAct,
                 playerRatings = playerRatingData,
                 playerRatingHistory = playerHistoryData,
-                blindSpots = blindSpotExportData
+                blindSpots = blindSpotExportData,
+                ancientRatings = ancientRatingExport
             };
 
             var options = new JsonSerializerOptions
@@ -193,6 +199,10 @@ public static class ExportCommand
         // Compute blind spots
         var blindSpotAnalyzer = new BlindSpotAnalyzer(conn);
         blindSpotAnalyzer.AnalyzeAllContexts();
+
+        // Process ancient choice ratings
+        var ancientEngine = new AncientRatingEngine(conn);
+        ancientEngine.ProcessAllRuns();
 
         // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
@@ -273,12 +283,40 @@ public static class ExportCommand
                 blindSpotType, bsScore, bsPickRate, bsWinDelta);
         }).ToList();
 
+        // Build ancient stats for mod export
+        var ancientRatings = conn.Query(
+            "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation FROM AncientGlicko2Ratings WHERE Character = 'ALL'")
+            .ToList();
+
+        var ancientByKey = ancientRatings.GroupBy(r => (string)r.ChoiceKey).ToList();
+
+        var ancientStats = ancientByKey.Select(g =>
+        {
+            var key = g.Key;
+            double rating = 0, rd = 350;
+            double rNeow = 0, rdNeow = 350;
+            double rPost1 = 0, rdPost1 = 350;
+            double rPost2 = 0, rdPost2 = 350;
+
+            foreach (var r in g)
+            {
+                var ctx = (string)r.Context;
+                if (ctx == "overall") { rating = (double)r.Rating; rd = (double)r.RatingDeviation; }
+                else if (ctx == "neow") { rNeow = (double)r.Rating; rdNeow = (double)r.RatingDeviation; }
+                else if (ctx == "post_act1") { rPost1 = (double)r.Rating; rdPost1 = (double)r.RatingDeviation; }
+                else if (ctx == "post_act2") { rPost2 = (double)r.Rating; rdPost2 = (double)r.RatingDeviation; }
+            }
+
+            return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2);
+        }).ToList();
+
         var overlayData = new ModOverlayData(
             Version: 3,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
             SkipEloByAct: skipEloByAct,
-            Cards: cards);
+            Cards: cards,
+            AncientChoices: ancientStats);
 
         var options = new JsonSerializerOptions
         {
