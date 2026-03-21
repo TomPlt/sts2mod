@@ -1,0 +1,128 @@
+@page "/blind-spots"
+@inject DataService Data
+@inject FilterState Filter
+
+<div class="oracle-page">
+    <h2 class="page-title">Blind Spots</h2>
+    <p class="page-subtitle">Cards where your pick behavior and outcomes disagree</p>
+
+    @if (_loading)
+    {
+        <p class="loading">Loading...</p>
+    }
+    else
+    {
+        <div class="filter-bar" style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <button class="filter-btn @(_contextFilter == null ? "active" : "")"
+                    @onclick="() => SetContext(null)">All</button>
+            @foreach (var ctx in _contexts)
+            {
+                <button class="filter-btn @(_contextFilter == ctx ? "active" : "")"
+                        @onclick="() => SetContext(ctx)">@FormatContext(ctx)</button>
+            }
+        </div>
+
+        @if (_overPicks.Any())
+        {
+            <h3 style="color:var(--red, #ef4444);">Over-Picks — Cards Hurting You</h3>
+            <table class="oracle-table">
+                <thead>
+                    <tr><th>Card</th><th>Rating</th><th>Pick Rate</th><th>Win Δ</th><th>Score</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var bs in _overPicks)
+                    {
+                        <tr>
+                            <td>@FormatName(bs.CardId)</td>
+                            <td>@GetRating(bs.CardId).ToString("F0")</td>
+                            <td>@bs.PickRate.ToString("P0")</td>
+                            <td class="text-red">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</td>
+                            <td>@bs.Score.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (_underPicks.Any())
+        {
+            <h3 style="color:var(--amber, #f59e0b);margin-top:2rem;">Under-Picks — Cards You're Sleeping On</h3>
+            <table class="oracle-table">
+                <thead>
+                    <tr><th>Card</th><th>Rating</th><th>Pick Rate</th><th>Win Δ</th><th>Score</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var bs in _underPicks)
+                    {
+                        <tr>
+                            <td>@FormatName(bs.CardId)</td>
+                            <td>@GetRating(bs.CardId).ToString("F0")</td>
+                            <td>@bs.PickRate.ToString("P0")</td>
+                            <td class="text-green">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</td>
+                            <td>@bs.Score.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (!_overPicks.Any() && !_underPicks.Any())
+        {
+            <p style="color:var(--muted);margin-top:2rem;">No blind spots detected. Play more runs or adjust filters.</p>
+        }
+    }
+</div>
+
+@code {
+    private bool _loading = true;
+    private string? _contextFilter;
+    private List<string> _contexts = [];
+    private List<BlindSpotExport> _overPicks = [];
+    private List<BlindSpotExport> _underPicks = [];
+    private ExportData? _data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+        _contexts = _data.BlindSpots
+            .Select(b => b.Context)
+            .Where(c => c != "overall")
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+        ApplyFilter();
+        _loading = false;
+    }
+
+    private void SetContext(string? context)
+    {
+        _contextFilter = context;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var filtered = _data!.BlindSpots.AsEnumerable();
+        if (_contextFilter != null)
+            filtered = filtered.Where(b => b.Context == _contextFilter);
+        else
+            filtered = filtered.Where(b => b.Context == "overall");
+
+        _overPicks = filtered.Where(b => b.BlindSpotType == "over_pick")
+            .OrderByDescending(b => b.Score).ToList();
+        _underPicks = filtered.Where(b => b.BlindSpotType == "under_pick")
+            .OrderByDescending(b => b.Score).ToList();
+    }
+
+    private double GetRating(string cardId)
+    {
+        var rating = _data?.Glicko2Ratings.FirstOrDefault(r => r.CardId == cardId && r.Context == "overall");
+        return rating?.Rating ?? 0;
+    }
+
+    private string FormatName(string cardId) =>
+        cardId.Replace("CARD.", "").Replace("_", " ").Replace("+", " +");
+
+    private string FormatContext(string context) =>
+        context == "overall" ? "Overall" : context.Replace("_", " ");
+}
