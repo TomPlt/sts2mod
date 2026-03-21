@@ -63,6 +63,20 @@ public class SchemaTests
     }
 
     [Fact]
+    public void Initialize_CreatesAncientGlicko2Tables()
+    {
+        using var conn = new SqliteConnection("Data Source=:memory:");
+        conn.Open();
+        Schema.Initialize(conn);
+
+        var ratings = conn.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='AncientGlicko2Ratings'").ToList();
+        Assert.Single(ratings);
+
+        var history = conn.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='AncientGlicko2History'").ToList();
+        Assert.Single(history);
+    }
+
+    [Fact]
     public void Initialize_IsIdempotent()
     {
         using var conn = new SqliteConnection("Data Source=:memory:");
