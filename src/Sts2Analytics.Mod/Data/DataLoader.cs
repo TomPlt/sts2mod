@@ -12,6 +12,7 @@ public static class DataLoader
     private static double _skipElo;
     private static Dictionary<string, double>? _skipEloByAct;
     private static Dictionary<string, AncientStats>? _ancientChoices;
+    private static Dictionary<string, MapIntelCharacter>? _mapIntel;
 
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
@@ -88,6 +89,17 @@ public static class DataLoader
                 }
             }
             GD.Print($"[SpireOracle] Loaded {_ancientChoices.Count} ancient choices");
+
+            _mapIntel = new Dictionary<string, MapIntelCharacter>(StringComparer.OrdinalIgnoreCase);
+            if (data.MapIntel != null)
+            {
+                foreach (var mic in data.MapIntel)
+                {
+                    if (!string.IsNullOrEmpty(mic.Character))
+                        _mapIntel[mic.Character] = mic;
+                }
+            }
+            GD.Print($"[SpireOracle] Loaded map intel for {_mapIntel.Count} characters");
             return true;
         }
         catch (Exception ex)
@@ -105,4 +117,10 @@ public static class DataLoader
 
     public static AncientStats? GetAncientChoice(string choiceKey) =>
         _ancientChoices?.TryGetValue(choiceKey, out var stats) == true ? stats : null;
+
+    public static MapIntelCharacter? GetMapIntel(string character) =>
+        _mapIntel?.TryGetValue(character, out var intel) == true ? intel : null;
+
+    public static List<string> GetMapIntelCharacters() =>
+        _mapIntel?.Keys.ToList() ?? new List<string>();
 }

@@ -33,10 +33,25 @@ public record AncientStats(
     [property: JsonPropertyName("ratingPostAct2")] double RatingPostAct2 = 0,
     [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350);
 
+public record MapIntelPool(
+    [property: JsonPropertyName("pool")] string Pool,
+    [property: JsonPropertyName("avgDamage")] double AvgDamage,
+    [property: JsonPropertyName("sampleSize")] int SampleSize,
+    [property: JsonPropertyName("encounters")] List<string> Encounters);
+
+public record MapIntelAct(
+    [property: JsonPropertyName("actIndex")] int ActIndex,
+    [property: JsonPropertyName("pools")] List<MapIntelPool> Pools);
+
+public record MapIntelCharacter(
+    [property: JsonPropertyName("character")] string Character,
+    [property: JsonPropertyName("acts")] List<MapIntelAct> Acts);
+
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,
     [property: JsonPropertyName("exportedAt")] string ExportedAt,
     [property: JsonPropertyName("skipElo")] double SkipElo,
     [property: JsonPropertyName("skipEloByAct")] Dictionary<string, double>? SkipEloByAct,
     [property: JsonPropertyName("cards")] List<CardStats> Cards,
-    [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null);
+    [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null,
+    [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null);
