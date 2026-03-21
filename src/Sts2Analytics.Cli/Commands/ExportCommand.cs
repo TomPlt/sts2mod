@@ -321,13 +321,58 @@ public static class ExportCommand
             return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2);
         }).ToList();
 
+        // Build map intel data per character per act
+        var mapIntelSql = """
+            SELECT
+                r.Character,
+                f.ActIndex,
+                CASE
+                    WHEN f.EncounterId LIKE '%\_WEAK' ESCAPE '\' THEN 'weak'
+                    WHEN f.EncounterId LIKE '%\_NORMAL' ESCAPE '\' THEN 'normal'
+                    WHEN f.EncounterId LIKE '%\_ELITE' ESCAPE '\' THEN 'elite'
+                    WHEN f.EncounterId LIKE '%\_BOSS' ESCAPE '\' THEN 'boss'
+                    ELSE NULL
+                END AS Pool,
+                f.EncounterId,
+                f.DamageTaken
+            FROM Floors f
+            JOIN Runs r ON f.RunId = r.Id
+            WHERE f.EncounterId IS NOT NULL
+              AND f.MapPointType IN ('monster', 'elite', 'boss')
+            """;
+
+        var mapIntelRows = conn.Query(mapIntelSql).ToList();
+
+        var mapIntel = mapIntelRows
+            .Where(r => r.Pool != null)
+            .GroupBy(r => (string)r.Character)
+            .Select(charGroup => new MapIntelCharacter(
+                charGroup.Key,
+                charGroup
+                    .GroupBy(r => (int)(long)r.ActIndex)
+                    .OrderBy(g => g.Key)
+                    .Select(actGroup => new MapIntelAct(
+                        actGroup.Key,
+                        actGroup
+                            .GroupBy(r => (string)r.Pool)
+                            .Select(poolGroup => new MapIntelPool(
+                                poolGroup.Key,
+                                poolGroup.Average(r => (double)(long)r.DamageTaken),
+                                poolGroup.Count(),
+                                poolGroup.Select(r => (string)r.EncounterId).Distinct().OrderBy(e => e).ToList()))
+                            .OrderBy(p => p.Pool switch { "weak" => 0, "normal" => 1, "elite" => 2, "boss" => 3, _ => 4 })
+                            .ToList()))
+                    .ToList()))
+            .ToList();
+
         var overlayData = new ModOverlayData(
-            Version: 3,
+            Version: 4,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
             SkipEloByAct: skipEloByAct,
             Cards: cards,
-            AncientChoices: ancientStats);
+            AncientChoices: ancientStats,
+            MapIntel: mapIntel);
 
         var options = new JsonSerializerOptions
         {
