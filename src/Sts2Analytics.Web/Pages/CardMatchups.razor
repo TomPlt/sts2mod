@@ -3,85 +3,199 @@
 @inject FilterState Filter
 @implements IDisposable
 
-<PageTitle>Card Matchups - STS2 Analytics</PageTitle>
+<PageTitle>Card Compare — STS2 Analytics</PageTitle>
 
-<h2>Card Matchups</h2>
+<h2>Card Compare</h2>
 
 @if (_loading)
 {
-    <p><em>Loading...</em></p>
+    <p class="dim-text">Loading...</p>
 }
 else
 {
-    <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: flex-end;">
-        <div>
-            <label style="display: block; margin-bottom: 0.25rem;">Card A</label>
-            <RadzenDropDown @bind-Value="_cardAId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
+    <div class="compare-controls">
+        <div class="card-picker">
+            <label class="picker-label">Card</label>
+            <RadzenDropDown @bind-Value="_selectedCardId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
-                            Style="width: 280px;" Placeholder="Select card..." />
+                            Style="width: 300px;" Placeholder="Select card or SKIP..."
+                            Change="@((object _) => BuildComparison())" />
         </div>
-        <div style="padding-bottom: 0.5rem; font-size: 1.5rem; font-weight: bold;">vs</div>
-        <div>
-            <label style="display: block; margin-bottom: 0.25rem;">Card B</label>
-            <RadzenDropDown @bind-Value="_cardBId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
-                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
-                            Style="width: 280px;" Placeholder="Select card..." />
-        </div>
-    </div>
 
-    @if (_cardAId != null && _cardBId != null)
-    {
-        var a = GetCard(_cardAId);
-        var b = GetCard(_cardBId);
-        @if (a != null && b != null)
+        @if (_compareCardId != null)
         {
-            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                <div class="matchup-card">
-                    <h3>@FormatName(a.CardId)</h3>
-                    <div class="matchup-stat"><span>Glicko-2 Rating</span><strong>@a.Rating.ToString("F0")</strong></div>
-                    <div class="matchup-stat"><span>Games Played</span><strong>@a.GamesPlayed</strong></div>
-                    @{ var aWr = GetWinRate(a.CardId); }
-                    @if (aWr != null)
-                    {
-                        <div class="matchup-stat"><span>Win% (picked)</span><strong>@aWr.WinRateWhenPicked.ToString("P1")</strong></div>
-                        <div class="matchup-stat"><span>Win% (skipped)</span><strong>@aWr.WinRateWhenSkipped.ToString("P1")</strong></div>
-                        <div class="matchup-stat"><span>Delta</span><strong>@aWr.WinRateDelta.ToString("+0.0%;-0.0%")</strong></div>
-                    }
-                </div>
-
-                <div class="matchup-card">
-                    <h3>@FormatName(b.CardId)</h3>
-                    <div class="matchup-stat"><span>Glicko-2 Rating</span><strong>@b.Rating.ToString("F0")</strong></div>
-                    <div class="matchup-stat"><span>Games Played</span><strong>@b.GamesPlayed</strong></div>
-                    @{ var bWr = GetWinRate(b.CardId); }
-                    @if (bWr != null)
-                    {
-                        <div class="matchup-stat"><span>Win% (picked)</span><strong>@bWr.WinRateWhenPicked.ToString("P1")</strong></div>
-                        <div class="matchup-stat"><span>Win% (skipped)</span><strong>@bWr.WinRateWhenSkipped.ToString("P1")</strong></div>
-                        <div class="matchup-stat"><span>Delta</span><strong>@bWr.WinRateDelta.ToString("+0.0%;-0.0%")</strong></div>
-                    }
-                </div>
-            </div>
-
-            <div style="margin-top: 1.5rem; padding: 1rem; background: #1a1a2e; border-radius: 8px; border: 1px solid #2a2a4a;">
-                <h3 style="margin: 0 0 0.5rem; color: #b0b0c8;">Comparison</h3>
-                @{
-                    var eloDiff = a.Rating - b.Rating;
-                    var leader = eloDiff >= 0 ? FormatName(a.CardId) : FormatName(b.CardId);
-                }
-                <p><strong>@leader</strong> leads by <strong>@Math.Abs(eloDiff).ToString("F0")</strong> Glicko-2 points.</p>
-                @if (aWr != null && bWr != null)
-                {
-                    var deltaDiff = aWr.WinRateDelta - bWr.WinRateDelta;
-                    var deltaLeader = deltaDiff >= 0 ? FormatName(a.CardId) : FormatName(b.CardId);
-                    <p><strong>@deltaLeader</strong> has a higher win rate delta by <strong>@Math.Abs(deltaDiff).ToString("P1")</strong>.</p>
-                }
+            <div class="compare-vs">vs</div>
+            <div class="card-picker">
+                <label class="picker-label">Compare with</label>
+                <RadzenDropDown @bind-Value="_compareCardId" Data="@_cardOptions" TextProperty="Name" ValueProperty="Id"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                                Style="width: 300px;" Placeholder="Select card..."
+                                Change="@((object _) => BuildComparison())" />
             </div>
         }
+
+        <button class="add-compare-btn" @onclick="ToggleCompare">
+            @(_compareCardId != null ? "Remove compare" : "+ Compare")
+        </button>
+    </div>
+
+    @if (_selectedCardId != null)
+    {
+        <div class="compare-section">
+            <h3>@FormatName(_selectedCardId) — Rating by Character</h3>
+            <div class="panel" style="padding: 0; overflow: hidden;">
+                <table class="oracle-table compare-table">
+                    <thead>
+                        <tr>
+                            <th>Character</th>
+                            <th style="text-align: right;">Overall</th>
+                            <th style="text-align: right;">Act 1</th>
+                            <th style="text-align: right;">Act 2</th>
+                            <th style="text-align: right;">Act 3</th>
+                            <th style="text-align: right;">Games</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in _charRows)
+                        {
+                            <tr>
+                                <td style="font-weight: 500;">@row.CharName</td>
+                                <td style="text-align: right;">@RatingCell(row.Overall, row.OverallRd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act1, row.Act1Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act2, row.Act2Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act3, row.Act3Rd)</td>
+                                <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (_compareCardId != null && _compareRows.Count > 0)
+        {
+            <div class="compare-section">
+                <h3>@FormatName(_compareCardId) — Rating by Character</h3>
+                <div class="panel" style="padding: 0; overflow: hidden;">
+                    <table class="oracle-table compare-table">
+                        <thead>
+                            <tr>
+                                <th>Character</th>
+                                <th style="text-align: right;">Overall</th>
+                                <th style="text-align: right;">Act 1</th>
+                                <th style="text-align: right;">Act 2</th>
+                                <th style="text-align: right;">Act 3</th>
+                                <th style="text-align: right;">Games</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in _compareRows)
+                            {
+                                <tr>
+                                    <td style="font-weight: 500;">@row.CharName</td>
+                                    <td style="text-align: right;">@RatingCell(row.Overall, row.OverallRd)</td>
+                                    <td style="text-align: right;">@RatingCell(row.Act1, row.Act1Rd)</td>
+                                    <td style="text-align: right;">@RatingCell(row.Act2, row.Act2Rd)</td>
+                                    <td style="text-align: right;">@RatingCell(row.Act3, row.Act3Rd)</td>
+                                    <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="compare-section">
+                <h3>Difference — @FormatName(_selectedCardId) minus @FormatName(_compareCardId)</h3>
+                <div class="panel" style="padding: 0; overflow: hidden;">
+                    <table class="oracle-table compare-table">
+                        <thead>
+                            <tr>
+                                <th>Character</th>
+                                <th style="text-align: right;">Overall</th>
+                                <th style="text-align: right;">Act 1</th>
+                                <th style="text-align: right;">Act 2</th>
+                                <th style="text-align: right;">Act 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in _diffRows)
+                            {
+                                <tr>
+                                    <td style="font-weight: 500;">@row.CharName</td>
+                                    <td style="text-align: right;">@DiffCell(row.Overall)</td>
+                                    <td style="text-align: right;">@DiffCell(row.Act1)</td>
+                                    <td style="text-align: right;">@DiffCell(row.Act2)</td>
+                                    <td style="text-align: right;">@DiffCell(row.Act3)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <div class="compare-section">
+            <h3>Skip Baseline by Character</h3>
+            <div class="panel" style="padding: 0; overflow: hidden;">
+                <table class="oracle-table compare-table">
+                    <thead>
+                        <tr>
+                            <th>Character</th>
+                            <th style="text-align: right;">Overall</th>
+                            <th style="text-align: right;">Act 1</th>
+                            <th style="text-align: right;">Act 2</th>
+                            <th style="text-align: right;">Act 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in _skipRows)
+                        {
+                            <tr>
+                                <td style="font-weight: 500;">@row.CharName</td>
+                                <td style="text-align: right;">@RatingCell(row.Overall, row.OverallRd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act1, row.Act1Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act2, row.Act2Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act3, row.Act3Rd)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     }
     else
     {
-        <p style="color: #aaa;">Select two cards above to compare their stats.</p>
+        <p class="dim-text">Select a card above to see its ratings across characters and acts.</p>
+
+        <div class="compare-section">
+            <h3>Skip Baseline by Character</h3>
+            <div class="panel" style="padding: 0; overflow: hidden;">
+                <table class="oracle-table compare-table">
+                    <thead>
+                        <tr>
+                            <th>Character</th>
+                            <th style="text-align: right;">Overall</th>
+                            <th style="text-align: right;">Act 1</th>
+                            <th style="text-align: right;">Act 2</th>
+                            <th style="text-align: right;">Act 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in _skipRows)
+                        {
+                            <tr>
+                                <td style="font-weight: 500;">@row.CharName</td>
+                                <td style="text-align: right;">@RatingCell(row.Overall, row.OverallRd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act1, row.Act1Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act2, row.Act2Rd)</td>
+                                <td style="text-align: right;">@RatingCell(row.Act3, row.Act3Rd)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     }
 }
 
@@ -89,98 +203,266 @@ else
     private bool _loading = true;
     private ExportData? _data;
     private List<CardOption> _cardOptions = [];
-    private Dictionary<string, CardWinRate> _filteredWinRates = new();
-    private string? _cardAId;
-    private string? _cardBId;
+    private string? _selectedCardId;
+    private string? _compareCardId;
 
-    public record CardOption(string Id, string Name);
+    private List<CharRow> _charRows = [];
+    private List<CharRow> _compareRows = [];
+    private List<DiffRow> _diffRows = [];
+    private List<CharRow> _skipRows = [];
+
+    private static readonly string[] Characters = [
+        "CHARACTER.IRONCLAD", "CHARACTER.SILENT", "CHARACTER.DEFECT",
+        "CHARACTER.NECROBINDER", "CHARACTER.REGENT"
+    ];
+
+    record CardOption(string Id, string Name);
+    record CharRow(string CharName, double Overall, double OverallRd, double Act1, double Act1Rd,
+        double Act2, double Act2Rd, double Act3, double Act3Rd, long Games);
+    record DiffRow(string CharName, double? Overall, double? Act1, double? Act2, double? Act3);
 
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
         Filter.OnChange += OnFilterChanged;
-        Recompute();
+        BuildCardOptions();
+        BuildSkipTable();
         _loading = false;
     }
 
-    private void Recompute()
+    private void BuildCardOptions()
     {
         if (_data is null) return;
 
-        var eloContext = Filter.Character ?? "overall";
         _cardOptions = _data.Glicko2Ratings
-            .Where(e => e.Context == eloContext && e.GamesPlayed >= 5)
-            .OrderBy(e => FormatName(e.CardId))
-            .Select(e => new CardOption(e.CardId, FormatName(e.CardId)))
+            .Where(e => e.Context == "overall" && e.GamesPlayed >= 3)
+            .OrderBy(e => e.CardId == "SKIP" ? "___SKIP" : FormatName(e.CardId))
+            .Select(e => new CardOption(e.CardId, e.CardId == "SKIP" ? "SKIP (baseline)" : FormatName(e.CardId)))
             .ToList();
-
-        var (runIds, winMap) = ClientAnalytics.FilterRuns(_data.Runs, Filter);
-        _filteredWinRates = (_data.CardChoices.Count > 0 && Filter.HasAnyFilter
-            ? ClientAnalytics.ComputeCardWinRates(_data.CardChoices, runIds, winMap)
-            : _data.CardWinRates)
-            .ToDictionary(c => c.CardId);
     }
+
+    private void BuildSkipTable()
+    {
+        _skipRows = BuildCharTable("SKIP");
+    }
+
+    private List<CharRow> BuildCharTable(string cardId)
+    {
+        if (_data is null) return [];
+
+        var rows = new List<CharRow>();
+        foreach (var ch in Characters)
+        {
+            var charName = FormatCharName(ch);
+            var overall = GetRating(cardId, ch);
+            var act1 = GetRating(cardId, $"{ch}_ACT1");
+            var act2 = GetRating(cardId, $"{ch}_ACT2");
+            var act3 = GetRating(cardId, $"{ch}_ACT3");
+
+            rows.Add(new CharRow(charName,
+                overall?.Rating ?? 0, overall?.RatingDeviation ?? 0,
+                act1?.Rating ?? 0, act1?.RatingDeviation ?? 0,
+                act2?.Rating ?? 0, act2?.RatingDeviation ?? 0,
+                act3?.Rating ?? 0, act3?.RatingDeviation ?? 0,
+                overall?.GamesPlayed ?? 0));
+        }
+
+        // Add overall row
+        var ov = GetRating(cardId, "overall");
+        rows.Insert(0, new CharRow("Overall",
+            ov?.Rating ?? 0, ov?.RatingDeviation ?? 0,
+            0, 0, 0, 0, 0, 0,
+            ov?.GamesPlayed ?? 0));
+
+        return rows;
+    }
+
+    private void BuildComparison()
+    {
+        _charRows = _selectedCardId != null ? BuildCharTable(_selectedCardId) : [];
+        _compareRows = _compareCardId != null ? BuildCharTable(_compareCardId) : [];
+
+        if (_charRows.Count > 0 && _compareRows.Count > 0)
+        {
+            _diffRows = _charRows.Zip(_compareRows, (a, b) => new DiffRow(
+                a.CharName,
+                a.Overall > 0 && b.Overall > 0 ? a.Overall - b.Overall : null,
+                a.Act1 > 0 && b.Act1 > 0 ? a.Act1 - b.Act1 : null,
+                a.Act2 > 0 && b.Act2 > 0 ? a.Act2 - b.Act2 : null,
+                a.Act3 > 0 && b.Act3 > 0 ? a.Act3 - b.Act3 : null
+            )).ToList();
+        }
+        else
+        {
+            _diffRows = [];
+        }
+    }
+
+    private void ToggleCompare()
+    {
+        _compareCardId = _compareCardId != null ? null : "SKIP";
+        BuildComparison();
+    }
+
+    private Glicko2RatingResult? GetRating(string cardId, string context) =>
+        _data?.Glicko2Ratings.FirstOrDefault(e => e.CardId == cardId && e.Context == context);
 
     private void OnFilterChanged()
     {
-        Recompute();
+        BuildCardOptions();
+        BuildSkipTable();
+        BuildComparison();
         InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    public void Dispose() => Filter.OnChange -= OnFilterChanged;
+
+    static RenderFragment RatingCell(double rating, double rd) => builder =>
     {
-        Filter.OnChange -= OnFilterChanged;
+        if (rating <= 0)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "dim-text");
+            builder.AddContent(2, "—");
+            builder.CloseElement();
+            return;
+        }
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", $"elo-badge {GetBadgeClass(rating)}");
+        builder.AddContent(2, rating.ToString("F0"));
+        builder.CloseElement();
+        if (rd > 0)
+        {
+            builder.OpenElement(3, "span");
+            builder.AddAttribute(4, "class", "rd-text");
+            builder.AddContent(5, $" ±{rd:F0}");
+            builder.CloseElement();
+        }
+    };
+
+    static RenderFragment DiffCell(double? diff) => builder =>
+    {
+        if (diff is null)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "dim-text");
+            builder.AddContent(2, "—");
+            builder.CloseElement();
+            return;
+        }
+        var cls = diff.Value > 20 ? "diff-pos" : diff.Value < -20 ? "diff-neg" : "diff-neutral";
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", cls);
+        builder.AddContent(2, diff.Value.ToString("+0;-0"));
+        builder.CloseElement();
+    };
+
+    static string GetBadgeClass(double rating) => rating switch
+    {
+        >= 1650 => "high",
+        >= 1500 => "mid",
+        _ => "low"
+    };
+
+    static string FormatName(string id)
+    {
+        var plusIdx = id.IndexOf('+');
+        var suffix = "";
+        var baseId = id;
+        if (plusIdx >= 0) { suffix = " " + id[plusIdx..]; baseId = id[..plusIdx]; }
+        var dot = baseId.IndexOf('.');
+        var name = dot >= 0 ? baseId[(dot + 1)..] : baseId;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)) + suffix;
     }
 
-    private Glicko2RatingResult? GetCard(string? id)
-    {
-        if (id == null || _data is null) return null;
-        var context = Filter.Character ?? "overall";
-        return _data.Glicko2Ratings.FirstOrDefault(e => e.CardId == id && e.Context == context);
-    }
-
-    private CardWinRate? GetWinRate(string id) =>
-        _filteredWinRates.GetValueOrDefault(id);
-
-    private static string FormatName(string id)
+    static string FormatCharName(string id)
     {
         var dot = id.IndexOf('.');
         var name = dot >= 0 ? id[(dot + 1)..] : id;
-        return name.Replace('_', ' ').ToLowerInvariant()
-            .Split(' ')
-            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
-            .Aggregate((a, b) => a + " " + b);
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
     }
 }
 
 <style>
-    .matchup-card {
-        flex: 1;
-        min-width: 250px;
-        background: #1a1a2e;
-        border-radius: 8px;
-        padding: 1.5rem;
-        border: 1px solid #2a2a4a;
-    }
-
-    .matchup-card h3 {
-        margin: 0 0 1rem;
-        color: #4fc3f7;
-        font-size: 1.3rem;
-    }
-
-    .matchup-stat {
+    .compare-controls {
         display: flex;
-        justify-content: space-between;
-        padding: 0.4rem 0;
-        border-bottom: 1px solid #2a2a4a;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-bottom: var(--gap-lg);
+        flex-wrap: wrap;
     }
 
-    .matchup-stat span {
-        color: #aaa;
+    .card-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
-    .matchup-stat strong {
-        color: #e0e0e0;
+    .picker-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+    }
+
+    .compare-vs {
+        padding-bottom: 0.4rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--ember);
+    }
+
+    .add-compare-btn {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        margin-bottom: 0.1rem;
+    }
+
+    .add-compare-btn:hover {
+        border-color: var(--ember-dim);
+        color: var(--ember-bright);
+    }
+
+    .compare-section {
+        margin-bottom: var(--gap-lg);
+    }
+
+    .compare-section h3 {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #b0b0c8);
+        margin-bottom: 0.5rem;
+    }
+
+    .compare-table { width: 100%; }
+    .compare-table td, .compare-table th { font-size: 0.85rem; }
+
+    .rd-text {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .diff-pos {
+        color: #4caf50;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-weight: 500;
+    }
+
+    .diff-neg {
+        color: #ef5350;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-weight: 500;
+    }
+
+    .diff-neutral {
+        color: var(--text-dim);
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
     }
 </style>

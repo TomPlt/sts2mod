@@ -25,6 +25,7 @@ public static class CardRewardPatch
             var cardRow = __instance.GetNodeOrNull<Control>("UI/CardRow");
             if (cardRow == null) return;
 
+            int overlaysAdded = 0;
             foreach (var child in cardRow.GetChildren())
             {
                 if (child is NGridCardHolder holder)
@@ -36,6 +37,7 @@ public static class CardRewardPatch
                     if (stats == null) continue;
 
                     OverlayFactory.AddOverlay(holder, stats, DataLoader.SkipElo);
+                    overlaysAdded++;
 
                     // Connect hover signals for detail panel
                     // The hitbox child handles mouse hover, not the holder itself
@@ -55,6 +57,9 @@ public static class CardRewardPatch
                 }
             }
 
+            // Don't show skip line for screens with no analytics (e.g. boss malus choices)
+            if (overlaysAdded == 0) return;
+
             // Add skip line reference
             var ui = __instance.GetNodeOrNull<Control>("UI");
             if (ui != null)
@@ -66,26 +71,37 @@ public static class CardRewardPatch
                 container.Name = "SpireOracleSkipLine";
                 container.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
                 container.AnchorTop = 1f;
-                container.Position = new Vector2(0, -120);
+                container.Position = new Vector2(0, -80);
                 container.Alignment = BoxContainer.AlignmentMode.Center;
 
-                var label = new Label();
-                label.Text = $"SKIP LINE: {DataLoader.SkipElo:F0}";
-                label.AddThemeFontSizeOverride("font_size", 18);
-                label.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f, 0.6f));
-                container.AddChild(label);
+                // Skip overall rating
+                var skipOverall = new Label();
+                skipOverall.Text = $"Skip: {DataLoader.SkipElo:F0}";
+                skipOverall.AddThemeFontSizeOverride("font_size", 28);
+                skipOverall.AddThemeColorOverride("font_color", Colors.White);
+                container.AddChild(skipOverall);
+
+                // Per-act skip ratings
+                var act1Skip = DataLoader.GetSkipElo(actIndex: 0);
+                var act2Skip = DataLoader.GetSkipElo(actIndex: 1);
+                var act3Skip = DataLoader.GetSkipElo(actIndex: 2);
+
+                var skipActs = new Label();
+                skipActs.Text = $"  A1: {act1Skip:F0}  A2: {act2Skip:F0}  A3: {act3Skip:F0}";
+                skipActs.AddThemeFontSizeOverride("font_size", 28);
+                skipActs.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.7f));
+                container.AddChild(skipActs);
 
                 // Separator
                 var sep = new Label();
-                sep.Text = "  |  ";
-                sep.AddThemeFontSizeOverride("font_size", 18);
-                sep.AddThemeColorOverride("font_color", new Color(0.3f, 0.3f, 0.3f));
+                sep.Text = "  ";
+                sep.AddThemeFontSizeOverride("font_size", 28);
                 container.AddChild(sep);
 
                 // Dashboard button
                 var dashBtn = new Button();
-                dashBtn.Text = "Open Dashboard";
-                dashBtn.AddThemeFontSizeOverride("font_size", 16);
+                dashBtn.Text = "Dashboard";
+                dashBtn.AddThemeFontSizeOverride("font_size", 22);
                 dashBtn.AddThemeColorOverride("font_color", new Color(0.36f, 0.72f, 0.83f));
                 var btnStyle = new StyleBoxFlat();
                 btnStyle.BgColor = new Color(0.1f, 0.15f, 0.2f, 0.8f);
@@ -108,7 +124,7 @@ public static class CardRewardPatch
                 dashBtn.AddThemeStyleboxOverride("hover", btnHover);
                 dashBtn.Pressed += () =>
                 {
-                    OS.ShellOpen("http://localhost:5150");
+                    OS.ShellOpen("http://localhost:5202/elo");
                 };
                 container.AddChild(dashBtn);
 

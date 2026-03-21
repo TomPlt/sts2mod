@@ -23,6 +23,12 @@ else
             <button class="@(_upgradeFilter == 1 ? "active" : "")" @onclick="() => SetUpgradeFilter(1)">Base</button>
             <button class="@(_upgradeFilter == 2 ? "active" : "")" @onclick="() => SetUpgradeFilter(2)">Upgraded</button>
         </div>
+        <div class="upgrade-filter">
+            <button class="@(_rarityFilter == null ? "active" : "")" @onclick="() => SetRarityFilter(null)">All</button>
+            <button class="rarity-c @(_rarityFilter == "Common" ? "active" : "")" @onclick='() => SetRarityFilter("Common")'>C</button>
+            <button class="rarity-u @(_rarityFilter == "Uncommon" ? "active" : "")" @onclick='() => SetRarityFilter("Uncommon")'>U</button>
+            <button class="rarity-r @(_rarityFilter == "Rare" ? "active" : "")" @onclick='() => SetRarityFilter("Rare")'>R</button>
+        </div>
     </div>
 
     <RadzenDataGrid Data="@_filteredCards" TItem="CardRow" AllowSorting="true" AllowPaging="true" PageSize="25"
@@ -45,6 +51,7 @@ else
     private ExportData? _data;
     private int _minGames = 3;
     private int _upgradeFilter; // 0=all, 1=base, 2=upgraded
+    private string? _rarityFilter;
     private List<CardRow> _allCards = [];
     private List<CardRow> _filteredCards = [];
 
@@ -54,6 +61,7 @@ else
     {
         Filter.OnChange += OnFilterChanged;
         _data = await Data.GetDataAsync();
+        await Data.GetCardRaritiesAsync();
         Recompute();
         _loading = false;
     }
@@ -105,6 +113,12 @@ else
         ApplyFilter();
     }
 
+    private void SetRarityFilter(string? r)
+    {
+        _rarityFilter = r;
+        ApplyFilter();
+    }
+
     private void ApplyFilter()
     {
         _filteredCards = _allCards
@@ -115,6 +129,7 @@ else
                 2 => c.Id.Contains('+'),
                 _ => true
             })
+            .Where(c => _rarityFilter == null || Data.GetRarity(c.Id) == _rarityFilter)
             .ToList();
     }
 
@@ -179,5 +194,23 @@ else
     .upgrade-filter button:hover:not(.active) {
         border-color: var(--text-dim);
         color: var(--text);
+    }
+
+    .upgrade-filter button.rarity-c.active {
+        background: rgba(140, 170, 140, 0.2);
+        border-color: #8caa8c;
+        color: #8caa8c;
+    }
+
+    .upgrade-filter button.rarity-u.active {
+        background: rgba(100, 160, 220, 0.2);
+        border-color: #64a0dc;
+        color: #64a0dc;
+    }
+
+    .upgrade-filter button.rarity-r.active {
+        background: rgba(220, 180, 60, 0.2);
+        border-color: #dcb43c;
+        color: #dcb43c;
     }
 </style>

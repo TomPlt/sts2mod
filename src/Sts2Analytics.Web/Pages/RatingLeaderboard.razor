@@ -33,6 +33,13 @@ else
         <button class="@(_upgradeFilter == UpgradeFilter.All ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.All)">All</button>
         <button class="@(_upgradeFilter == UpgradeFilter.BaseOnly ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.BaseOnly)">Base</button>
         <button class="@(_upgradeFilter == UpgradeFilter.UpgradedOnly ? "active" : "")" @onclick="() => SetUpgradeFilter(UpgradeFilter.UpgradedOnly)">Upgraded</button>
+
+        <span class="filter-divider"></span>
+
+        <button class="@(_rarityFilter == null ? "active" : "")" @onclick="() => SetRarityFilter(null)">All</button>
+        <button class="rarity-c @(_rarityFilter == "Common" ? "active" : "")" @onclick='() => SetRarityFilter("Common")'>C</button>
+        <button class="rarity-u @(_rarityFilter == "Uncommon" ? "active" : "")" @onclick='() => SetRarityFilter("Uncommon")'>U</button>
+        <button class="rarity-r @(_rarityFilter == "Rare" ? "active" : "")" @onclick='() => SetRarityFilter("Rare")'>R</button>
     </div>
 
     @if (_usingWinRateFallback)
@@ -57,7 +64,6 @@ else
                         <th style="width: 5rem; text-align: right;" class="act-col">Act 3</th>
                     }
                     <th style="width: 4rem; text-align: right;">Games</th>
-                    <th style="width: 10rem;">Confidence</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,12 +113,6 @@ else
                             </td>
                         }
                         <td style="text-align: right;" class="dim-text mono">@row.Games</td>
-                        <td>
-                            <div class="elo-bar-track">
-                                <div class="elo-bar-fill @(row.CardId == "SKIP" ? "skip" : "") @(row.LowConfidence ? "low-conf" : "")"
-                                     style="width: @(Math.Clamp((row.Rating - _minRating) / (_maxRating - _minRating) * 100, 2, 100))%"></div>
-                            </div>
-                        </td>
                     </tr>
                 }
             </tbody>
@@ -138,6 +138,7 @@ else
     private int _showCount = 40;
     private int? _actFilter;
     private UpgradeFilter _upgradeFilter = UpgradeFilter.All;
+    private string? _rarityFilter;
     private bool _usingWinRateFallback;
 
     enum UpgradeFilter { All, BaseOnly, UpgradedOnly }
@@ -151,6 +152,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
+        await Data.GetCardRaritiesAsync();
         Filter.OnChange += OnFilterChanged;
         ApplyFilter();
         _loading = false;
@@ -171,19 +173,32 @@ else
     private void SetUpgradeFilter(UpgradeFilter f)
     {
         _upgradeFilter = f;
-        ApplyUpgradeFilter();
+        ApplyCardFilters();
+    }
+
+    private void SetRarityFilter(string? rarity)
+    {
+        _rarityFilter = rarity;
+        ApplyCardFilters();
     }
 
     private static bool IsUpgraded(string cardId) => cardId.Contains('+');
 
-    private void ApplyUpgradeFilter()
+    private void ApplyCardFilters()
     {
-        _filteredRatings = _upgradeFilter switch
+        var filtered = _allRatings.AsEnumerable();
+
+        filtered = _upgradeFilter switch
         {
-            UpgradeFilter.BaseOnly => _allRatings.Where(r => !IsUpgraded(r.CardId)).ToList(),
-            UpgradeFilter.UpgradedOnly => _allRatings.Where(r => IsUpgraded(r.CardId)).ToList(),
-            _ => _allRatings
+            UpgradeFilter.BaseOnly => filtered.Where(r => !IsUpgraded(r.CardId)),
+            UpgradeFilter.UpgradedOnly => filtered.Where(r => IsUpgraded(r.CardId)),
+            _ => filtered
         };
+
+        if (_rarityFilter != null)
+            filtered = filtered.Where(r => Data.GetRarity(r.CardId) == _rarityFilter);
+
+        _filteredRatings = filtered.ToList();
 
         // Re-rank after filtering
         for (var i = 0; i < _filteredRatings.Count; i++)
@@ -217,15 +232,39 @@ else
             context = $"{Filter.Character}_ACT{_actFilter}";
         else if (Filter.Character is not null)
             context = Filter.Character;
-        else if (_actFilter is not null)
-            context = "overall";
         else
             context = "overall";
 
-        var ratings = _data.Glicko2Ratings
-            .Where(e => e.Context == context)
-            .OrderByDescending(e => e.Rating)
-            .ToList();
+        List<Glicko2RatingResult> ratings;
+        if (_actFilter is not null && Filter.Character is null)
+        {
+            // No per-character filter but act selected: aggregate across all character act contexts
+            var actSuffix = $"_ACT{_actFilter}";
+            ratings = _data.Glicko2Ratings
+                .Where(e => e.Context.EndsWith(actSuffix))
+                .GroupBy(e => e.CardId)
+                .Select(g =>
+                {
+                    var totalGames = g.Sum(e => e.GamesPlayed);
+                    var weightedRating = totalGames > 0
+                        ? g.Sum(e => e.Rating * e.GamesPlayed) / totalGames
+                        : g.Average(e => e.Rating);
+                    var avgRd = totalGames > 0
+                        ? g.Sum(e => e.RatingDeviation * e.GamesPlayed) / totalGames
+                        : g.Average(e => e.RatingDeviation);
+                    return new Glicko2RatingResult(g.Key, "ALL", $"overall{actSuffix}",
+                        weightedRating, avgRd, 0, totalGames);
+                })
+                .OrderByDescending(e => e.Rating)
+                .ToList();
+        }
+        else
+        {
+            ratings = _data.Glicko2Ratings
+                .Where(e => e.Context == context)
+                .OrderByDescending(e => e.Rating)
+                .ToList();
+        }
 
         _skipRating = ratings
             .Where(e => e.CardId == "SKIP")
@@ -245,7 +284,7 @@ else
         // Build per-act lookup
         BuildActRatingLookup();
 
-        ApplyUpgradeFilter();
+        ApplyCardFilters();
     }
 
     private void BuildActRatingLookup()
@@ -303,7 +342,7 @@ else
             _minRating = _allRatings.Min(r => r.Rating);
         }
 
-        ApplyUpgradeFilter();
+        ApplyCardFilters();
     }
 
     private void ShowMore() => _showCount += 40;
@@ -418,6 +457,24 @@ else
         height: 1.2rem;
         background: var(--surface-border);
         margin: 0 0.25rem;
+    }
+
+    .act-filter button.rarity-c.active {
+        background: rgba(140, 170, 140, 0.2);
+        border-color: #8caa8c;
+        color: #8caa8c;
+    }
+
+    .act-filter button.rarity-u.active {
+        background: rgba(100, 160, 220, 0.2);
+        border-color: #64a0dc;
+        color: #64a0dc;
+    }
+
+    .act-filter button.rarity-r.active {
+        background: rgba(220, 180, 60, 0.2);
+        border-color: #dcb43c;
+        color: #dcb43c;
     }
 
     .elo-table tbody td { font-size: 0.85rem; }

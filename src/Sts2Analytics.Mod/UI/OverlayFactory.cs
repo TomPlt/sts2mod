@@ -58,6 +58,44 @@ public static class OverlayFactory
 
         cardHolder.AddChild(strip);
 
+        // --- Blind Spot Badge (top-right corner) ---
+        if (!string.IsNullOrEmpty(stats.BlindSpot))
+        {
+            var bsBadge = new PanelContainer();
+            bsBadge.Name = "SpireOracleBlindSpot";
+            bsBadge.AddToGroup(OverlayGroup);
+
+            var bsStyle = new StyleBoxFlat();
+            bsStyle.CornerRadiusBottomLeft = 4;
+            bsStyle.CornerRadiusBottomRight = 4;
+            bsStyle.CornerRadiusTopLeft = 4;
+            bsStyle.CornerRadiusTopRight = 4;
+            bsStyle.ContentMarginLeft = 6;
+            bsStyle.ContentMarginRight = 6;
+            bsStyle.ContentMarginTop = 2;
+            bsStyle.ContentMarginBottom = 2;
+
+            var isOverPick = stats.BlindSpot == "over_pick";
+            bsStyle.BgColor = isOverPick
+                ? new Color(0.94f, 0.27f, 0.27f) // red
+                : new Color(0.96f, 0.62f, 0.04f); // amber
+
+            bsBadge.AddThemeStyleboxOverride("panel", bsStyle);
+
+            var bsLabel = new Label();
+            bsLabel.Text = isOverPick ? "⚠ OVER-PICK" : "⚠ UNDER-PICK";
+            bsLabel.AddThemeFontSizeOverride("font_size", 18);
+            bsLabel.AddThemeColorOverride("font_color", isOverPick
+                ? Colors.White
+                : new Color(0.1f, 0.1f, 0.1f));
+            bsBadge.AddChild(bsLabel);
+
+            // Position top-right
+            bsBadge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
+            bsBadge.Position = new Vector2(-10, -10);
+            cardHolder.AddChild(bsBadge);
+        }
+
         // --- Detail Panel (below card, hidden by default) ---
         var detail = new PanelContainer();
         detail.Name = "SpireOracleDetail";
@@ -92,6 +130,12 @@ public static class OverlayFactory
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
         AddStatRow(vbox, "Delta", $"{stats.Delta:+0.0%;-0.0%;0.0%}");
+
+        if (!string.IsNullOrEmpty(stats.BlindSpot))
+        {
+            var bsType = stats.BlindSpot == "over_pick" ? "Over-pick" : "Under-pick";
+            AddStatRow(vbox, "Blind Spot", $"{bsType} (score: {stats.BlindSpotScore:F2})");
+        }
 
         detail.AddChild(vbox);
 

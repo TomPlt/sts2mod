@@ -15,13 +15,33 @@ public static class DataLoader
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
 
-    public static double GetSkipEloForAct(int actIndex)
+    public static double GetSkipElo(string? characterContext = null, int? actIndex = null)
     {
-        var key = $"act{actIndex + 1}";
-        if (_skipEloByAct != null && _skipEloByAct.TryGetValue(key, out var elo))
-            return elo;
+        if (_skipEloByAct == null) return _skipElo;
+
+        if (characterContext != null && actIndex != null)
+        {
+            var key = $"{characterContext.Replace("CHARACTER.", "").ToLower()}_act{actIndex + 1}";
+            if (_skipEloByAct.TryGetValue(key, out var elo)) return elo;
+        }
+        if (characterContext != null)
+        {
+            var key = characterContext.Replace("CHARACTER.", "").ToLower();
+            if (_skipEloByAct.TryGetValue(key, out var elo)) return elo;
+        }
+        if (actIndex != null)
+        {
+            // Try any character's act rating as fallback
+            var actKey = $"act{actIndex + 1}";
+            foreach (var kvp in _skipEloByAct)
+            {
+                if (kvp.Key.EndsWith(actKey)) return kvp.Value;
+            }
+        }
         return _skipElo;
     }
+
+    public static Dictionary<string, double>? SkipEloByAct => _skipEloByAct;
 
     public static bool Load(string modPath)
     {
