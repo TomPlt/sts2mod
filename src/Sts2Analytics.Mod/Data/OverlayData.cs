@@ -16,7 +16,11 @@ public record CardStats(
     [property: JsonPropertyName("eloAct2")] double EloAct2 = 0,
     [property: JsonPropertyName("rdAct2")] double RdAct2 = 350,
     [property: JsonPropertyName("eloAct3")] double EloAct3 = 0,
-    [property: JsonPropertyName("rdAct3")] double RdAct3 = 350);
+    [property: JsonPropertyName("rdAct3")] double RdAct3 = 350,
+    [property: JsonPropertyName("blindSpot")] string? BlindSpot = null,
+    [property: JsonPropertyName("blindSpotScore")] double BlindSpotScore = 0,
+    [property: JsonPropertyName("blindSpotPickRate")] double BlindSpotPickRate = 0,
+    [property: JsonPropertyName("blindSpotWinRateDelta")] double BlindSpotWinRateDelta = 0);
 
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,
