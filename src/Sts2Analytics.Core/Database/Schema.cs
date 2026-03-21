@@ -233,6 +233,19 @@ public static class Schema
         CREATE INDEX IF NOT EXISTS IX_PlayerRatingHistory_PlayerRatingId ON PlayerRatingHistory(PlayerRatingId);
         CREATE INDEX IF NOT EXISTS IX_PlayerRatingHistory_RunId ON PlayerRatingHistory(RunId);
 
+        CREATE TABLE IF NOT EXISTS BlindSpots (
+            CardId TEXT NOT NULL,
+            Context TEXT NOT NULL,
+            BlindSpotType TEXT NOT NULL,
+            Score REAL NOT NULL DEFAULT 0,
+            PickRate REAL NOT NULL DEFAULT 0,
+            ExpectedPickRate REAL NOT NULL DEFAULT 0,
+            WinRateDelta REAL NOT NULL DEFAULT 0,
+            GamesAnalyzed INTEGER NOT NULL DEFAULT 0,
+            LastUpdated TEXT NOT NULL DEFAULT '',
+            PRIMARY KEY (CardId, Context)
+        );
+
         CREATE INDEX IF NOT EXISTS IX_Floors_RunId ON Floors(RunId);
         CREATE INDEX IF NOT EXISTS IX_CardChoices_FloorId ON CardChoices(FloorId);
         CREATE INDEX IF NOT EXISTS IX_CardChoices_CardId ON CardChoices(CardId);

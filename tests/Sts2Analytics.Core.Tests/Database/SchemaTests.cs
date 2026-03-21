@@ -52,6 +52,17 @@ public class SchemaTests
     }
 
     [Fact]
+    public void Initialize_CreatesBlindSpotsTable()
+    {
+        using var conn = new SqliteConnection("Data Source=:memory:");
+        conn.Open();
+        Schema.Initialize(conn);
+
+        var blindSpots = conn.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='BlindSpots'").ToList();
+        Assert.Single(blindSpots);
+    }
+
+    [Fact]
     public void Initialize_IsIdempotent()
     {
         using var conn = new SqliteConnection("Data Source=:memory:");
