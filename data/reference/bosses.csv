@@ -1,0 +1,93 @@
+Boss Name,HP,Move 1,Move 2,Move 3,Move 4,Move 5,Move 6,Notes,Attack Pattern
+Ceremonial Beast,252 (262),Stamp,Plow,Beast Cry,Stomp,Crush,,"Plow X: The first time Ceremonial Beast's HP reaches X or below, it becomes stunned and loses all strength.",Starts with Stamp. Then uses Plow every turn until it is stunned.
+,,Gains Plow 150 (160),Damage 18 (20),Apply Ringing,Damage 15 (17),Damage 17 (19),,,
+,,,Gains 2 Strength,,,Gains 3 (4) Strength,,Ringing: You can only play 1 card this turn.,"After being stunned, cycles through Beast Cry -> Stomp -> Crush."
+,,,,,,,,,
+,,,,,,,,,
+Doormaker,489 (512),Dramatic Open,Beam,Chomp,Pulverize,,,Starts the fight with infinite HP.,Starts with Dramatic Entrance. Then cycles through Beam -> Chomp -> Pulverize.
+,,Loses its infinite max HP,Damage 10x3 (11x3),Damage 40 (45),Damage 20 (22),,,,
+,,Clears all powers from itself,,,Gain 2 (3) Strength,,,Hunger of the Void: Every 10th card you draw is removed from combat and Doormaker gains 1 (2) Strength.,
+,,Gain Hunger of the Void,,,,,,,
+,,,,,,,,,
+Kaiser Crab,,,,,,,,,
+Crusher,209 (219),Thrash,Enlarging Strike,Bug Sting,Adapt,Guarded Strike,,Starts with Back Attack and Crab Rage.,Cycles through Thrash -> Enlarging Strike -> Bug Sting -> Adapt -> Guarded Strike.
+,,Damage 12 (14),Damage 4,Damage 6x2 (7x2),Gain 2 Strength,Damage 12 (14),,Back Attack: Deals 50% more damage if attacking you from behind.,
+,,,,Apply 2 Weak,,Block 18,,"Crab Rage: When an ally dies, gains 6 strength and 99 block.",
+,,,,Apply 2 Frail,,,,,
+,,,,,,,,,
+Rocket,199 (209),Targeting Reticle,Precision Beam,Charge Up,Laser,Recharge,,Starts with Back Attack and Crab Rage.,Cycles through Targeting Reticle -> Precision Beam -> Charge Up -> Laser -> Recharge.
+,,Damage 3 (4),Damage 18 (20),Gain 2 (3) Strength,Damage 31 (35),Pass turn,,,
+,,,,,,,,,
+Knowledge Demon,379 (399),Curse of Knowledge,Slap,Knowledge Overwhelming,Ponder,,,Disintegration X: Take X damage at the end of your turn.,Cycles through Curse of Knowledge -> Slap -> Knowledge Overwhelming -> Ponder until Curse of Knowledge has been used 3 times. Then cycles through Slap -> Knowledge Overwhelming -> Ponder.
+,,Player must choose one of two debuffs:,Damage 17 (18),Damage 8x3 (9x3),Damage 11 (13),,,(Stacks additively if selected multiple times),
+,,1st choice: Disentegration 6 or Mind Rot,,,Heal 30*,,,,
+,,2nd choice: Disentegration 7 or Sloth,,,Gain 2 (3) Strength,,,Mind Rot: Draw 1 fewer card at the start of your turn,
+,,3rd Choice: Disentegration 8 or Waste Away,,,,,,Sloth: You cannot play more than 3 cards per turn,
+,,,,,,,,Waste Away: Gain 1 less energy at the start of your turn,
+,,,,,,,,,
+,,,,,,,,* Heal is multiplied by player count,
+,,,,,,,,,
+Lagavulin Matriarch,222 (233),Slash,Disembowel,Slash 2,Soul Siphon,,,"Starts with 12 Plating, and sleeps for 3 turns or until losing HP.",Cycles through Slash -> Disembowel -> Slash 2 -> Soul Siphon.
+,,Damage 19 (21),Damage 9x2 (10x2),Damage 12 (14),Apply -2 Strength,,,"On wakeup, all Plating is removed.",
+,,,,Block 12 (14),Apply -2 Dexterity,,,,
+,,,,,Gain 2 Strength,,,,
+,,,,,,,,,
+Queen,400 (419),Puppet Strings,You Are Mine!,Burn Bright For Me,Off With Your Head,Execution,Enrage,Starts with a Torch Head Amalgam in play.,"Begins with Puppet Strings -> You Are Mine!
+
+Afterwards, while Amalgam is alive, always does Burn Bright For Me. If Amalgam dies and intent is Burn Bright For Me, intent is immediately replaced with Enrage.
+
+After Amalgam dies, cycles Off With Your Head -> Execution -> Enrage."
+,,Apply Chains of Binding 3,Apply 99 Frail,Give allies 1 Strength,Damage 3x5 (4x5),Damage 15 (18),Gain 2 Strength,"If Amalgam dies, and intent is Burn Bright For Me, Enrage instead.",
+,,,Apply 99 Weak,Block 20,,,,,
+,,,Apply 99 Vulnerable,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Torch Head Amalgam,199 (211),Tackle,Soul Beam,Weak Tackle,,,,,"Begins with Tackle -> Tackle.
+
+Afterwards, cycles Soul Beam -> Weak Tackle -> Weak Tackle."
+,,Damage 18 (19),Damage 8x3,Damage 14 (15),,,,,
+,,,,,,,,,
+,,,,,,,,,
+Soul Fysh,211 (221),Beckon,De-Gas,Gaze,Fade,Scream,,"Beckon: 1 cost status, lose 6 HP if it is in hand at the end of turn.",Cycles through Beckon -> De-Gas -> Gaze -> Fade -> Scream.
+,,Shuffle 1 Beckon into draw,Damage 16 (17) ,Damage 7 (8),Gain 2* Intangible,Damage 11 (12),,,
+,,Shuffle 1 Beckon into discard,,Shuffle 1 Beckon into discard,,Apply 3 Vulnerable,,* One of the 2 Intangible from Fade ticks down immediately.,
+,,,,,,,,,
+Test Subject #C14,,,,,,,,,
+Stage 1,100 (111),Bite,Skull Bash,,,,,Starts with Enrage 3.,"Cycles through Bite -> Skull Bash.
+
+When killed, revive next turn in stage 2."
+,,Damage 20 (22),Damage 14 (16),,,,,"Enrage X: Whenever you play a skill, gain X Strength.",
+,,,Apply 1 Vulnerable,,,,,,
+,,,,,,,,,
+Stage 2,200 (212),Multi-Claw,,,,,,Starts with Painful Stabs 1.,Uses Multi-Claw every turn.
+,,Damage 10xN (11xN),,,,,,Painful Stabs X: Shuffle X Wounds into discard when inflicting unblocked damage.,
+,,(N = 3 + # times Multi-Claw has been used),,,,,,,
+,,,,,,,,,
+Stage 3,300 (313),Lacerate,Big Pounce,Burning Growl,,,,"Starts with Nemesis, which will immediately give 1 Intangible.",Cycles through Lacerate -> Big Pounce -> Burning Growl.
+,,Damage 10x3 (11x3),Damage 45,Shuffle 3 (5) Burns into discard,,,,"Nemesis: At the end of every other turn, gain 1 Intangible.",
+,,,,Gain 2 (3) Strength,,,,,
+,,,,,,,,,
+The Insatiable,321 (341),Liquify Ground,Thrash,Lunging Bite,Salivate,,,"Sandpit X: In X turns, instantly die.","Starts with Liquify Ground.
+
+Afterwards, cycles through Thrash -> Lunging Bite -> Salivate -> Thrash."
+,,Gain Sandpit 4,Damage 8x2 (9x2),Damage 28 (31),Gain 2 (3) Strength,,,,
+,,Shuffle 3 Frantic Escapes into draw,,,,,,"Frantic Escape: 1 cost status, increase card cost and Sandpit by 1.",
+,,Shuffle 3 Frantic Escapes into discard,,,,,,,
+,,,,,,,,,
+The Kin,,,,,,,,,
+Kin Priest,190 (199),Orb of Frailty,Orb of Weakness,Beam,Ritual,,,,Cycles through Orb of Frailty -> Orb of Weakness -> Beam -> Ritual.
+,,Damage 8 (9),Damage 8 (9),Damage 3x3,Gain 2 (3) Strength,,,,
+,,Apply 1 Frail,Apply 1 Weak,,,,,,
+,,,,,,,,,
+Kin Follower,58 - 59 (62 - 63),Quick Slash,Boomerang,Power Dance,,,,Kin Follower is a minion.,Cycles through Quick Slash -> Boomerang -> Power Dance.
+(Minion),,Damage 5,Damage 2x2,Gain 2 (3) Strength,,,,,
+,,,,,,,,,
+Vantom,173 (183),Ink Blot,Inky Lance,Dismember,Prepare,,,Starts with Slippery 9,Cycles through Ink Blot -> Inky Lance -> Dismember -> Prepare.
+,,Damage 7 (8),Damage 6x2 (7x2),Damage 27 (30),Gain 2 Strength,,,,
+,,,,Add 3 Wounds into discard,,,,"Slippery X: The next X times this loses HP, only lose 1. ",
+,,,,,,,,,
+Waterfall Giant,250 (260),Pressurize,Stomp,Ram,Siphon,Pressure Gun,Pressure Up,"Steam Eruption X: After dying, wait 1 turn, then attack for X damage.",Cycles through Pressurize -> Stomp -> Ram -> Siphon -> Pressure Gun -> Pressure Up.
+,,Gain 15 (20) Steam Eruption,Damage 15 (16),Damage 10 (11),Heal 15*,Damage 20 (23) + 5*N,Damage 13 (14),,
+,,,Apply 1 Weak,Gain 3 Steam Eruption,Gain 3 Steam Eruption,N = # of times this move was used,Gain 3 Steam Eruption,,
+,,,Gain 3 Steam Eruption,,,Gain 3 Steam Eruption,,* Heal is multiplied by player count,

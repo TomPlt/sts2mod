@@ -99,7 +99,7 @@ public partial class MapIntelPanel : PanelContainer
             intel.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
         if (actData.Runs > 0)
         {
-            AddStatRow($"Act {actIndex + 1} Win Rate", $"{actData.WinRate:P0} ({actData.Wins}/{actData.Runs})",
+            AddStatRow($"Survived Act {actIndex + 1}", $"{actData.WinRate:P0} ({actData.Wins}/{actData.Runs})",
                 actData.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
         }
 

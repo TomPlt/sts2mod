@@ -3,29 +3,33 @@
 @inject FilterState Filter
 @implements IDisposable
 
-<div class="oracle-page">
-    <h2 class="page-title">My Rating</h2>
-    <p class="page-subtitle">Your Glicko-2 player rating per character</p>
+<PageTitle>Spire Oracle — My Rating</PageTitle>
 
-    @if (_loading)
-    {
-        <p class="loading">Loading...</p>
-    }
-    else
-    {
-        <div class="rating-cards" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
-            @foreach (var r in _ratings)
-            {
-                <div class="stat-card @(r.Context == _selectedContext ? "active" : "")"
-                     style="cursor:pointer;min-width:140px;text-align:center;"
-                     @onclick="() => SelectContext(r.Context)">
-                    <div class="stat-label">@FormatContext(r.Context)</div>
-                    <div class="stat-value">@r.Rating.ToString("F0")</div>
-                    <div class="stat-sub">±@r.RatingDeviation.ToString("F0") RD · @r.GamesPlayed games</div>
-                </div>
-            }
-        </div>
+@if (_loading)
+{
+    <p class="dim-text">Consulting the oracle...</p>
+}
+else
+{
+    <h2>My Rating</h2>
+    <p class="dim-text" style="margin-top: -1.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        Your Glicko-2 player rating per character
+    </p>
 
+    <div class="stats-row" style="margin-bottom: var(--gap-lg);">
+        @foreach (var r in _ratings)
+        {
+            <div class="stat-card @(r.Context == _selectedContext ? "selected" : "")"
+                 style="cursor: pointer; text-align: center;"
+                 @onclick="() => SelectContext(r.Context)">
+                <div class="stat-label">@FormatContext(r.Context)</div>
+                <div class="stat-value" style="color: var(--text-primary);">@r.Rating.ToString("F0")</div>
+                <div class="dim-text" style="font-size: 0.7rem;">±@r.RatingDeviation.ToString("F0") RD · @r.GamesPlayed games</div>
+            </div>
+        }
+    </div>
+
+    <div class="panel">
         <h3>Recent Runs — @FormatContext(_selectedContext)</h3>
         <table class="oracle-table">
             <thead>
@@ -33,7 +37,7 @@
                     <th>Character</th>
                     <th>Opponent</th>
                     <th>Result</th>
-                    <th>Rating Change</th>
+                    <th style="text-align: right;">Rating Change</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,19 +45,27 @@
                 {
                     var change = h.RatingAfter - h.RatingBefore;
                     <tr>
-                        <td>@FormatContext(h.Context)</td>
-                        <td>@h.Opponent</td>
-                        <td class="@(h.Outcome > 0 ? "text-green" : "text-red")">@(h.Outcome > 0 ? "WIN" : "LOSS")</td>
-                        <td class="@(change > 0 ? "text-green" : "text-red")">
-                            @(change > 0 ? "+" : "")@change.ToString("F0")
-                            (@h.RatingBefore.ToString("F0") → @h.RatingAfter.ToString("F0"))
+                        <td><span class="char-tag @GetCharClass(h.Context)">@FormatContext(h.Context)</span></td>
+                        <td class="mono">@h.Opponent</td>
+                        <td>
+                            <span class="result-pill @(h.Outcome > 0 ? "win" : "loss")">
+                                @(h.Outcome > 0 ? "Win" : "Loss")
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="delta @(change >= 0 ? "positive" : "negative")">
+                                @(change >= 0 ? "+" : "")@change.ToString("F0")
+                            </span>
+                            <span class="dim-text mono" style="font-size: 0.75rem;">
+                                (@h.RatingBefore.ToString("F0") → @h.RatingAfter.ToString("F0"))
+                            </span>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-    }
-</div>
+    </div>
+}
 
 @code {
     private bool _loading = true;
@@ -111,9 +123,29 @@
     private static string FormatContext(string context)
     {
         if (context == "overall") return "Overall";
-        // Strip "CHARACTER." prefix and title-case
         var name = context.Replace("CHARACTER.", "");
         return string.Join(" ", name.Split('_').Select(w =>
             w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
     }
+
+    static string GetCharClass(string id) => id.ToLower() switch
+    {
+        var s when s.Contains("ironclad") => "ironclad",
+        var s when s.Contains("silent") => "silent",
+        var s when s.Contains("defect") => "defect",
+        var s when s.Contains("necrobinder") => "necrobinder",
+        var s when s.Contains("regent") => "regent",
+        _ => ""
+    };
 }
+
+<style>
+    .stat-card.selected {
+        border-color: var(--ember);
+        background: rgba(212, 85, 42, 0.06);
+    }
+
+    .stat-card.selected::after {
+        background: linear-gradient(90deg, var(--ember), transparent);
+    }
+</style>

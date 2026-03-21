@@ -1,0 +1,293 @@
+Event,Options (initial options bolded),,Notes
+Act 1: Overgrowth,,,
+,,,
+Aroma of Chaos,Let Go,"Transform a card in your Deck.
+",
+,Maintain Control,Upgrade a card in your Deck.,
+,,,
+"Byrdonis Nest
+Can only occur if you do not have an event pet
+",Eat the Egg,Gain 7 Max HP.,
+,Take the Egg,"Add Byrdonis Egg to your Deck.
+","While Byrdonis Egg is in your deck you can select Hatch as a Rest Site action, which removes Byrdonis Egg and adds a Byrd Swoop to your deck. "
+,,,
+Dense Vegetation,Trudge On,Lose 8 HP. Gain 61-99 Gold.,
+,Rest,Heal 30% Max HP. Fight 4 Wrigglers.,Receive regular combat rewards after the fight.
+,,,
+Jungle Maze Adventure,Solo Quest,Gain 135 - 165 Gold. Lose 18 HP.,
+,Join Forces,Gain 35 - 65 Gold.,
+,,,
+"Luminous Choir
+Can only occur if you have 150 gold or more",Reach into the Flesh,Remove 2 cards from your Deck. Add Spore Mind to your Deck.,
+,Offer Tribute,Pay 100 - 150 Gold. Obtain a random Relic.,
+,,,
+"Morphic Grove
+Can only occur if you have at least 2 transformable cards.",Group,Lose ALL Gold. Transform 2 cards.,
+,Loner,Gain 5 Max HP.,
+,,,
+Sapphire Seed,Consume,Heal 9 HP. Upgrade a card in your Deck.,
+,Plant and Nourish,Enchant a card with Sown.,"Sown: The first time you play this card each combat, gain 1 energy."
+,,,
+Tablet of Truth,Decipher,Lose 3 Max HP. Upgrade a random card.,Followed by a choice between Continue Deciphering and Give Up.
+,Smash,Heal 20 HP.,
+,Continue Deciphering,Lose 6 Max HP. Upgrade a random card.,Followed by a choice between Keep Deciphering and Give Up.
+,Keep Deciphering,Lose 12 Max HP. Upgrade a random card.,Followed by a choice between KEEP DECIPHERING and Give Up.
+,KEEP DECIPHERING,Lose 24 Max HP. Upgrade a random card.,Followed by a choice between Lose Everything and Give Up.
+,Lose Everything,Set your Max HP to 1. Upgrade ALL of your cards.,
+,Give Up,Leave.,
+,,,
+"Unrest Site
+Can only occur if you are missing 30% of your max HP or more",Rest Anyways,Heal to full HP. Receive Poor Sleep.,
+,Kill the Trees,Lose 8 Max HP. Obtain a random Relic.,
+,,,
+Wellspring,Bottle,Procure 1 random Potion.,Random potion is generated uniformly (all potions equally likely regardless of rarity).
+,Bathe,Remove 1 card from your Deck. Add 1 Guilty to your Deck.,
+,,,
+"Whispering Hollow
+Can only occur if you have 50 gold or more",Exchange Gold,Lose 50 Gold. Procure 2 random Potions.,Random potions are generated following rarity chances.
+,Hug the Tree,Lose 9 HP. Choose a card to Transform.,
+,,,
+"Wood Carvings
+Can only occur if you have a starter card in your deck",Bird,Choose 1 starter card to Transform into Peck.,
+,Snake,Enchant 1 card with Slither.,"Slither: When you draw this card, randomize its cost from 0 to 3."
+,Torus,Choose 1 starter card to Transform into Toric Toughness.,
+,,,
+Act 1: Underdocks,,,
+,,,
+Abyssal Baths,Immerse,Gain 2 Max HP. Take N damage.,"N = 3 + # times Immerse has been selected previously.
+Followed by a choice between Immerse and Exit Baths."
+,Abstain,Heal 10 HP.,
+,Exit Baths,Leave.,
+,,,
+Doors of Light and Dark,Light Door,Upgrade 2 random cards.,
+,Dark Door,Remove 1 card from your Deck.,
+,,,
+Drowning Beacon,Bottle,Procure Glowwater Potion.,
+,Climb,Obtain Fresnel Lens. Lose 13 Max HP.,
+,,,
+"Endless Conveyor
+Can only occur if you have 120 gold or more",Grab [Dish] off the Belt,Pay 40 Gold. Receive a boon based on the [Dish]. Continue Feasting!,"Followed by a choice between Grab [Dish] off the Belt and Leave.
+Dish is generated randomly from allowed options according to their weights. To find the chance for each dish in a particular roll, take its weight divided by the total weight of all allowed options.
+Cannot select the same dish twice in a row."
+,Caviar,Gain 4 Max HP.,Weight = 6.
+,Clam Roll,Heal 10 HP.,Weight = 6. Only allowed if you are missing HP.
+,Fried Eel,Add a random Colorless Card to your Deck.,Weight = 3. Colorless card uses base rare chance with no offset (so almost always will be uncommon).
+,Golden Fysh,Gain 75 Gold.,Weight = 1. Only allowed after the 1st dish.
+,Jelly Liver,Transform 1 card in your Deck.,Weight = 3.
+,Seapunk Salad,Add Feeding Frenzy to your Deck.,Guaranteed to be offered every 5th dish. Otherwise is not allowed.
+,Spicy Snappy,Upgrade a random card in your Deck.,Weight = 3.
+,Suspicious Condiment,Procure a random potion.,Weight = 3. Only allowed if you have an empty potion slot. Random potion is generated uniformly (all potions equally likely regardless of rarity).
+,Observe the Chef,Upgrade a random card in your Deck.,
+,Leave,Leave.,
+,,,
+"Punch Off
+Can only occur on floor 6 or higher",Nab,Add Injury to your Deck. Obtain a random Relic.,
+,I Can Take Them,Fight 2 Punch Constructs.,"Receive regular combat rewards after the fight, plus an extra potion and a relic.
+Extra potion is generated following potion rarity chances and does not affect potion chance. If the regular potion roll drops a potion then you will receive two potions."
+,,,
+"Spiraling Whirlpool
+Can only occur if you have an enchantable basic Strike or Defend in your deck",Observe,Enchant a Strike or Defend with Spiral.,Spiral: This card gains Replay 1.
+,Drink,Heal 33% Max HP.,
+,,,
+The Sunken Statue,Grab the Sword,Obtain the Sword of Stone.,
+,Dive into the Water,Gain 101 - 121 Gold. Lose 7 HP.,
+,,,
+Sunken Treasury,First Chest,Gain 52 - 67 Gold.,
+,Second Chest,Gain 303 - 363 Gold. Receive Greed.,
+,,,
+"Trash Heap
+Can only occur if you have 6 HP or more",Dive In,Lose 8 HP. Obtain a random forgotten Relic from the past.,"Forgotten relics: Darkstone Periapt, Dream Catcher, Hand Drill, Maw Bank, The Boot"
+,Grab Random Junk,Gain 100 Gold. Obtain a random forgotten card from the past.,"Forgotten cards: Caltrops, Clash, Distraction, Dual Wield, Entrench, Hello World, Outmaneuver, Rebound, Rip and Tear, Stack"
+,,,
+"Waterlogged Scriptorium
+Can only occur if you have 65 gold or more",Bloody Ink,Gain 6 Max HP.,
+,Tentacle Quill,Pay 65 Gold. Enchant a card with Steady.,Steady: This card gains Retain.
+,Prickly Sponge,Pay 155 Gold. Enchant 2 cards with Steady.,
+,,,
+Act 2: Hive,,,
+,,,
+"Amalgamator
+Can only occur if you have at least 2 basic Strikes and 2 basic Defends",Combine Strikes,Remove 2 Strikes. Add Ultimate Strike to your Deck.,
+,Combine Defends,Remove 2 Defends. Add Ultimate Defend to your Deck.,
+,,,
+Bugslayer,Learn Extermination Technique,Add Exterminate to your Deck.,
+,Learn Squash Technique,Add Squash to your Deck.,
+,,,
+Colorful Philosophers,[Character Color] x 3,"Receive 1 Common card pack, 1 Uncommon card pack, and 1 Rare card pack from the selected character's card pool.",3 random (unlocked) characters are selected for the card pool options.
+,,,
+"Colossal Flower
+Can only occur if you have 19 HP or more",Extract Nectar,Gain 35 Gold.,
+,Extract Nectar (2),Gain 75 Gold.,
+,Extract Nectar (3),Gain 135 Gold.,
+,Reach Deeper,Enter deeper. Lose 5 HP.,Followed by a choice between Extract Nectar (2) and Reach Deeper (2).
+,Reach Deeper (2),Enter deeper. Lose 6 HP.,Followed by a choice between Extract Nectar (3) and Reach Deeper (3).
+,Reach Deeper (3),Obtain Pollinous Core. Lose 7 HP.,
+,,,
+"Field of Man-Sized Holes
+Can only occur if you have an enchantable card (cards can only have 1 enchantment)",Resist,Remove 2 cards from your Deck. Add Normality to your Deck.,
+,Enter Your Hole,Enchant a card with Perfect Fit.,"Perfect Fit: Whenever this would be shuffled into your Draw Pile, place it on the top instead."
+,,,
+Infested Automaton,Study,Obtain a random Power.,Generated using regular rare and uncommon chance with no offset (so will almost always be uncommon).
+,Touch the Core,Obtain a random 0 cost card.,Generated using regular rare and uncommon chance with no offset (so will almost always be common or uncommon).
+,,,
+The Lost Wisp,Capture the Wisp,Add Decay to your Deck. Obtain the Lost Wisp.,
+,Search the Nearby Area,Gain 45 - 75 Gold.,
+,,,
+Spirit Grafter,Let It In,Heal 25 HP. Add Metamorphosis to your Deck.,
+,Rejection,Lose 10 HP. Upgrade a card.,
+,,,
+The Lantern Key,Return the Key,Gain 100 Gold.,
+,Keep the Key,Fight the Mysterious Knight to obtain the Lantern Key.,"Mysterious Knight is the same as a Flail Knight (from the Knights elite in Act 3: The Glory), but starts with 6 Strength and 6 Plating.
+If you have the Lantern Key in your deck, the first ? room you enter in Act 3 will be the War Historian, Repy event."
+,,,
+"Zen Weaver
+Can only occur if you have 125 gold or more",Breathing Techniques,Pay 50 Gold. Add 2 Enlightenment to your Deck.,
+,Emotional Awareness,Pay 125 Gold. Remove 1 card from your Deck.,
+,Arachnid Acupuncture,Pay 250 Gold. Remove 2 cards from your Deck.,
+,,,
+Act 3: Glory,,,
+,,,
+Battleworn Dummy,Setting 1,Fight a 75 HP dummy. Procure 1 random Potion.,"Whichever setting you pick, you must defeat the dummy within 3 turns to earn the reward.
+Random potion is generated uniformly (all potions equally likely regardless of rarity).
+"
+,Setting 2,Fight a 150 HP dummy. Upgrade 2 random cards.,
+,Setting 3,Fight a 300 HP dummy. Obtain a random Relic.,
+,,,
+"Grave of the Forgotten
+Can only occur if you have a card with Exhaust.",Accept the Forgotten Soul,Obtain Forgotten Soul.,"Forgotten Soul (relic): Whenever you Exhaust a card, deal 1 damage to a random enemy."
+,Confront with Truth,Add Decay to your Deck. Enchant a card that Exhausts with Soul's Power.,Soul's Power: This card loses Exhaust.
+,,,
+Hungry for Mushrooms,Big Mushroom,Obtain Big Mushroom.,"Big Mushroom (relic): Upon pickup, raise your Max HP by 20. At the start of each combat, draw 2 fewer cards."
+,Fragrant Mushroom,Obtain Fragrant Mushroom.,"Fragrant Mushroom (relic): Upon pickup, lose 15 HP and Upgrade 3 random cards."
+,,,
+Reflections snoitcelfeR,Touch a Mirror,Downgrade 2 random cards. Upgrade 4 random cards.,Can upgrade a card that was just downgraded.
+,Shatter,Duplicate your Deck. Receive Bad Luck.,
+,,,
+"The Round Tea Party
+Can only occur if you have at least 12 HP.",Enjoy Your Tea,Obtain Royal Poison. Heal to full HP.,
+,Pick a Fight,Lose 11 HP. Obtain a random Relic.,
+,,,
+Tinker Time,Accept,Create a custom card to add to your Deck.,"Followed by choosing the card type from two of the three options Protector, Weapon, and Power."
+,Protector,"Make a Skill. Base effect: 1 energy, gain 8 block.","Followed by choosing the secondary effect from two of the three options Chaos, Energized, and Wisdom."
+,Chaos,Add a random card into your Hand. It costs 0 energy this turn.,Upgrade adds Innate.
+,Energized,Gain 2 energy.,
+,Wisdom,Draw 3 cards.,
+,Weapon,"Make an Attack. Base effect: 1 energy, deal 12 damage.","Followed by choosing the secondary effect from two of the three options Choking, Sapping, and Violence."
+,Choking,"Whenever you play a card this turn, the enemy loses 6 HP.",Upgrade adds Innate.
+,Sapping,Apply 2 Weak. Apply 2 Vulnerable.,
+,Violence,Hits 2 additional times.,
+,Gadget,Make a Power. Base effect: 1 energy.,"Followed by choosing the secondary effect from two of the three options Curious, Expertise, and Improvement."
+,Curious,Powers cost 1 less energy.,Upgrade adds Innate.
+,Expertise,Gain 2 Strength. Gain 2 Dexterity.,
+,Improvement,"At the end of combat, upgrade a random card.",
+,,,
+The Trial,Accept,Serve as today's Decider.,"Followed by a choice between DECIDE: Guilty and DECIDE: Innocent, with three variations depending on the defendant (Merchant, Noble, or Nondescript Woman)."
+,Merchant,,
+,DECIDE: Guilty,Add Regret to your Deck. Gain 2 random relics.,
+,DECIDE: Innocent,Add Shame to your Deck. Upgrade 2 cards in your Deck.,
+,Noble,,
+,DECIDE: Guilty,Heal 10 HP.,
+,DECIDE: Innocent,Add Regret to your Deck. Gain 300 Gold.,
+,Nondescript Woman,,
+,DECIDE: Guilty,Add Doubt to your Deck. Gain 2 card rewards.,
+,DECIDE: Innocent,Add Doubt to your Deck. Transform 2 cards.,
+,Reject,You are not allowed to Reject.,Followed by a choice between Accept and Double Down
+,Double Down,Abandon the run.,
+,,,
+Shared,,,
+,,,
+"Brain Leech
+Can only occur in Acts 1 and 2",Share Knowledge,Choose 1 of 5 random cards to add to your Deck.,Cards are generated using regular rare/uncommon chance without offset.
+,Rip the Leech Off,Lose 5 HP. Gain a Colorless card reward.,Uses regular rare/uncommon chance without offset.
+,,,
+"Crystal Sphere
+Can only occur in Act 2 and 3 if you have at least 100 gold",Uncover Future,Pay 50 Gold. Divine 3 times.,"Both options enter the Crystal Sphere minigame. Divining uncovers squares in the grid. Any fully uncovered items are gained as rewards.
+
+List of items in the Crystal Sphere (and their size, width x height):
+1 relic (4 x 4)
+2 common potions (1 x 2)
+1 rare potion (2 x 2)
+1 common card reward (2 x 2)
+1 uncommon card reward (2 x 2)
+1 rare card reward (2 x 2)
+1 Doubt (2 x 2)
+4 piles of 10 gold (1 x 1)
+2 piles of 30 gold (2 x 1)
+
+"
+,Payment Plan,Gain a Debt. Divine 6 times.,
+,,,
+"Doll Room
+Can only occur in Act 2
+",Pick at Random,Obtain a random Doll Relic.,"Doll relics:
+Bing Bong: Whenever you add a card to your Deck, add one additional copy.
+Daughter of the Wind: Whenever you play an Attack, gain 1 Block.
+Mr. Struggles: At the start of your turn, deal damage equal to the turn number to ALL enemies."
+,Take Some Time,Lose 5 HP. Choose 1 of 2 Doll Relics.,
+,Examine Each and Make the Best Choice,Lose 15 HP. Choose 1 of 3 Doll Relics.,
+,,,
+"The Merchant???
+Can only occur in Acts 2 or 3 if you have at least 100 gold or a Foul Potion",Anchor???,Start each combat with 4 Block.,6 random knockoff (???) relics will be offered for 42-57 gold each.
+,Blood Vial???,"At the start of each combat, heal 1 HP.","You can throw a Foul Potion to fight the Fake Merchant. If you win you get the following rewards:
+
+  - 300 gold
+  - All the knockoff relics he was selling
+  - Merchant's Rug???
+  - A regular combat roll for a potion
+  - A regular card reward."
+,Happy Flower???,"Every 5 turns, gain 1 energy.",
+,Lee's Waffle???,"Upon pickup, heal 10% of your HP.",
+,Mango???,"Upon pickup, raise your Max HP by 3.",
+,The Merchant's Rug???,Poor imitation. Does nothing.,
+,Orichalcum???,"If you end your turn without Block, gain 3 Block.",
+,Snecko Eye???,Start each combat Confused.,
+,Strike Dummy???,Cards containing “Strike” deal 1 additional damage.,
+,Venerable Tea Set???,"Whenever you enter a Rest Site, start the next combat with an additional energy.",
+,,,
+"Potion Courier
+Can only occur in Acts 2 or 3",Grab Potions,Procure 3 Foul Potions.,"Foul potions can be thrown at the Merchant to gain 100 gold, or at the Fake Merchant to trigger the Fake Merchant fight."
+,Ransack,Procure 1 random Uncommon Potion.,
+,,,
+Ranwid the Elder,Give 100 Gold,Obtain a random Relic.,
+,Give Potion,Obtain a random Relic.,
+,Give Relic,Obtain 2 random Relics.,
+,,,
+Relic Trader,Take the Bottom One,Trade one of your Relics for a random Relic.,"Each option names the random relic, so you know exactly what you are trading for. This includes both the relic you are trading away, and the relic you are receiving."
+,Take the Middle One,Trade one of your Relics for a random Relic.,
+,Take the Top One,Trade one of your Relics for a random Relic.,
+,,,
+Room Full of Cheese,Gorge,Choose 2 of 8 random Common cards to add to your Deck.,
+,Search,Lose 14 HP. Obtain the Chosen Cheese.,
+,,,
+Self-Help Book,Read the Entire Book,Choose a Power to Enchant with Swift 2.,"Swift: The first time you play this card, draw X cards."
+,Read a Random Passage,Choose a Skill to Enchant with Nimble 2.,Nimble: Increases Block gained from this card by X.
+,Read the Back,Choose an Attack to Enchant with Sharp 2.,Sharp: Increases damage from this card by X.
+,,,
+Slippery Bridge,Overcome,A random card is removed from your Deck.,
+,Hold On,Lose 3+ HP. The card in the above option is randomized.,
+,,,
+Stone of All Time,Drink and Lift,Lose a random Potion. Gain 10 Max HP.,"Vigorous: The first time this card is played, it deals X additional damage."
+,Push,Lose 6 HP. Enchant an Attack with Vigorous 8.,
+,,,
+Symbiote,Approach,Enchant an Attack with Corrupted.,"Corrupted: Deal 50% more damage, but lose 2 HP."
+,Kill with Fire,Choose a card to Transform.,
+,,,
+Tea Master,Bone Tea,"Pay 50 Gold. In the next combat, upgrade your starting hand.",
+,Ember Tea,Pay 150 Gold. Gain 4 strength in the next 5 combats.,
+,Tea of Discourtesy,Add 2 Dazed to the draw pile in your next combat.,
+,,,
+The Future of Potions?,Insert (rarity) Potion,Lose a (rarity) Potion. Obtain an Upgraded (rarity) skill.,3 random potions are chosen from your belt. The rarity of the potion determines the rarity of the upgraded skill card reward.
+,,,
+The Legends Were True,Nab the Map,Receive the Spoils Map.,
+,Slowly Find an Exit,Lose 8 HP. Procure 1 random Potion.,
+,,,
+This or That?,This,Lose 6 HP. Gain 41-69 Gold.,
+,That,Add Clumsy to your Deck. Obtain a random Relic.,
+,,,
+"War Historian, Repy",Unlock the Cage,Lose Lantern Key. Obtain History Course.,
+,Unlock the Chest,Lose Lantern Key. Procure 2 random Potions. Obtain 2 random Relics.,
+,,,
+Welcome to Wongo's,Wongo's Bargain Bin,Pay 100 Gold. Obtain 1 random Common Relic.,
+,Wongo's Featured Item,Pay 200 Gold. Obtain a random Relic.,"Featured Item random relic is named in the option, so you can know what you are paying for in advance."
+,Wongo's Mystery Box,Pay 300 Gold. Obtain 3 random Relics after 5 combats.,
+,Leave,Downgrade a random card.,

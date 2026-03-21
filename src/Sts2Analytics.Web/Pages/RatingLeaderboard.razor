@@ -23,6 +23,8 @@ else
     }
 
     <div class="act-filter">
+        <input type="text" class="search-input" placeholder="Search cards..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyCardFilters" />
+        <span class="filter-divider"></span>
         <button class="@(_actFilter == null ? "active" : "")" @onclick="() => SetActFilter(null)">All Acts</button>
         <button class="@(_actFilter == 1 ? "active" : "")" @onclick="() => SetActFilter(1)">Act 1</button>
         <button class="@(_actFilter == 2 ? "active" : "")" @onclick="() => SetActFilter(2)">Act 2</button>
@@ -188,6 +190,9 @@ else
     private void ApplyCardFilters()
     {
         var filtered = _allRatings.AsEnumerable();
+
+        if (!string.IsNullOrEmpty(_searchText))
+            filtered = filtered.Where(r => r.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
 
         filtered = _upgradeFilter switch
         {
@@ -429,7 +434,23 @@ else
         display: flex;
         gap: 0.5rem;
         margin-bottom: var(--gap-md);
+        align-items: center;
     }
+
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 180px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--ember); }
+    .search-input::placeholder { color: var(--text-dim); }
 
     .act-filter button {
         background: var(--void-2);

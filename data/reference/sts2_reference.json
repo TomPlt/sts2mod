@@ -1,0 +1,889 @@
+{
+  "acts": [
+    {
+      "name": "ACT1.OVERGROWTH",
+      "displayName": "The Overgrowth",
+      "ancients": ["NOBBERS"],
+      "easyPool": [
+        "Fuzzy Wurm Crawler",
+        "Nibbits",
+        "Shrinker Beetle",
+        "Slimes"
+      ],
+      "hardPool": [
+        "Cubex Construct",
+        "Flyconid",
+        "Fogmog",
+        "Inklets",
+        "Mawler",
+        "Nibbits",
+        "Overgrowth Crawlers",
+        "Ruby Raiders",
+        "Slimes",
+        "Slithering Strangler",
+        "Snapping Jaxfruit",
+        "Vine Shambler"
+      ],
+      "elites": [
+        {
+          "name": "Bygone Effigy",
+          "hp": "127 (132)",
+          "moves": ["Sleep", "Wake", "Slash"],
+          "notes": "Starts with Slow. Starts with Sleep -> Wake -> Slash. Then uses Slash every turn after."
+        },
+        {
+          "name": "Byrdonis",
+          "hp": "91 - 94 (99)",
+          "moves": ["Peck", "Swoop"],
+          "notes": "Starts with Territorial 1. Alternates between Swoop -> Peck."
+        },
+        {
+          "name": "Phrog Parasite",
+          "hp": "61 - 64 (66 - 68)",
+          "moves": ["Infect", "Lash"],
+          "notes": "Starts with Infested 4. Alternates between Infect -> Lash. Summons 4 Wrigglers after death."
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Ceremonial Beast",
+          "hp": "252 (262)",
+          "moves": ["Stamp", "Plow", "Beast Cry", "Stomp", "Crush"],
+          "notes": "Plow X: The first time Ceremonial Beast's HP reaches X or below, it becomes stunned and loses all strength. Starts with Stamp, then uses Plow until stunned, then cycles Beast Cry -> Stomp -> Crush."
+        },
+        {
+          "name": "The Kin",
+          "monsters": ["Kin Follower", "Kin Follower", "Kin Priest"],
+          "notes": "Kin Priest cycles Orb of Frailty -> Orb of Weakness -> Beam -> Ritual. Kin Follower cycles Quick Slash -> Boomerang -> Power Dance."
+        },
+        {
+          "name": "Vantom",
+          "hp": "173 (183)",
+          "moves": ["Ink Blot", "Inky Lance", "Dismember", "Prepare"],
+          "notes": "Starts with Slippery 9. Cycles through Ink Blot -> Inky Lance -> Dismember -> Prepare."
+        }
+      ],
+      "events": [
+        {
+          "name": "Aroma of Chaos",
+          "condition": null,
+          "options": [
+            {"name": "Let Go", "effect": "Transform a card in your Deck.", "notes": null},
+            {"name": "Maintain Control", "effect": "Upgrade a card in your Deck.", "notes": null}
+          ]
+        },
+        {
+          "name": "Byrdonis Nest",
+          "condition": "Can only occur if you do not have an event pet",
+          "options": [
+            {"name": "Eat the Egg", "effect": "Gain 7 Max HP.", "notes": null},
+            {"name": "Take the Egg", "effect": "Add Byrdonis Egg to your Deck.", "notes": "While Byrdonis Egg is in your deck you can select Hatch as a Rest Site action, which removes Byrdonis Egg and adds a Byrd Swoop to your deck."}
+          ]
+        },
+        {
+          "name": "Dense Vegetation",
+          "condition": null,
+          "options": [
+            {"name": "Trudge On", "effect": "Lose 8 HP. Gain 61-99 Gold.", "notes": null},
+            {"name": "Rest", "effect": "Heal 30% Max HP. Fight 4 Wrigglers.", "notes": "Receive regular combat rewards after the fight."}
+          ]
+        },
+        {
+          "name": "Jungle Maze Adventure",
+          "condition": null,
+          "options": [
+            {"name": "Solo Quest", "effect": "Gain 135 - 165 Gold. Lose 18 HP.", "notes": null},
+            {"name": "Join Forces", "effect": "Gain 35 - 65 Gold.", "notes": null}
+          ]
+        },
+        {
+          "name": "Luminous Choir",
+          "condition": "Can only occur if you have 150 gold or more",
+          "options": [
+            {"name": "Reach into the Flesh", "effect": "Remove 2 cards from your Deck. Add Spore Mind to your Deck.", "notes": null},
+            {"name": "Offer Tribute", "effect": "Pay 100 - 150 Gold. Obtain a random Relic.", "notes": null}
+          ]
+        },
+        {
+          "name": "Morphic Grove",
+          "condition": "Can only occur if you have at least 2 transformable cards.",
+          "options": [
+            {"name": "Group", "effect": "Lose ALL Gold. Transform 2 cards.", "notes": null},
+            {"name": "Loner", "effect": "Gain 5 Max HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "Sapphire Seed",
+          "condition": null,
+          "options": [
+            {"name": "Consume", "effect": "Heal 9 HP. Upgrade a card in your Deck.", "notes": null},
+            {"name": "Plant and Nourish", "effect": "Enchant a card with Sown.", "notes": "Sown: The first time you play this card each combat, gain 1 energy."}
+          ]
+        },
+        {
+          "name": "Sunken Statue",
+          "condition": null,
+          "options": [
+            {"name": "Grab the Sword", "effect": "Obtain the Sword of Stone.", "notes": null},
+            {"name": "Dive into the Water", "effect": "Gain 101 - 121 Gold. Lose 7 HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "Tablet of Truth",
+          "condition": null,
+          "options": [
+            {"name": "Decipher", "effect": "Lose 3 Max HP. Upgrade a random card.", "notes": "Followed by a choice between Continue Deciphering and Give Up."},
+            {"name": "Smash", "effect": "Heal 20 HP.", "notes": null},
+            {"name": "Continue Deciphering", "effect": "Lose 6 Max HP. Upgrade a random card.", "notes": "Followed by a choice between Keep Deciphering and Give Up."},
+            {"name": "Keep Deciphering", "effect": "Lose 12 Max HP. Upgrade a random card.", "notes": "Followed by a choice between KEEP DECIPHERING and Give Up."},
+            {"name": "KEEP DECIPHERING", "effect": "Lose 24 Max HP. Upgrade a random card.", "notes": "Followed by a choice between Lose Everything and Give Up."},
+            {"name": "Lose Everything", "effect": "Set your Max HP to 1. Upgrade ALL of your cards.", "notes": null},
+            {"name": "Give Up", "effect": "Leave.", "notes": null}
+          ]
+        },
+        {
+          "name": "Unrest Site",
+          "condition": "Can only occur if you are missing 30% of your max HP or more",
+          "options": [
+            {"name": "Rest Anyways", "effect": "Heal to full HP. Receive Poor Sleep.", "notes": null},
+            {"name": "Kill the Trees", "effect": "Lose 8 Max HP. Obtain a random Relic.", "notes": null}
+          ]
+        },
+        {
+          "name": "Wellspring",
+          "condition": null,
+          "options": [
+            {"name": "Bottle", "effect": "Procure 1 random Potion.", "notes": "Random potion is generated uniformly (all potions equally likely regardless of rarity)."},
+            {"name": "Bathe", "effect": "Remove 1 card from your Deck. Add 1 Guilty to your Deck.", "notes": null}
+          ]
+        },
+        {
+          "name": "Whispering Hollow",
+          "condition": "Can only occur if you have 50 gold or more",
+          "options": [
+            {"name": "Exchange Gold", "effect": "Lose 50 Gold. Procure 2 random Potions.", "notes": "Random potions are generated following rarity chances."},
+            {"name": "Hug the Tree", "effect": "Lose 9 HP. Choose a card to Transform.", "notes": null}
+          ]
+        },
+        {
+          "name": "Wood Carvings",
+          "condition": "Can only occur if you have a starter card in your deck",
+          "options": [
+            {"name": "Bird", "effect": "Choose 1 starter card to Transform into Peck.", "notes": null},
+            {"name": "Snake", "effect": "Enchant 1 card with Slither.", "notes": "Slither: When you draw this card, randomize its cost from 0 to 3."},
+            {"name": "Torus", "effect": "Choose 1 starter card to Transform into Toric Toughness.", "notes": null}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ACT1.UNDERDOCKS",
+      "displayName": "The Underdocks",
+      "ancients": ["NOBBERS"],
+      "easyPool": [
+        "Corpse Slugs",
+        "Seapunk",
+        "Sludge Spinner",
+        "Toadpoles"
+      ],
+      "hardPool": [
+        "Corpse Slugs",
+        "Cultists",
+        "Living Fog",
+        "Fossil Stalker",
+        "Gremlin Merc",
+        "Haunted Ship",
+        "Punch Construct",
+        "Sewer Clam",
+        "Seapunk",
+        "Two-Tailed Rats"
+      ],
+      "elites": [
+        {
+          "name": "Skulking Colony",
+          "hp": "74 (79)",
+          "moves": ["Smash", "Zoom", "Inertia", "Piercing Stabs"],
+          "notes": "Starts with Hardened Shell 15. Cycles through Smash -> Zoom -> Inertia -> Piercing Stabs."
+        },
+        {
+          "name": "Phantasmal Gardeners",
+          "monsters": "4 Phantasmal Gardeners",
+          "hp": "26 - 31 (27 - 32) each",
+          "moves": ["Bite", "Lash", "Flail", "Enlarge"],
+          "notes": "Starts with Skittish 6 (7). 1st starts with Flail, 2nd with Bite, 3rd with Lash, 4th with Enlarge. Then cycles Bite -> Lash -> Flail -> Enlarge."
+        },
+        {
+          "name": "Terror Eel",
+          "hp": "140 (150)",
+          "moves": ["Crash", "Thrash", "Terror"],
+          "notes": "Starts with Shriek 75. Cycles Crash -> Thrash until stunned at 75 HP, then uses Terror, then cycles Crash -> Thrash again."
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Lagavulin Matriarch",
+          "hp": "222 (233)",
+          "moves": ["Slash", "Disembowel", "Slash 2", "Soul Siphon"],
+          "notes": "Starts with 12 Plating and sleeps for 3 turns or until losing HP. On wakeup, all Plating is removed. Cycles Slash -> Disembowel -> Slash 2 -> Soul Siphon."
+        },
+        {
+          "name": "Soul Fysh",
+          "hp": "211 (221)",
+          "moves": ["Beckon", "De-Gas", "Gaze", "Fade", "Scream"],
+          "notes": "Beckon: 1 cost status, lose 6 HP if in hand at end of turn. Cycles Beckon -> De-Gas -> Gaze -> Fade -> Scream."
+        },
+        {
+          "name": "Waterfall Giant",
+          "hp": "250 (260)",
+          "moves": ["Pressurize", "Stomp", "Ram", "Siphon", "Pressure Gun", "Pressure Up"],
+          "notes": "Steam Eruption X: After dying, wait 1 turn, then attack for X damage. Cycles Pressurize -> Stomp -> Ram -> Siphon -> Pressure Gun -> Pressure Up."
+        }
+      ],
+      "events": [
+        {
+          "name": "Abyssal Baths",
+          "condition": null,
+          "options": [
+            {"name": "Immerse", "effect": "Gain 2 Max HP. Take N damage.", "notes": "N = 3 + # times Immerse has been selected previously. Followed by a choice between Immerse and Exit Baths."},
+            {"name": "Abstain", "effect": "Heal 10 HP.", "notes": null},
+            {"name": "Exit Baths", "effect": "Leave.", "notes": null}
+          ]
+        },
+        {
+          "name": "Doors of Light and Dark",
+          "condition": null,
+          "options": [
+            {"name": "Light Door", "effect": "Upgrade 2 random cards.", "notes": null},
+            {"name": "Dark Door", "effect": "Remove 1 card from your Deck.", "notes": null}
+          ]
+        },
+        {
+          "name": "Drowning Beacon",
+          "condition": null,
+          "options": [
+            {"name": "Bottle", "effect": "Procure Glowwater Potion.", "notes": null},
+            {"name": "Climb", "effect": "Obtain Fresnel Lens. Lose 13 Max HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "Endless Conveyor",
+          "condition": "Can only occur if you have 120 gold or more",
+          "options": [
+            {"name": "Grab [Dish] off the Belt", "effect": "Pay 40 Gold. Receive a boon based on the [Dish]. Continue Feasting!", "notes": "Dish is generated randomly from allowed options according to their weights. Cannot select the same dish twice in a row."},
+            {"name": "Caviar", "effect": "Gain 4 Max HP.", "notes": "Weight = 6."},
+            {"name": "Clam Roll", "effect": "Heal 10 HP.", "notes": "Weight = 6. Only allowed if you are missing HP."},
+            {"name": "Fried Eel", "effect": "Add a random Colorless Card to your Deck.", "notes": "Weight = 3."},
+            {"name": "Golden Fysh", "effect": "Gain 75 Gold.", "notes": "Weight = 1. Only allowed after the 1st dish."},
+            {"name": "Jelly Liver", "effect": "Transform 1 card in your Deck.", "notes": "Weight = 3."},
+            {"name": "Seapunk Salad", "effect": "Add Feeding Frenzy to your Deck.", "notes": "Guaranteed to be offered every 5th dish. Otherwise not allowed."},
+            {"name": "Spicy Snappy", "effect": "Upgrade a random card in your Deck.", "notes": "Weight = 3."},
+            {"name": "Suspicious Condiment", "effect": "Procure a random potion.", "notes": "Weight = 3. Only allowed if you have an empty potion slot."},
+            {"name": "Observe the Chef", "effect": "Upgrade a random card in your Deck.", "notes": null},
+            {"name": "Leave", "effect": "Leave.", "notes": null}
+          ]
+        },
+        {
+          "name": "Punch Off",
+          "condition": "Can only occur on floor 6 or higher",
+          "options": [
+            {"name": "Nab", "effect": "Add Injury to your Deck. Obtain a random Relic.", "notes": null},
+            {"name": "I Can Take Them", "effect": "Fight 2 Punch Constructs.", "notes": "Receive regular combat rewards after the fight, plus an extra potion and a relic."}
+          ]
+        },
+        {
+          "name": "Spiraling Whirlpool",
+          "condition": "Can only occur if you have an enchantable basic Strike or Defend in your deck",
+          "options": [
+            {"name": "Observe", "effect": "Enchant a Strike or Defend with Spiral.", "notes": "Spiral: This card gains Replay 1."},
+            {"name": "Drink", "effect": "Heal 33% Max HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "The Sunken Statue",
+          "condition": null,
+          "options": [
+            {"name": "Grab the Sword", "effect": "Obtain the Sword of Stone.", "notes": null},
+            {"name": "Dive into the Water", "effect": "Gain 101 - 121 Gold. Lose 7 HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "Sunken Treasury",
+          "condition": null,
+          "options": [
+            {"name": "First Chest", "effect": "Gain 52 - 67 Gold.", "notes": null},
+            {"name": "Second Chest", "effect": "Gain 303 - 363 Gold. Receive Greed.", "notes": null}
+          ]
+        },
+        {
+          "name": "Trash Heap",
+          "condition": "Can only occur if you have 6 HP or more",
+          "options": [
+            {"name": "Dive In", "effect": "Lose 8 HP. Obtain a random forgotten Relic from the past.", "notes": "Forgotten relics: Darkstone Periapt, Dream Catcher, Hand Drill, Maw Bank, The Boot"},
+            {"name": "Grab Random Junk", "effect": "Gain 100 Gold. Obtain a random forgotten card from the past.", "notes": "Forgotten cards: Caltrops, Clash, Distraction, Dual Wield, Entrench, Hello World, Outmaneuver, Rebound, Rip and Tear, Stack"}
+          ]
+        },
+        {
+          "name": "Waterlogged Scriptorium",
+          "condition": "Can only occur if you have 65 gold or more",
+          "options": [
+            {"name": "Bloody Ink", "effect": "Gain 6 Max HP.", "notes": null},
+            {"name": "Tentacle Quill", "effect": "Pay 65 Gold. Enchant a card with Steady.", "notes": "Steady: This card gains Retain."},
+            {"name": "Prickly Sponge", "effect": "Pay 155 Gold. Enchant 2 cards with Steady.", "notes": null}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ACT2.HIVE",
+      "displayName": "The Hive",
+      "ancients": ["Darv", "Orobas", "Pael", "Tezcatara"],
+      "easyPool": [
+        "Bowlbugs",
+        "Exoskeletons",
+        "Thieving Hopper",
+        "Tunneler"
+      ],
+      "hardPool": [
+        "Bowlbugs",
+        "Chompers",
+        "Exoskeletons",
+        "Hunter Killer",
+        "Louse Progenitor",
+        "Mytes",
+        "Ovicopter",
+        "Slumbering Beetle",
+        "Spiny Toad",
+        "The Obscura",
+        "Tunneler"
+      ],
+      "elites": [
+        {
+          "name": "Decimillipede",
+          "monsters": "3 Decimillipede segments",
+          "hp": "40 - 46 (46 - 52) per segment",
+          "moves": ["Writhe", "Bulk", "Constrict"],
+          "notes": "Starts with Reattach. Segments cycle Writhe -> Bulk -> Constrict. When killed, spends one turn dead and then revives with 25 HP."
+        },
+        {
+          "name": "Entomancer",
+          "hp": "145 (155)",
+          "moves": ["Pheromone Spit", "Bees", "Spear"],
+          "notes": "Starts with Personal Hive 1. Cycles Bees -> Spear -> Pheromone Spit. After reaching 3 stacks of Personal Hive, switches to gaining 2 strength with Pheromone Spit."
+        },
+        {
+          "name": "Infested Prisms",
+          "hp": "200 (215)",
+          "moves": ["Jab", "Radiate", "Whirlwind", "Pulsate"],
+          "notes": "Starts with Vital Spark 1. Cycles Jab -> Radiate -> Whirlwind -> Pulsate."
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Kaiser Crab",
+          "monsters": ["Crusher", "Rocket"],
+          "notes": "Crusher: 209 (219) HP. Cycles Thrash -> Enlarging Strike -> Bug Sting -> Adapt -> Guarded Strike. Rocket: 199 (209) HP. Cycles Targeting Reticle -> Precision Beam -> Charge Up -> Laser -> Recharge. Both start with Back Attack and Crab Rage."
+        },
+        {
+          "name": "Knowledge Demon",
+          "hp": "379 (399)",
+          "moves": ["Curse of Knowledge", "Slap", "Knowledge Overwhelming", "Ponder"],
+          "notes": "Cycles Curse of Knowledge -> Slap -> Knowledge Overwhelming -> Ponder until Curse of Knowledge used 3 times, then cycles Slap -> Knowledge Overwhelming -> Ponder. Disintegration X: Take X damage at end of your turn."
+        },
+        {
+          "name": "The Insatiable",
+          "hp": "321 (341)",
+          "moves": ["Liquify Ground", "Thrash", "Lunging Bite", "Salivate"],
+          "notes": "Starts with Liquify Ground, then cycles Thrash -> Lunging Bite -> Salivate -> Thrash. Sandpit X: In X turns, instantly die."
+        }
+      ],
+      "events": [
+        {
+          "name": "Amalgamator",
+          "condition": "Can only occur if you have at least 2 basic Strikes and 2 basic Defends",
+          "options": [
+            {"name": "Combine Strikes", "effect": "Remove 2 Strikes. Add Ultimate Strike to your Deck.", "notes": null},
+            {"name": "Combine Defends", "effect": "Remove 2 Defends. Add Ultimate Defend to your Deck.", "notes": null}
+          ]
+        },
+        {
+          "name": "Bugslayer",
+          "condition": null,
+          "options": [
+            {"name": "Learn Extermination Technique", "effect": "Add Exterminate to your Deck.", "notes": null},
+            {"name": "Learn Squash Technique", "effect": "Add Squash to your Deck.", "notes": null}
+          ]
+        },
+        {
+          "name": "Colorful Philosophers",
+          "condition": null,
+          "options": [
+            {"name": "[Character Color] x 3", "effect": "Receive 1 Common card pack, 1 Uncommon card pack, and 1 Rare card pack from the selected character's card pool.", "notes": "3 random (unlocked) characters are selected for the card pool options."}
+          ]
+        },
+        {
+          "name": "Colossal Flower",
+          "condition": "Can only occur if you have 19 HP or more",
+          "options": [
+            {"name": "Extract Nectar", "effect": "Gain 35 Gold.", "notes": null},
+            {"name": "Extract Nectar (2)", "effect": "Gain 75 Gold.", "notes": null},
+            {"name": "Extract Nectar (3)", "effect": "Gain 135 Gold.", "notes": null},
+            {"name": "Reach Deeper", "effect": "Enter deeper. Lose 5 HP.", "notes": "Followed by a choice between Extract Nectar (2) and Reach Deeper (2)."},
+            {"name": "Reach Deeper (2)", "effect": "Enter deeper. Lose 6 HP.", "notes": "Followed by a choice between Extract Nectar (3) and Reach Deeper (3)."},
+            {"name": "Reach Deeper (3)", "effect": "Obtain Pollinous Core. Lose 7 HP.", "notes": null}
+          ]
+        },
+        {
+          "name": "Field of Man-Sized Holes",
+          "condition": "Can only occur if you have an enchantable card (cards can only have 1 enchantment)",
+          "options": [
+            {"name": "Resist", "effect": "Remove 2 cards from your Deck. Add Normality to your Deck.", "notes": null},
+            {"name": "Enter Your Hole", "effect": "Enchant a card with Perfect Fit.", "notes": "Perfect Fit: Whenever this would be shuffled into your Draw Pile, place it on the top instead."}
+          ]
+        },
+        {
+          "name": "Infested Automaton",
+          "condition": null,
+          "options": [
+            {"name": "Study", "effect": "Obtain a random Power.", "notes": "Generated using regular rare and uncommon chance with no offset (so will almost always be uncommon)."},
+            {"name": "Touch the Core", "effect": "Obtain a random 0 cost card.", "notes": "Generated using regular rare and uncommon chance with no offset (so will almost always be common or uncommon)."}
+          ]
+        },
+        {
+          "name": "The Lost Wisp",
+          "condition": null,
+          "options": [
+            {"name": "Capture the Wisp", "effect": "Add Decay to your Deck. Obtain the Lost Wisp.", "notes": null},
+            {"name": "Search the Nearby Area", "effect": "Gain 45 - 75 Gold.", "notes": null}
+          ]
+        },
+        {
+          "name": "Spirit Grafter",
+          "condition": null,
+          "options": [
+            {"name": "Let It In", "effect": "Heal 25 HP. Add Metamorphosis to your Deck.", "notes": null},
+            {"name": "Rejection", "effect": "Lose 10 HP. Upgrade a card.", "notes": null}
+          ]
+        },
+        {
+          "name": "The Lantern Key",
+          "condition": null,
+          "options": [
+            {"name": "Return the Key", "effect": "Gain 100 Gold.", "notes": null},
+            {"name": "Keep the Key", "effect": "Fight the Mysterious Knight to obtain the Lantern Key.", "notes": "Mysterious Knight is the same as a Flail Knight but starts with 6 Strength and 6 Plating. If you have the Lantern Key, the first ? room in Act 3 will be the War Historian, Repy event."}
+          ]
+        },
+        {
+          "name": "Zen Weaver",
+          "condition": "Can only occur if you have 125 gold or more",
+          "options": [
+            {"name": "Breathing Techniques", "effect": "Pay 50 Gold. Add 2 Enlightenment to your Deck.", "notes": null},
+            {"name": "Emotional Awareness", "effect": "Pay 125 Gold. Remove 1 card from your Deck.", "notes": null},
+            {"name": "Arachnid Acupuncture", "effect": "Pay 250 Gold. Remove 2 cards from your Deck.", "notes": null}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ACT3.GLORY",
+      "displayName": "The Glory",
+      "ancients": ["Darv", "Nonupeipe", "Tanx", "Vakuu"],
+      "easyPool": [
+        "Devoted Sculptor",
+        "Scrolls of Biting",
+        "Turret Operator"
+      ],
+      "hardPool": [
+        "Axebots",
+        "Construct Menagerie",
+        "Fabricator",
+        "Frog Knight",
+        "Globe Head",
+        "Owl Magistrate",
+        "Scrolls of Biting",
+        "Slimed Berserker",
+        "The Lost and Forgotten"
+      ],
+      "elites": [
+        {
+          "name": "Knights",
+          "monsters": ["Flail Knight", "Spectral Knight", "Magi Knight"],
+          "notes": "Flail Knight (101 HP): Starts with Ram, then randomly uses War Chant, Flail, Ram. Spectral Knight (93 HP): Starts with Hex then Soul Slash, then randomly uses Soul Slash and Soul Flame. Magi Knight (82 HP): Cycles Power Shield -> Dampen -> Spear -> Prep -> Magic Bomb."
+        },
+        {
+          "name": "Mecha Knight",
+          "hp": "300 (320)",
+          "moves": ["Charge", "Flamethrower", "Windup", "Heavy Cleave"],
+          "notes": "Starts with Artifact 3. Starts with Charge, then cycles Flamethrower -> Windup -> Heavy Cleave."
+        },
+        {
+          "name": "Soul Nexus",
+          "hp": "234 (254)",
+          "moves": ["Soul Burn", "Maelstrom", "Drain Life"],
+          "notes": "Starts with Soul Burn, then picks randomly between Soul Burn, Maelstrom, and Drain Life. Cannot use the same move twice in a row."
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Doormaker",
+          "hp": "489 (512)",
+          "moves": ["Dramatic Open", "Beam", "Chomp", "Pulverize"],
+          "notes": "Starts the fight with infinite HP. Dramatic Open loses infinite max HP, clears all powers from itself, and gains Hunger of the Void. Then cycles Beam -> Chomp -> Pulverize. Hunger of the Void: Every 10th card drawn is removed from combat and Doormaker gains 1 (2) Strength."
+        },
+        {
+          "name": "Queen",
+          "hp": "400 (419)",
+          "monsters": ["Queen", "Torch Head Amalgam"],
+          "moves": ["Puppet Strings", "You Are Mine!", "Burn Bright For Me", "Off With Your Head", "Execution", "Enrage"],
+          "notes": "Starts with Torch Head Amalgam. Begins with Puppet Strings -> You Are Mine! While Amalgam alive, always does Burn Bright For Me. After Amalgam dies, cycles Off With Your Head -> Execution -> Enrage."
+        },
+        {
+          "name": "Test Subject #C14",
+          "stages": [
+            {"stage": 1, "hp": "100 (111)", "moves": ["Bite", "Skull Bash"], "notes": "Starts with Enrage 3. Cycles Bite -> Skull Bash. When killed, revives in stage 2."},
+            {"stage": 2, "hp": "200 (212)", "moves": ["Multi-Claw"], "notes": "Starts with Painful Stabs 1. Uses Multi-Claw every turn. N = 3 + # times Multi-Claw used."},
+            {"stage": 3, "hp": "300 (313)", "moves": ["Lacerate", "Big Pounce", "Burning Growl"], "notes": "Starts with Nemesis (immediately gains 1 Intangible). Cycles Lacerate -> Big Pounce -> Burning Growl."}
+          ]
+        }
+      ],
+      "events": [
+        {
+          "name": "Battleworn Dummy",
+          "condition": null,
+          "options": [
+            {"name": "Setting 1", "effect": "Fight a 75 HP dummy. Procure 1 random Potion.", "notes": "Must defeat the dummy within 3 turns to earn the reward."},
+            {"name": "Setting 2", "effect": "Fight a 150 HP dummy. Upgrade 2 random cards.", "notes": "Must defeat the dummy within 3 turns to earn the reward."},
+            {"name": "Setting 3", "effect": "Fight a 300 HP dummy. Obtain a random Relic.", "notes": "Must defeat the dummy within 3 turns to earn the reward."}
+          ]
+        },
+        {
+          "name": "Grave of the Forgotten",
+          "condition": "Can only occur if you have a card with Exhaust.",
+          "options": [
+            {"name": "Accept the Forgotten Soul", "effect": "Obtain Forgotten Soul.", "notes": "Forgotten Soul (relic): Whenever you Exhaust a card, deal 1 damage to a random enemy."},
+            {"name": "Confront with Truth", "effect": "Add Decay to your Deck. Enchant a card that Exhausts with Soul's Power.", "notes": "Soul's Power: This card loses Exhaust."}
+          ]
+        },
+        {
+          "name": "Hungry for Mushrooms",
+          "condition": null,
+          "options": [
+            {"name": "Big Mushroom", "effect": "Obtain Big Mushroom.", "notes": "Big Mushroom (relic): Upon pickup, raise your Max HP by 20. At the start of each combat, draw 2 fewer cards."},
+            {"name": "Fragrant Mushroom", "effect": "Obtain Fragrant Mushroom.", "notes": "Fragrant Mushroom (relic): Upon pickup, lose 15 HP and Upgrade 3 random cards."}
+          ]
+        },
+        {
+          "name": "Reflections",
+          "condition": null,
+          "options": [
+            {"name": "Touch a Mirror", "effect": "Downgrade 2 random cards. Upgrade 4 random cards.", "notes": "Can upgrade a card that was just downgraded."},
+            {"name": "Shatter", "effect": "Duplicate your Deck. Receive Bad Luck.", "notes": null}
+          ]
+        },
+        {
+          "name": "The Round Tea Party",
+          "condition": "Can only occur if you have at least 12 HP.",
+          "options": [
+            {"name": "Enjoy Your Tea", "effect": "Obtain Royal Poison. Heal to full HP.", "notes": null},
+            {"name": "Pick a Fight", "effect": "Lose 11 HP. Obtain a random Relic.", "notes": null}
+          ]
+        },
+        {
+          "name": "Tinker Time",
+          "condition": null,
+          "options": [
+            {"name": "Accept", "effect": "Create a custom card to add to your Deck.", "notes": "Followed by choosing the card type from two of the three options Protector, Weapon, and Power."},
+            {"name": "Protector", "effect": "Make a Skill. Base effect: 1 energy, gain 8 block.", "notes": "Followed by choosing the secondary effect from two of the three options Chaos, Energized, and Wisdom."},
+            {"name": "Chaos", "effect": "Add a random card into your Hand. It costs 0 energy this turn.", "notes": "Upgrade adds Innate."},
+            {"name": "Energized", "effect": "Gain 2 energy.", "notes": null},
+            {"name": "Wisdom", "effect": "Draw 3 cards.", "notes": null},
+            {"name": "Weapon", "effect": "Make an Attack. Base effect: 1 energy, deal 12 damage.", "notes": "Followed by choosing the secondary effect from two of the three options Choking, Sapping, and Violence."},
+            {"name": "Choking", "effect": "Whenever you play a card this turn, the enemy loses 6 HP.", "notes": "Upgrade adds Innate."},
+            {"name": "Sapping", "effect": "Apply 2 Weak. Apply 2 Vulnerable.", "notes": null},
+            {"name": "Violence", "effect": "Hits 2 additional times.", "notes": null},
+            {"name": "Gadget", "effect": "Make a Power. Base effect: 1 energy.", "notes": "Followed by choosing the secondary effect from two of the three options Curious, Expertise, and Improvement."},
+            {"name": "Curious", "effect": "Powers cost 1 less energy.", "notes": "Upgrade adds Innate."},
+            {"name": "Expertise", "effect": "Gain 2 Strength. Gain 2 Dexterity.", "notes": null},
+            {"name": "Improvement", "effect": "At the end of combat, upgrade a random card.", "notes": null}
+          ]
+        },
+        {
+          "name": "The Trial",
+          "condition": null,
+          "options": [
+            {"name": "Accept", "effect": "Serve as today's Decider.", "notes": "Followed by a choice between DECIDE: Guilty and DECIDE: Innocent, with three variations depending on the defendant."},
+            {"name": "Merchant - DECIDE: Guilty", "effect": "Add Regret to your Deck. Gain 2 random relics.", "notes": null},
+            {"name": "Merchant - DECIDE: Innocent", "effect": "Add Shame to your Deck. Upgrade 2 cards in your Deck.", "notes": null},
+            {"name": "Noble - DECIDE: Guilty", "effect": "Heal 10 HP.", "notes": null},
+            {"name": "Noble - DECIDE: Innocent", "effect": "Add Regret to your Deck. Gain 300 Gold.", "notes": null},
+            {"name": "Nondescript Woman - DECIDE: Guilty", "effect": "Add Doubt to your Deck. Gain 2 card rewards.", "notes": null},
+            {"name": "Nondescript Woman - DECIDE: Innocent", "effect": "Add Doubt to your Deck. Transform 2 cards.", "notes": null},
+            {"name": "Reject", "effect": "You are not allowed to Reject.", "notes": "Followed by a choice between Accept and Double Down."},
+            {"name": "Double Down", "effect": "Abandon the run.", "notes": null}
+          ]
+        },
+        {
+          "name": "Trial",
+          "condition": null,
+          "options": [
+            {"name": "See The Trial entry above", "effect": "See The Trial entry above.", "notes": null}
+          ]
+        }
+      ]
+    }
+  ],
+  "sharedEvents": [
+    {
+      "name": "Brain Leech",
+      "condition": "Can only occur in Acts 1 and 2",
+      "options": [
+        {"name": "Share Knowledge", "effect": "Choose 1 of 5 random cards to add to your Deck.", "notes": "Cards are generated using regular rare/uncommon chance without offset."},
+        {"name": "Rip the Leech Off", "effect": "Lose 5 HP. Gain a Colorless card reward.", "notes": "Uses regular rare/uncommon chance without offset."}
+      ]
+    },
+    {
+      "name": "Crystal Sphere",
+      "condition": "Can only occur in Act 2 and 3 if you have at least 100 gold",
+      "options": [
+        {"name": "Uncover Future", "effect": "Pay 50 Gold. Divine 3 times.", "notes": "Both options enter the Crystal Sphere minigame. Divining uncovers squares in the grid. Any fully uncovered items are gained as rewards."},
+        {"name": "Payment Plan", "effect": "Gain a Debt. Divine 6 times.", "notes": null}
+      ]
+    },
+    {
+      "name": "Doll Room",
+      "condition": "Can only occur in Act 2",
+      "options": [
+        {"name": "Pick at Random", "effect": "Obtain a random Doll Relic.", "notes": "Doll relics: Bing Bong (whenever you add a card to your Deck, add one additional copy), Daughter of the Wind (whenever you play an Attack, gain 1 Block), Mr. Struggles (at the start of your turn, deal damage equal to the turn number to ALL enemies)."},
+        {"name": "Take Some Time", "effect": "Lose 5 HP. Choose 1 of 2 Doll Relics.", "notes": null},
+        {"name": "Examine Each and Make the Best Choice", "effect": "Lose 15 HP. Choose 1 of 3 Doll Relics.", "notes": null}
+      ]
+    },
+    {
+      "name": "The Merchant???",
+      "condition": "Can only occur in Acts 2 or 3 if you have at least 100 gold or a Foul Potion",
+      "options": [
+        {"name": "Buy knockoff relics", "effect": "6 random knockoff (???) relics offered for 42-57 gold each.", "notes": "You can throw a Foul Potion to fight the Fake Merchant. If you win you get 300 gold, all knockoff relics, Merchant's Rug???, a regular combat potion roll, and a regular card reward."},
+        {"name": "Anchor???", "effect": "Start each combat with 4 Block.", "notes": null},
+        {"name": "Blood Vial???", "effect": "At the start of each combat, heal 1 HP.", "notes": null},
+        {"name": "Happy Flower???", "effect": "Every 5 turns, gain 1 energy.", "notes": null},
+        {"name": "Lee's Waffle???", "effect": "Upon pickup, heal 10% of your HP.", "notes": null},
+        {"name": "Mango???", "effect": "Upon pickup, raise your Max HP by 3.", "notes": null},
+        {"name": "The Merchant's Rug???", "effect": "Poor imitation. Does nothing.", "notes": null},
+        {"name": "Orichalcum???", "effect": "If you end your turn without Block, gain 3 Block.", "notes": null},
+        {"name": "Snecko Eye???", "effect": "Start each combat Confused.", "notes": null},
+        {"name": "Strike Dummy???", "effect": "Cards containing \"Strike\" deal 1 additional damage.", "notes": null},
+        {"name": "Venerable Tea Set???", "effect": "Whenever you enter a Rest Site, start the next combat with an additional energy.", "notes": null}
+      ]
+    },
+    {
+      "name": "Potion Courier",
+      "condition": "Can only occur in Acts 2 or 3",
+      "options": [
+        {"name": "Grab Potions", "effect": "Procure 3 Foul Potions.", "notes": "Foul potions can be thrown at the Merchant to gain 100 gold, or at the Fake Merchant to trigger the Fake Merchant fight."},
+        {"name": "Ransack", "effect": "Procure 1 random Uncommon Potion.", "notes": null}
+      ]
+    },
+    {
+      "name": "Ranwid the Elder",
+      "condition": null,
+      "options": [
+        {"name": "Give 100 Gold", "effect": "Obtain a random Relic.", "notes": null},
+        {"name": "Give Potion", "effect": "Obtain a random Relic.", "notes": null},
+        {"name": "Give Relic", "effect": "Obtain 2 random Relics.", "notes": null}
+      ]
+    },
+    {
+      "name": "Relic Trader",
+      "condition": null,
+      "options": [
+        {"name": "Take the Bottom One", "effect": "Trade one of your Relics for a random Relic.", "notes": "Each option names the random relic, so you know exactly what you are trading for."},
+        {"name": "Take the Middle One", "effect": "Trade one of your Relics for a random Relic.", "notes": null},
+        {"name": "Take the Top One", "effect": "Trade one of your Relics for a random Relic.", "notes": null}
+      ]
+    },
+    {
+      "name": "Room Full of Cheese",
+      "condition": null,
+      "options": [
+        {"name": "Gorge", "effect": "Choose 2 of 8 random Common cards to add to your Deck.", "notes": null},
+        {"name": "Search", "effect": "Lose 14 HP. Obtain the Chosen Cheese.", "notes": null}
+      ]
+    },
+    {
+      "name": "Self-Help Book",
+      "condition": null,
+      "options": [
+        {"name": "Read the Entire Book", "effect": "Choose a Power to Enchant with Swift 2.", "notes": "Swift: The first time you play this card, draw X cards."},
+        {"name": "Read a Random Passage", "effect": "Choose a Skill to Enchant with Nimble 2.", "notes": "Nimble: Increases Block gained from this card by X."},
+        {"name": "Read the Back", "effect": "Choose an Attack to Enchant with Sharp 2.", "notes": "Sharp: Increases damage from this card by X."}
+      ]
+    },
+    {
+      "name": "Slippery Bridge",
+      "condition": null,
+      "options": [
+        {"name": "Overcome", "effect": "A random card is removed from your Deck.", "notes": null},
+        {"name": "Hold On", "effect": "Lose 3+ HP. The card in the above option is randomized.", "notes": null}
+      ]
+    },
+    {
+      "name": "Stone of All Time",
+      "condition": null,
+      "options": [
+        {"name": "Drink and Lift", "effect": "Lose a random Potion. Gain 10 Max HP.", "notes": null},
+        {"name": "Push", "effect": "Lose 6 HP. Enchant an Attack with Vigorous 8.", "notes": "Vigorous: The first time this card is played, it deals X additional damage."}
+      ]
+    },
+    {
+      "name": "Symbiote",
+      "condition": null,
+      "options": [
+        {"name": "Approach", "effect": "Enchant an Attack with Corrupted.", "notes": "Corrupted: Deal 50% more damage, but lose 2 HP."},
+        {"name": "Kill with Fire", "effect": "Choose a card to Transform.", "notes": null}
+      ]
+    },
+    {
+      "name": "Tea Master",
+      "condition": null,
+      "options": [
+        {"name": "Bone Tea", "effect": "Pay 50 Gold. In the next combat, upgrade your starting hand.", "notes": null},
+        {"name": "Ember Tea", "effect": "Pay 150 Gold. Gain 4 strength in the next 5 combats.", "notes": null},
+        {"name": "Tea of Discourtesy", "effect": "Add 2 Dazed to the draw pile in your next combat.", "notes": null}
+      ]
+    },
+    {
+      "name": "The Future of Potions?",
+      "condition": null,
+      "options": [
+        {"name": "Insert (rarity) Potion", "effect": "Lose a (rarity) Potion. Obtain an Upgraded (rarity) skill.", "notes": "3 random potions are chosen from your belt. The rarity of the potion determines the rarity of the upgraded skill card reward."}
+      ]
+    },
+    {
+      "name": "The Legends Were True",
+      "condition": null,
+      "options": [
+        {"name": "Nab the Map", "effect": "Receive the Spoils Map.", "notes": null},
+        {"name": "Slowly Find an Exit", "effect": "Lose 8 HP. Procure 1 random Potion.", "notes": null}
+      ]
+    },
+    {
+      "name": "This or That?",
+      "condition": null,
+      "options": [
+        {"name": "This", "effect": "Lose 6 HP. Gain 41-69 Gold.", "notes": null},
+        {"name": "That", "effect": "Add Clumsy to your Deck. Obtain a random Relic.", "notes": null}
+      ]
+    },
+    {
+      "name": "War Historian, Repy",
+      "condition": "Only accessible if you have the Lantern Key (from The Lantern Key event in Act 2). The first ? room in Act 3 will be this event.",
+      "options": [
+        {"name": "Unlock the Cage", "effect": "Lose Lantern Key. Obtain History Course.", "notes": null},
+        {"name": "Unlock the Chest", "effect": "Lose Lantern Key. Procure 2 random Potions. Obtain 2 random Relics.", "notes": null}
+      ]
+    },
+    {
+      "name": "Welcome to Wongo's",
+      "condition": null,
+      "options": [
+        {"name": "Wongo's Bargain Bin", "effect": "Pay 100 Gold. Obtain 1 random Common Relic.", "notes": null},
+        {"name": "Wongo's Featured Item", "effect": "Pay 200 Gold. Obtain a random Relic.", "notes": "Featured Item random relic is named in the option, so you can know what you are paying for in advance."},
+        {"name": "Wongo's Mystery Box", "effect": "Pay 300 Gold. Obtain 3 random Relics after 5 combats.", "notes": null},
+        {"name": "Leave", "effect": "Downgrade a random card.", "notes": null}
+      ]
+    }
+  ],
+  "mechanics": {
+    "ancients": {
+      "chanceRule": "All ancients in an act's ancient pool are equally weighted.",
+      "darvSpecialRule": "Darv has a 50% chance to be added to the Act 2 ancient pool. If that fails, he has another 50% chance to be added to the Act 3 ancient pool.",
+      "darvChances": {
+        "act2": "1/8",
+        "act3": "1/16",
+        "act3GivenNoAct2": "1/14"
+      }
+    },
+    "cardRarity": {
+      "rareOffset": {
+        "description": "Rare offset starts at -5%, increases by 0.5% whenever a non-rare card is rolled in a card reward. Resets to -5% when a rare is rolled. Cannot exceed 40%.",
+        "baseChances": {
+          "regular": "3% (1.5%)",
+          "elite": "10% (5%)",
+          "boss": "100%",
+          "shop": "9% (4.5%)"
+        }
+      },
+      "uncommonChance": {
+        "description": "Uncommon chance is fixed depending on floor type.",
+        "byFloorType": {
+          "regular": "37%",
+          "elite": "40%",
+          "boss": "0%",
+          "shop": "37%"
+        }
+      },
+      "commonChance": "Remaining percentage to reach 100%."
+    },
+    "upgradeChance": {
+      "description": "Non-rare cards in card rewards have a chance of being upgraded based on act.",
+      "byAct": {
+        "act1": "0%",
+        "act2": "25% (12.5%)",
+        "act3": "50% (25%)"
+      }
+    },
+    "combatEncounters": {
+      "easyPoolSize": "First 3 regular combats of Act 1, first 2 of Acts 2 and 3.",
+      "poolReset": "After seeing all encounters in a pool, the pool resets. All elites in an act will be encountered in random order before any repeated elites.",
+      "tagRule": "No encounter can be seen that shares a tag with the previous encounter. Exception: if no allowed encounters exist in the pool, one is selected at random disregarding restrictions."
+    },
+    "potions": {
+      "dropChance": "Starts at 40%. Decreases by 10% if a potion drops from combat, increases by 10% if not.",
+      "eliteBonus": "Elites have a flat 12.5% bonus added to the current potion chance.",
+      "rarity": "65% Common, 25% Uncommon, 10% Rare"
+    },
+    "gold": {
+      "combatGold": {
+        "regular": "10 - 20 (7 - 15)",
+        "elite": "35 - 45 (26 - 33)",
+        "boss": "100 (75)"
+      },
+      "chestGold": "42 - 53 (31 - 39)"
+    },
+    "questionMarkRooms": {
+      "description": "All probabilities start at their base chance and go up by that much if you don't see that room type, resetting once you do.",
+      "combatChance": "Base: 10%",
+      "treasureChance": "Base: 2%",
+      "shopChance": "Base: 3%. Cannot roll shop if the previous node is a shop or every connected future node is a shop."
+    },
+    "relics": {
+      "rarityChances": {
+        "common": "50%",
+        "uncommon": "33%",
+        "rare": "17%"
+      }
+    },
+    "shops": {
+      "contents": "2 attacks, 2 skills, 1 power from your character's card pool; 1 uncommon colorless and 1 rare colorless card; 2 regular relics (common, uncommon, or rare); 1 shop relic; 3 potions; 1 card remove.",
+      "sale": "One card is randomly on sale, cutting its price in half.",
+      "cardPrices": {
+        "commonClass": "47 - 53",
+        "uncommonClass": "71 - 78",
+        "rareClass": "142 - 157",
+        "uncommonColorless": "81 - 90",
+        "rareColorless": "163 - 181"
+      },
+      "potionPrices": {
+        "common": "47 - 53",
+        "uncommon": "71 - 78",
+        "rare": "95 - 105"
+      },
+      "relicPrices": {
+        "common": "149 - 201",
+        "uncommon": "191 - 259",
+        "rare": "234 - 316",
+        "shop": "170 - 230"
+      },
+      "removePrice": "75 + 25*N (N = # of times card removal has been purchased previously)"
+    }
+  }
+}

@@ -349,7 +349,13 @@ public static class ExportCommand
             FROM Runs GROUP BY Character
             """).ToDictionary(r => (string)r.Character, r => new { Runs = (int)(long)r.Runs, Wins = (int)(long)r.Wins });
 
-        // Per-character per-act elite count and win rate
+        // Per-character per-act elite count and survival rate
+        // A run "survived" an act if it reached a higher act, OR won the game
+        // First get max act reached per run
+        var maxActPerRun = conn.Query("""
+            SELECT RunId, MAX(ActIndex) as MaxActReached FROM Floors GROUP BY RunId
+            """).ToDictionary(r => (long)r.RunId, r => (int)(long)r.MaxActReached);
+
         var perActStats = conn.Query("""
             SELECT r.Character, r.Win, r.Id as RunId,
                    f.ActIndex,
@@ -357,9 +363,13 @@ public static class ExportCommand
             FROM Runs r
             JOIN Floors f ON f.RunId = r.Id
             GROUP BY r.Id, f.ActIndex
-            """).ToList();
+            """).Select(r => {
+                var runId = (long)r.RunId;
+                var maxAct = maxActPerRun.TryGetValue(runId, out var ma) ? ma : 0;
+                return new { r.Character, r.Win, r.RunId, r.ActIndex, r.EliteCount, MaxAct = (long)maxAct };
+            }).ToList();
 
-        // Key: (character, actIndex) -> list of (runId, win, eliteCount)
+        // Key: (character, actIndex) -> list of (runId, win, eliteCount, maxAct)
         var actRunStats = perActStats
             .GroupBy(r => ((string)r.Character, (int)(long)r.ActIndex))
             .ToDictionary(g => g.Key, g => g.ToList());
@@ -385,7 +395,8 @@ public static class ExportCommand
                             var actIdx = actGroup.Key;
                             var actRuns = actRunStats.TryGetValue((charKey, actIdx), out var ar) ? ar : null;
                             var actRunCount = actRuns?.Count ?? 0;
-                            var actWinCount = actRuns?.Count(r => (long)r.Win == 1) ?? 0;
+                            // "Survived act" = reached a higher act OR won the run
+                            var actWinCount = actRuns?.Count(r => r.MaxAct > actIdx || (long)r.Win == 1) ?? 0;
                             var actWinRate = actRunCount > 0 ? (double)actWinCount / actRunCount : 0;
 
                             // Elite correlation for this act only

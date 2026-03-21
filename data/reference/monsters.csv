@@ -1,0 +1,333 @@
+Monster Name,HP,Move 1,Move 2,Move 3,Move 4,Move 5,Move 6,Notes,Attack Pattern
+Axebot,40 - 44 (42 - 46),Boot Up,One-Two,Sharpen,Hammer Uppercut,,,Starts with Stock 2.,"Chooses randomly from One-Two, Sharpen, and Hammer Uppercut (allowed options equally likely). Cannot Sharpen twice in a row. Cannot use One-Two or Hammer Uppercut more than twice in a row."
+,,Block 10,Damage 5x2 (6x2),Gain 4 Strength,Damage 8 (10),,,"Stock X: When killed, a new Axebot is summoned in its place (with Stock X - 1).",
+,,Gain 1 Strength,,,Apply 1 Weak,,,,
+,,,,,Apply 1 Frail,,,,
+,,,,,,,,,"Summoned Axebots (from Stock) immediately start with Boot Up, then resume choosing random moves."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Bowlbug (Egg),21 - 22 (23 - 24),Bite,,,,,,,Always uses Bite.
+,,Damage 7 (8),,,,,,,
+,,Block 7 (8),,,,,,,
+,,,,,,,,,
+Bowlbug (Nectar),35 - 38 (36 - 39),Thrash,Buff,,,,,,Starts with Thrash -> Buff. Then uses Thrash every turn.
+,,Damage 3,Gain 15 (16) Strength,,,,,,
+,,,,,,,,,
+Bowlbug (Rock),45 - 48 (46 - 49),Headbutt,Stunned,,,,,Starts with Imbalanced,"Uses Headbutt every turn. If fully blocked, becomes stunned for a turn before resuming Headbutt."
+,,Damage 15 (16),Passes turn,,,,,Imbalanced: Becomes stunned if its attack is fully blocked.,
+,,,,,,,,,
+,,,,,,,,,
+Bowlbug (Silk),40 - 43 (41 - 44),Toxic Spit,Thrash,,,,,,Alternates between Toxic Spit and Thrash.
+,,Apply 1 Weak,Damage 4x2 (5x2),,,,,,
+,,,,,,,,,
+Calcified Cultist,38 - 41 (39 - 42),Incantation,Dark Strike,,,,,,Starts with Incantation. Then uses Dark Strike every turn after.
+,,Gain Ritual 2,Damage 9 (11),,,,,,
+,,,,,,,,,
+Chomper,60 - 64 (63 - 67),Clamp,Screech,,,,,Starts with Artifact 2,"First Chomper starts with Clamp, second with Screech. Then continue cycling through Clamp -> Screech."
+,,Damage 8x2 (9x2),Add 3 Dazed to Discard,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Corpse Slug,25 - 27 (27 - 29),Whip Slap,Glomp,Gloop,,,,Starts with Ravenous 4 (5),First Corpse Slug picks its first move randomly. Each subsequent Corpse Slug starts with the next move in the cycle. Cycle through Whip Slap  -> Glomp -> Gloop
+,,Damage 3x2,Damage 8 (9),Apply 2 Frail,,,,"Ravenous X: When an enemy dies, become stunned and gain X Strength.",
+,,,,,,,,,
+,,,,,,,,,
+Cubex Construct,65 (70),Charge Up,Repeater Blast,Expel Blast,Submerge,,,Starts with 13 Block and Artifact 1.,Cycles through Charge Up -> Repeater Blast - > Repeater Blast -> Expel Blast -> Submerge.
+,,Gain 2 Strength,Damage 7 (8),Damage 5x2 (6x2),Block 15,,,,
+,,,Gain 2 Strength,,,,,,
+,,,,,,,,,
+Damp Cultist,51 - 53 (52 - 54),Incantation,Dark Strike,,,,,,Starts with Incantation. Then uses Dark Strike every turn after.
+,,Ritual 5 (6),Damage 1 (3),,,,,,
+,,,,,,,,,
+Devoted Sculptor,162 (172),Forbidden Incantation,Savage,,,,,,"Starts with Forbidden Incantation, then uses Savage every turn."
+,,Gain 9 Ritual.,Damage 12 (15),,,,,,
+,,,,,,,,,
+Exoskeleton,24 - 28 (25 - 29),Skitter,Mandible,Enrage,,,,Starts with Hard to Kill 9,"First Exoskeleton starts with Skitter, second starts with Mandible, third starts with Enrage (and fourth starts randomly with Skitter or Mandible, if present). "
+,,Damage 1x3 (1x4),Damage 8 (9),Gain 2 Strength,,,,Hard to Kill X: Reduce all damage taken and HP loss to X.,
+,,,,,,,,,
+,,,,,,,,,After Skitter always uses Mandible. After Mandible always uses Enrage. After Enrage chooses randomly between Skitter and Mandible.
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Fabricator,150 (155),Fabricate,Fabricating Strike,Disintegrate,,,,,"When # allies (not counting self) is 2 or fewer, picks randomly between Fabricate and Fabricating Strike (equally likely)."
+,,Summons 1 Defensive Bot,Damage 18 (21),Damage 11 (13),,,,,
+,,Summons 1 Aggro Bot,Summon 1 Aggro Bot,,,,,,
+,,,,,,,,,"When # allies (not counting self) is 3 or more, always uses Disintegrate."
+,,,,,,,,,
+,,,,,,,,,Cannot summon the same minion consecutively.
+Guardbot,16 - 20 (17 - 21),Guard,,,,,,,Always uses Guard
+"(minion, defensive bot)",,Block 15 on Fabricator,,,,,,,
+,,,,,,,,,
+Noisebot,18 - 23 (19 - 24),Noise,,,,,,,Always uses Noise
+"(minion, defensive bot)",,Add 1 Dazed to Discard,,,,,,,
+,,Add 1 Dazed to Draw,,,,,,,
+,,,,,,,,,
+Stabbot,18 - 23 (19 - 24),Stab,,,,,,,Always uses Stab
+"(minion, aggro bot)",,Damage 11 (12),,,,,,,
+,,Apply 1 Frail,,,,,,,
+,,,,,,,,,
+Zapbot,18 - 23 (19 - 24),Zap,,,,,,Starts with High Voltage 2.,Always uses Zap
+"(minion, aggro bot)",,Damage 14 (15),,,,,,"High Voltage X: At the end of Zapbot's turn, it gains X strength.",
+,,,,,,,,,
+Fake Merchant,165 (175),Swipe,Spew Coins,Throw Relic,Enrage,,,,"Starts with Swipe.
+After Swipe, Spew Coins, or Enrage will pick from any of its allowed moves randomly.
+After Throw Relic will randomly use Swipe or Spew Coins.
+Cannot use the same move twice in a row, and Enrage has a 3 turn cooldown after use."
+,,Damage 13 (15),Damage 2x8,Damage 9 (10),Gain 2 Strength.,,,,
+,,,,Apply 1 Frail.,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Flyconid,47 - 49 (51 - 53),Frail Spores,Smash,Vulnerable Spores,,,,,"Starts randomly with Frail Spores or Smash (equal probability). Then picks move randomly (equal probability for allowed moves). Cannot use any move twice in a row. Vulnerable Spores has a 3 turn cooldown after use, and Frail Spores has a 2 turn cooldown after use."
+,,Damage 8 (9),Damage 11 (12),Apply 2 Vulnerable,,,,,
+,,Apply 2 Frail,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,"Exception: If at any point it uses Vuln Spores -> Frail Spores -> Smash, then it will have no allowed moves and default to Vulnerable Spores."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Fogmog,74 (78),Illusion,Swipe,Headbutt,,,,,Starts with Illusion -> Swipe.
+,,Summon 1 Eye with Teeth,Damage 8 (9),Damage 14 (16),,,,,"When using Swipe after a non-Swipe move, follows up with 40% chance to Swipe and 60% chance to Headbutt."
+,,,Gain 1 Strength,,,,,,
+,,,,,,,,,
+,,,,,,,,,"After using Swipe for second time in a row, always follows with Headbutt."
+,,,,,,,,,
+,,,,,,,,,"After Headbutt, always uses Swipe."
+Eye with Teeth,6,Distract,,,,,,Starts with Illusion,Always uses Distract.
+(minion),,3 Dazed to Discard,,,,,,"Illusion: When this dies, revives next turn at full HP",
+,,,,,,,,,
+,,,,,,,,,
+Fossil Stalker,51 - 53 (54 - 56),Latch,Tackle,Lash,,,,Starts with Suck 3,"Starts with Latch. Then chooses randomly between allowed options of Tackle, Latch, and Lash (allowed options equally likely). Moves cannot be used more than twice in a row."
+,,Damage 12 (14),Damage 9 (11),Damage 3x2 (4x2),,,,"Suck X: Whenever Fossil Stalker deals unblocked attack damage, it gains X strength.",
+,,,Apply 1 Frail,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Frog Knight,191 (199),Tongue Lash,Strike Down Evil,For the Queen,Beetle Charge,,,Starts with Plating 15 (19),Cycles through Tongue Lash -> Strike Down Evil -> For the Queen.
+,,Damage 13 (14),Damage 21 (23),Gain 5 Strength,Damage 35 (40),,,,
+,,Apply 2 Frail,,,,,,,"After For the Queen, if below half HP and Beetle Charge has not been used, then uses Beetle Charge before starting the cycle over."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Fuzzy Wurm Crawler,55 - 57 (58 - 59),Acid Goop,Inhale,,,,,,Starts with Acid Goop. Then cycles through Inhale -> Acid Goop -> Acid Goop.
+,,Damage 4 (6),Gain 7 Strength,,,,,,
+,,,,,,,,,
+Globe Head,148 (158),Shocking Slap,Thunder Strike,Galvanic Burst,,,,Starts with Galvanic 6.,Cycles through Shocking Slap -> Thunder Strike -> Galvanic Burst.
+,,Damage 13 (14),Damage 6x3 (7x3),Damage 16 (17),,,,Galvanic X: You take X damage when a Power is played.,
+,,Apply 2 Frail,,Gain 2 Strength,,,,,
+,,,,,,,,,
+Gremlin Merc,47 - 49 (51 - 53),Gimme,Double Smash,Hehe,,,,Starts with Surprise and Thievery 20,Cycles through Gimme -> Double Smash -> Hehe.
+,,Damage 7x2 (8x2),Damage 6x2 (7x2),Damage 8 (9),,,,"Surprise: When killed, summons 1 Sneaky Gremlin and 1 Fat Gremlin (they start stunned)",
+,,,Apply 2 Weak,Gain 2 Strength,,,,,
+,,,,,,,,,
+,,,,,,,,Thievery X: Steals X gold when attacking (stolen gold is held by Fat Gremlin once summoned),
+,,,,,,,,,
+,,,,,,,,,
+Fat Gremlin,13 - 17 (14 - 18),Flee,,,,,,Starts stunned when summoned after killing Gremlin Merc.,Always uses Flee.
+,,Escape from combat,,,,,,,
+,,,,,,,,Keeps stolen gold if successfully Flees.,
+Sneaky Gremlin,10 - 14 (11 - 15),Tackle,,,,,,Starts stunned when summoned after killing Gremlin Merc.,Always uses Tackle.
+,,Damage 9 (10),,,,,,,
+,,,,,,,,,
+Haunted Ship,63 (67),Ramming Speed,Haunt,Swipe,Stomp,,,,"Starts with Ramming Speed -> Haunt. Then picks randomly between Ramming Speed, Swipe, and Stomp (allowed options equally likely). Cannot use same move twice in a row."
+,,Damage 10 (11),Apply 2 Weak,Damage 13 (14),Damage 4x3 (5x3),,,,
+,,Add 2 Wounds to Discard,Apply 2 Frail,,,,,,
+,,,Apply 2 Vulnerable,,,,,,
+,,,,,,,,,
+Hunter Killer,121 (126),Tenderizing Goop,Bite,Puncture,,,,"Tender: Whenever you play a card, lose 1 strength and 1 dexterity this turn.",Starts with Tenderizing Goop. Then chooses randomly between Bite and Puncture each turn. Bite cannot be used twice in a row. Puncture cannot be used more than twice in a row.
+,,Apply Tender,Damage 17 (19),Damage 7x3 (8x3),,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Inklet,11 - 17 (12 - 18),Jab,Whirlwind,Piercing Gaze,,,,Starts with Slippery 1,Front and back Inklet start with Jab. Middle Inklet starts with Whirlwind.
+,,Damage 3 (4),Damage 2x3 (3x3),Damage 10 (11),,,,"Slippery X: The next time this enemy loses HP, it loses 1 HP instead.",
+,,,,,,,,,"Alternates between Jab -> Whirlwind or Piercing Gaze (chosen randomly, equally likely)."
+,,,,,,,,,
+Leaf Slime (Small),11 - 15 (12 - 16),Tackle,Goop,,,,,,Starts randomly with Tackle or Goop. Then alternates between them.
+,,Damage 3 (4),Add 1 Slimed to Discard,,,,,,
+,,,,,,,,,
+Leaf Slime (Medium),32 - 35 (33 - 36),Sticky Shot,Clump Shot,,,,,,Starts with Sticky Shot then alternates Clump Shot -> Sticky Shot.
+,,Add 2 Slimed to Discard,Damage 8 (9),,,,,,
+,,,,,,,,,
+Living Fog,80 (82),Advanced Gas,Bloat,Super Gas Blast,,,,Smoggy: You can only play 1 skill per turn.,Starts with Advanced Gas. Then alternates between Bloat -> Super Gas Blast.
+,,Damage 8 (9),Summon N Gas Bombs,Damage 8 (9),,,,,
+,,Apply Smoggy,"(N = # times Bloat has been used + 1, capped to 5)",,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Gas Bomb,7 (8),Explode,,,,,,Gas Bomb is a minion.,Uses Explode and dies.
+(minion),,Damage 8 (9),,,,,,,
+,,Dies,,,,,,,
+,,,,,,,,,
+Living Shield,55 (65),Shield Slam,Smash,,,,,Starts with Rampart 25,Uses Shield Slam every turn if Turret Operator is alive. Then uses Smash every turn once Turret Operator is dead.
+,,Damage 6,Damage 16 (18),,,,,Rampart X: Gives Turret Operator X block at the start of the player's turn.,
+,,,Gain 3 Strength,,,,,,
+,,,,,,,,,
+Louse Progenitor,134 - 136 (138 - 141),Web Cannon,Curl and Grow,Pounce,,,,Starts with Curl Up,Cycles through Web Cannon -> Curl and Grow -> Pounce.
+,,Damage 9 (10),Block 14 (18),Damage 14 (16),,,,Curl Up: Gain 14 (18) block upon first being hit.,
+,,Apply 2 Frail,Gain 5 Strength,,,,,,
+,,,,,,,,,
+Mawler,72 (76),Claw,Roar,Rip & Tear,,,,,"Starts with Claw. Then chooses randomly between Rip & Tear, Roar, and Claw (all allowed options equally likely). Roar can only be used once. Claw and Rip & Tear cannot be used twice in a row."
+,,Damage 4x2 (5x2),Apply 3 Vulnerable,Damage 14 (16),,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Myte,61 - 67 (64 - 69),Toxic,Bite,Suck,,,,"Toxic (status): At the end of your turn, take 5 damage if this is in your hand. 1 cost, exhausts.","First Myte starts with Toxic, second Myte starts with Suck."
+,,Add 2 Toxic to Hand,Damage 13 (15),Damage 4 (6),,,,,
+,,,,Gain 2 (3) Strength,,,,,Then continue cycling through Toxic -> Bite -> Suck.
+,,,,,,,,,
+,,,,,,,,,
+Nibbit,42 - 46 (44 - 48),Butt,Slice,Hiss,,,,,"In the single Nibbit encounter, it cycles through Butt -> Slice -> Hiss."
+,,Damage 12 (13),Damage 6 (7),Strength 2 (3),,,,,
+,,,Block 5 (6),,,,,,"In the two Nibbits encounter, the front starts with Slice and the back starts with Hiss. They then continue the cycle Butt -> Slice -> Hiss."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Ovicopter,124 - 130 (126 - 132),Lay Eggs,Smash,Tenderizer,Nutritional Paste,,,"Lay Eggs will summon until there are 3 allies alive (no allies alive -> summons 3, 1 allies alive -> summons 2, etc)",Starts with Lay Eggs -> Smash -> Tenderizer.
+,,Summon up to 3 Tough Eggs,Damage 16 (17),Damage 7 (8),Gain 3 (4) Strength,,,,"If 3 allies are alive after Tenderizer, uses Nutritional Paste -> Smash -> Tenderizer."
+,,,,Apply 2 Vulnerable,,,,,
+,,,,,,,,,"If less than 3 allies are alive after Tenderizer, uses Lay Eggs -> Smash -> Tenderizer."
+,,,,,,,,,
+Tough Egg,14 - 18 (15 - 19),Hatch,,,,,,Starts with Hatch 1.,Always uses Hatch.
+(minion),,Hatches into Hatchling.,,,,,,Hatch X: Hatches after X turns.,
+Hatchling,19 - 22 (20 - 23),Nibble,,,,,,,Always uses Nibble.
+(minion),,Damage 4 (5),,,,,,,
+,,,,,,,,,
+Owl Magistrate,234 (243),Magistrate Scrutiny,Peck Assault,Judicial Flight,Verdict,,,Soar: Receives 50% less attack damage until it lands.,Cycles through Magistrate Scrutiny -> Peck Assault -> Judicial Flight -> Verdict.
+,,Damage 16 (17),Damage 4x6,Gain Soar,Damage 33 (36),,,,
+,,,,,Apply 4 Vulnerable,,,,
+,,,,,Lose Soar,,,,
+,,,,,,,,,
+Punch Construct,55 (60),Ready,Strong Punch,Fast Punch,,,,Starts with Artifact 1.,Regular encounter: Cycles through Ready -> Strong Punch -> Fast Punch.
+,(reduced by 2-10 in Punch-Off event),Block 10,Damage 14 (16),Damage 5x2 (6x2),,,,,
+,,,,Apply 1 Weak,,,,,Punch-Off event: First Punch Construct starts the cycle with Strong Punch (second starts with Ready like usual).
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Ruby Raider (Assassin),18 - 23 (19 - 24),Killshot,,,,,,,Always uses Killshot.
+,,Damage 11 (12),,,,,,,
+,,,,,,,,,
+Ruby Raider (Axe),20 - 22 (21 - 23),Swing,Big Swing,,,,,,Cycles through Swing -> Swing -> Big Swing.
+,,Damage 5 (6),Damage 12 (13),,,,,,
+,,Block 5 (6),,,,,,,
+,,,,,,,,,
+Ruby Raider (Brute),30 - 33 (31 - 34),Beat,Roar,,,,,,Alternates between Beat -> Roar.
+,,Damage 7 (8),Gain 3 Strength,,,,,,
+,,,,,,,,,
+Ruby Raider (Crossbow),18 - 21 (19 - 22),Fire,Reload,,,,,,Alternates between Reload -> Fire.
+,,Damage 14 (16),Block 3,,,,,,
+,,,,,,,,,
+Ruby Raider (Tracker),21 - 25 (22 - 26),Track,Hounds,,,,,,"Starts with Track, then uses Hounds every turn."
+,,Apply 2 Frail,Damage 1x8 (1x9),,,,,,
+,,,,,,,,,
+Scroll of Biting,31 - 38 (32 - 39),Chomp,Chew,More Teeth,,,,Starts with Paper Cuts 2,First scroll picks its first move randomly. Scrolls 2 and 3 starts with the next moves in the cycle Chomp -> Chew -> More Teeth. Scroll 4 (if present) starts with More Teeth.
+,,Damage 14 (16),Damage 5x2 (6x2),Gain 2 Strength,,,,"Paper Cuts X: Whenever you take unblocked attack damage from this enemy, lose X Max HP.",
+,,,,,,,,,
+,,,,,,,,,"Then follows pattern Chomp -> More Teeth -> Chew, but after Chew picks randomly between Chomp and More Teeth and resumes pattern."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Seapunk,44 - 46 (47 - 49),Sea Kick,Spinning Kick,Bubble Burp,,,,,Cycles through Sea Kick -> Spinning Kick -> Bubble Burp.
+,,Damage 11 (13),Damage 2x4,Block 7 (8),,,,,
+,,,,Gain 1 (2) Strength,,,,,
+,,,,,,,,,
+Sewer Clam,56 (58),Pressurize,Jet,,,,,Starts with Plating 8 (9).,Alternates between Pressurize -> Jet.
+,,Strength 4,Damage 10 (11),,,,,,
+,,,,,,,,,
+Shrinker Beetle,38 - 40 (40 - 42),Shrinker,Chomp,Stomp,,,,Shrink: Deal 30% reduced damage.,Starts with Shrinker. Then alternates Chomp -> Stomp.
+,,Apply Shrink,Damage 7 (8),Damage 13 (14),,,,,
+,,,,,,,,,
+Slimed Berserker,266 (276),Vomit Ichor,Leeching Hug,Smother,Furious Pummeling,,,,Cycles through Vomit Ichor -> Furious Pummeling -> Leeching Hug -> Smother.
+,,Add 10 Slimed to discard,Apply 3 Weak,Damage 30 (33),Damage 4x4 (5x4),,,,
+,,,Gain 3 Strength,,,,,,
+,,,,,,,,,
+Slithering Strangler,53 - 55 (54 - 56),Constrict,Thwack,Lash,,,,"Constrict X: While the Slithering Strangler is alive, take X damage at the end of your turn.","Alternates between Constrict -> Thwack/Lash (chooses between Thwack and Lash at random, equally likely)"
+,,Apply 3 Constrict,Damage 7 (8),Damage 12 (13),,,,,
+,,,Block 5,,,,,,
+,,,,,,,,,
+Sludge Spinner,37 - 39 (41 - 42),Oil Spray,Slam,Rage,,,,,Starts with Oil Spray. Then chooses randomly between all allowed moves each turn. Cannot use any move twice in a row.
+,,Damage 8 (9),Damage 11 (12),Damage 6 (7),,,,,
+,,Weak 1,,Strength 3,,,,,
+,,,,,,,,,
+Slumbering Beetle,86 (89),Sleep,Roll Out,,,,,Starts with Plating 15 (18) and Slumber 3,Sleeps until it awakens. Then uses Roll Out every turn.
+,,Passes Turn,Damage 16 (18),,,,,Slumber X: Counter decreases after taking a turn or losing HP. Awakens at the end of its turn if counter has reached 0.,
+,,,Gain 2 Strength,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Snapping Jaxfruit,31 - 33 (34 - 36),Energy Orb,,,,,,,Always uses Energy Orb.
+,,Damage 3 (4),,,,,,,
+,,Gain 2 Strength,,,,,,,
+,,,,,,,,,
+Spiny Toad,116 - 119 (121 - 124),Protruding Spikes,Spike Explosion,Tongue Lash,,,,,Cycles through Protruding Spikes -> Spike Explosion -> Tongue Lash.
+,,Gain 5 Thorns,Damage 23 (25),Damage 17 (19),,,,,
+,,,Lose 5 Thorns,,,,,,
+,,,,,,,,,
+The Lost,93 (99),Debilitating Smog,Eye Lasers,,,,,,Alternates between Debilitating Smog -> Eye Lasers
+,,Apply -2 (-3) Strength,Damage 4x2 (5x2),,,,,,
+,,Gain 2 (3) Strength,,,,,,,
+,,,,,,,,,
+The Forgotten,106 (111),Miasma,Dread,,,,,,Alternates between Miasma -> Dread.
+,,Apply -2 (-3) Dexterity,Damage 13 (15) + the amount of Dexterity this has ,,,,,,
+,,Block 8,,,,,,,
+,,Gain 2 (3) Dexterity,,,,,,,
+,,,,,,,,,
+The Obscura,123 (129),Illusion,Piercing Gaze,Wail,Hardening Strike,,,,Starts with Illusion.
+,,Summon 1 Parafright,Damage 10 (11),Allies gain 3 Strength,Damage 6 (7),,,,"Then chooses randomly between Piercing Gaze, Wail, and Hardening Strike (allowed options equally likely). Cannot use any move twice in a row."
+,,,,,Block 6 (7),,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Parafright,21,Slam,,,,,,Starts with Illusion.,Always uses Slam.
+(minion),,Damage 16 (17),,,,,,"Illusion: When this dies, revives next turn at full HP",
+,,,,,,,,(retains Strength after reviving),
+,,,,,,,,,
+Thieving Hopper,79 (84),Thievery,Nab,Hat Trick,Flutter,Escape,,Starts with Escape Artist,Always uses Thievery -> Flutter -> Hat Trick -> Nab -> Escape.
+,,Damage 17 (19),Damage 14 (16),Damage 21 (23),Gain Flutter 5,Escape from the combat,,Escape Artist: Tries to escape the combat after 5 turns.,"If stunned before turn 5, resumes with the next intent in the pattern."
+,,Steal 1 card and gain Swipe,,,,,,,
+,,"(Stolen card is taken from draw or discard pile. Chooses a random card with priorities: 1. non-imbued uncommon card, 2. non-imbued common, rare, or event card, 3. non-imbued basic or quest card, 4. imbued or ancient card, 5. curse or anything else)",,,,,,"Swipe: Upon killing this enemy, the stolen card is returned.","If stunned on turn 5, tries to Escape again."
+,,,,,,,,,
+,,,,,,,,Flutter X: Receives 50% less attack damage. Deal attack damage X times to remove Flutter and stun it.,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,(Warning: Game softlocks if Thieving Hopper cannot find a valid target to steal),,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Toadpole,21 - 25 (22 - 26),Spike Spit,Whirl,Spiken,,,,,Front Toadpole starts with Spiken. Non-front Toadpole(s) start with Whirl. Then continue following cycle Spike Spit -> Whirl -> Spiken (then repeat).
+,,Lose 2 Thorns,Damage 7 (8),Gain 2 Thorns,,,,,
+,,Damage 3x3 (4x3),,,,,,,
+,,,,,,,,,
+Tunneler,87 (92),Bite,Burrow,Below,,,,Burrowed: Block is not removed at the start of Tunneler's turn. Becomes stunned if all block is removed.,Starts with Bite -> Burrow.
+,,Damage 13 (15),Gain Burrowed,Damage 23 (26),,,,,"While Burrowed, always uses Below."
+,,,Block 32 (37),,,,,,"After being stunned, loses Burrowed and uses Bite -> Burrow."
+,,,,,,,,,
+,,,,,,,,,
+Turret Operator,41 (51),Unload,Reload,,,,,,Cycles through Unload -> Unload -> Reload.
+,,Damage 3x5 (4x5),Gain 1 Strength,,,,,,
+,,,,,,,,,
+Twig Slime (S),7 - 11 (8 - 12),Tackle,,,,,,,Uses Tackle every turn.
+,,Damage 4 (5),,,,,,,
+,,,,,,,,,
+Twig Slime (M),26 - 28 (27 - 29),Clump Shot,Sticky Shot,,,,,,"Starts with Sticky Shot -> Clump Shot. Then chooses randomly each turn between Sticky Shot and Clump Shot (allowed options equally likely). Cannot use Sticky Shot twice in a row, and cannot use Clump shot more than twice in a row."
+,,Damage 11 (12),Add 1 Slimed to Discard,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Two-Tailed Rat,17 - 21 (18 - 22),Scratch,Disease Bite,Screech,Call for Backup,,,,"First Rat starts randomly with Scratch, Disesase Bite, or Screech. 2nd Rat has next move after it in the cycle Scratch -> Disease Bite -> Screech, and 3rd Rat has the next after that."
+,,Damage 8 (9),Damage 6 (7),Apply 1 Frail,Summon Two-Tailed Rat,,,,
+,,,,,(with random intent),,,,
+,,,,,,,,,A rat cannot Call for Backup until it has taken 2 turns. Each rat can only Call for Backup once. Only 1 rat can Call for Backup in any particular turn. Call for Backup can only be used 3 times total across all rats.
+,,,,,,,,,"If Call for Backup is not allowed for a rat, it picks randomly between Scratch, Disease Bite, and Screech (equal weight among allowed options). "
+,,,,,,,,,"If Call for Backup is allowed for a rat, then it has a 75% chance to Call for Backup, and remaining 25% to pick randomly between Scratch, Disease Bite, and Screech (equal weight among allowed options)."
+,,,,,,,,,Screech has a 3 turn cooldown. Scratch and Disease Bite cannot be used twice in a row.
+,,,,,,,,,
+Vine Shambler,61 (64),Grasping Vines,Swipe,Chomp,,,,Tangled X: Attacks cost 1 additional energy for X turns.,Cycles through Swipe -> Grasping Vines -> Chomp.
+,,Damage 8 (9),Damage 6x2 (7x2),Damage 16 (18),,,,,
+,,Apply 1 Tangled,,,,,,,
+,,,,,,,,,
+Wriggler,17 - 21 (18 - 22),Nasty Bite,Wriggle,,,,,,"If spawned from Phrog Parasite's death, starts stunned."
+,,Damage 6 (7),Add 1 Infection to Discard,,,,,,
+,,,Gain 2 Strength,,,,,,"Otherwise (or after stun), Wrigglers in positions 1 & 3 start with Nasty Bite and Wrigglers in positions 2 & 4 start with Wriggle. They then alternate between Nasty Bite -> Wriggle."

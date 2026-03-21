@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "exportedAt": "2026-03-21T22:58:27.6034284Z",
+  "exportedAt": "2026-03-21T23:08:00.4351304Z",
   "skipElo": 1666.2383854079098,
   "skipEloByAct": {
     "regent_act3": 1941.6516035742047,
@@ -15778,8 +15778,8 @@
             }
           ],
           "runs": 23,
-          "wins": 11,
-          "winRate": 0.4782608695652174,
+          "wins": 14,
+          "winRate": 0.6086956521739131,
           "eliteWinRates": [
             {
               "eliteCount": 0,
@@ -15994,8 +15994,8 @@
             }
           ],
           "runs": 14,
-          "wins": 11,
-          "winRate": 0.7857142857142857,
+          "wins": 12,
+          "winRate": 0.8571428571428571,
           "eliteWinRates": [
             {
               "eliteCount": 2,
@@ -16501,8 +16501,8 @@
             }
           ],
           "runs": 16,
-          "wins": 13,
-          "winRate": 0.8125,
+          "wins": 14,
+          "winRate": 0.875,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -16704,8 +16704,8 @@
             }
           ],
           "runs": 14,
-          "wins": 13,
-          "winRate": 0.9285714285714286,
+          "wins": 14,
+          "winRate": 1,
           "eliteWinRates": [
             {
               "eliteCount": 2,
@@ -17239,8 +17239,8 @@
             }
           ],
           "runs": 27,
-          "wins": 8,
-          "winRate": 0.2962962962962963,
+          "wins": 14,
+          "winRate": 0.5185185185185185,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -17435,8 +17435,8 @@
             }
           ],
           "runs": 14,
-          "wins": 8,
-          "winRate": 0.5714285714285714,
+          "wins": 9,
+          "winRate": 0.6428571428571429,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -17975,8 +17975,8 @@
             }
           ],
           "runs": 26,
-          "wins": 14,
-          "winRate": 0.5384615384615384,
+          "wins": 17,
+          "winRate": 0.6538461538461539,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -18192,8 +18192,8 @@
             }
           ],
           "runs": 17,
-          "wins": 14,
-          "winRate": 0.8235294117647058,
+          "wins": 15,
+          "winRate": 0.8823529411764706,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -18718,8 +18718,8 @@
             }
           ],
           "runs": 16,
-          "wins": 10,
-          "winRate": 0.625,
+          "wins": 14,
+          "winRate": 0.875,
           "eliteWinRates": [
             {
               "eliteCount": 1,
@@ -18934,8 +18934,8 @@
             }
           ],
           "runs": 14,
-          "wins": 10,
-          "winRate": 0.7142857142857143,
+          "wins": 11,
+          "winRate": 0.7857142857142857,
           "eliteWinRates": [
             {
               "eliteCount": 1,

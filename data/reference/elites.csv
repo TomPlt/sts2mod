@@ -1,0 +1,70 @@
+Elite Name,HP,Move 1,Move 2,Move 3,Move 4,Move 5,Move 6,Notes,Attack Pattern
+Bygone Effigy,127 (132),Sleep,Wake,Slash,,,,Starts with Slow,Starts with Sleep -> Wake -> Slash. Then uses Slash every turn after.
+,,Pass Turn,Gain 10 Strength,Damage 13 (15),,,,Slow: Attacks deal 10% extra damage for every card played this turn.,
+,,,,,,,,,
+,,,,,,,,,
+Byrdonis,91 - 94 (99),Peck,Swoop,,,,,Starts with Territorial 1,Alternates between Swoop -> Peck.
+,,Damage 3x3 (4x3),Damage 17 (19),,,,,"Territorial X: At the end of its turn, gains X strength.",
+,,,,,,,,,
+,,,,,,,,,
+Decimillipede,40 - 46 (46 - 52),Writhe,Bulk,Constrict,,,,Starts with Reattach.,"First segment starts with a random move, second segment starts with the next move in the cycle Writhe -> Bulk -> Constrict, and third segment starts with the next move after that."
+(3 segments),"(always even #, segments have different max HP)",Damage 5x2 (6x2),Damage 6 (7),Damage 8 (9),,,,"Reattach: If other segments are still alive, revives after 2 turns with 25 HP.",
+,,,Gain 2 Strength,Apply 1 Weak,,,,,
+,,,,,,,,,
+,,,,,,,,,Cycles through Writhe -> Constrict -> Bulk.
+,,,,,,,,,"When killed, spends one turn dead and then one turn reviving with 25 HP. After reviving, continues the regular attack cycle from a random starting move."
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Entomancer,145 (155),Pheromone Spit,Bees,Spear,,,,Starts with Personal Hive 1,"Cycles through Bees -> Spear -> Pheromone Spit. After reaching 3 stacks of Personal Hive, switches to gaining 2 strength when using Pheromone Spit."
+,,"If less than 3 Personal Hive: Gain 1 Personal Hive and 1 Strength
+",Damage 3x7 (3x8),Damage 18 (20),,,,Personal Hive X: Add X Dazed to the draw pile whenever hit by an attack.,
+,,,,,,,,,
+,,If at 3 Personal Hive: Gain 2 Strength,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Infested Prism,200 (215),Jab,Radiate,Whirlwind,Pulsate,,,Starts with Vital Spark 1,Cycles through Jab -> Radiate -> Whirlwind -> Pulsate
+,,Damage 22 (24),Damage 16 (18),Damage 9x3 (10x3),Block 20 (22),,,"Vital Spark X: The first time Infected Prism takes attack damage each turn, the attacked gains X energy.",
+,,,Block 16 (18),,Gain 4 (5) Strength,,,,
+,,,,,,,,,
+,,,,,,,,,
+Knights,,,,,,,,,
+Flail Knight,101 (108),War Chant,Flail,Ram,,,,,"Starts with Ram. Then chooses randomly between War Chant, Flail, and Ram (allowed options equally likely). Flail and Ram cannot be used more than twice in a row. War Chant cannot be used twice in a row."
+,,Gain 3 Strength,Damage 9x2 (10x2),Damage 15 (17),,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Spectral Knight,93 (97),Hex,Soul Slash,Soul Flame,,,,"Hex: While Spectral Knight is alive, all your cards are ethereal.",Starts with Hex and then Soul Slash. Then chooses randomly between Soul Slash and Soul Flame (allowed options equally likely). Soul Slash cannot be used more than twice in a row. Soul Flame cannot be used twice in a row.
+,,Apply Hex,Damage 15 (17),Damage 3x3 (4x3),,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Magi Knight,82 (89),Power Shield,Dampen,Prep,Magic Bomb,Spear,,"Dampen: While Magi Knight is alive, all your upgraded cards are downgraded.",Cycles through Power Shield -> Dampen -> Spear -> Prep -> Magic Bomb.
+,,Damage 6 (7),Apply Dampen,Block 5 (9),Damage 35 (40),Damage 10 (11),,,
+,,Block 5 (9),,,,,,,
+,,,,,,,,,
+Mecha Knight,300 (320),Charge,Flamethrower,Windup,Heavy Cleave,,,Starts with Artifact 3,Starts with Charge. Then cycles through Flamethrower -> Windup -> Heavy Cleave.
+,,Damage 25 (30),Add 4 Burns to Hand,Block 15,Damage 35 (40),,,,
+,,,,Strength 5,,,,,
+,,,,,,,,,
+,,,,,,,,,
+Phantasmal Gardener,26 - 31 (27 - 32),Bite,Lash,Flail,Enlarge,,,Starts with Skittish 6 (7),"1st one starts with Flail, 2nd with Bite, 3rd with Lash, and 4th with Enlarge. Then cycle through Bite -> Lash -> Flail -> Enlarge. "
+,,Damage 5,Damage 7,Damage 1x3,Strength 2 (3),,,Skittish X: First time hit each turn gain X block.,
+,,,,,,,,,
+,,,,,,,,,
+Phrog Parasite,61 - 64 (66 - 68),Infect,Lash,,,,,Starts with Infested 4,Alternates between Infect -> Lash.
+,,Add 3 Infection to Discard,Damage 4x4 (5x4),,,,,Infested X: Summons X Wrigglers after dying (they start stunned).,
+,,,,,,,,,
+,,,,,,,,,
+Skulking Colony,74 (79),Smash,Zoom,Inertia,Piercing Stabs,,,Starts with Hardened Shell 15,Cycles through Smash -> Zoom -> Inertia -> Piercing Stabs.
+,,Damage 9 (11),Damage 16 (17),Gain 3 (4) Strength,Damage 7x2 (8x2),,,Hardened Shell X: Cannot lose more than X HP per turn.,
+,,Add 5 Dazed to Discard,Block 10 (13),Add 3 Dazed to Discard,,,,,
+,,,,,,,,,
+Soul Nexus,234 (254),Soul Burn,Maelstrom,Drain Life,,,,,"Starts with Soul Burn. Then picks randomly between Soul Burn, Maelstrom, and Drain Life (all allowed options equally likely). Cannot use the same move twice in a row."
+,,Damage 29 (31),Damage 6x4 (7x4),Damage 18 (19),,,,,
+,,,,Apply 2 Vulnerable,,,,,
+,,,,Apply 2 Weak,,,,,
+,,,,,,,,,
+Terror Eel,140 (150),Crash,Thrash,Terror,,,,Starts with Shriek 75,Cycles between Crash -> Thrash until it gets stunned by reaching 75 HP. Then uses Terror before cycling Crash -> Thrash again.
+,,Damage 16 (18),Damage 3x3 (4x3),Apply 99 Vulnerable,,,,Shriek X: Becomes Stunned after reaching X HP or below.,
+,,,Gain 6 Vigor,,,,,,
