@@ -208,6 +208,45 @@ public static class OverlayFactory
         parent.AddChild(row);
     }
 
+    public static void AddAncientOverlay(Control choiceHolder, AncientStats stats)
+    {
+        RemoveOverlay(choiceHolder);
+
+        var badge = new PanelContainer();
+        badge.Name = "SpireOracleAncientBadge";
+        badge.AddToGroup(OverlayGroup);
+
+        var badgeStyle = new StyleBoxFlat();
+        badgeStyle.BgColor = stats.Rating >= 1600
+            ? new Color(0.83f, 0.33f, 0.16f) // ember - strong
+            : stats.Rating >= 1450
+                ? new Color(0.14f, 0.19f, 0.27f) // grey - average
+                : new Color(0.16f, 0.10f, 0.10f); // dark red - weak
+        badgeStyle.CornerRadiusBottomLeft = 6;
+        badgeStyle.CornerRadiusBottomRight = 6;
+        badgeStyle.CornerRadiusTopLeft = 6;
+        badgeStyle.CornerRadiusTopRight = 6;
+        badgeStyle.ContentMarginLeft = 8;
+        badgeStyle.ContentMarginRight = 8;
+        badgeStyle.ContentMarginTop = 4;
+        badgeStyle.ContentMarginBottom = 4;
+        badge.AddThemeStyleboxOverride("panel", badgeStyle);
+
+        var label = new Label();
+        label.Text = $"{stats.Rating:F0}";
+        label.AddThemeFontSizeOverride("font_size", 28);
+        label.AddThemeColorOverride("font_color", Colors.White);
+        badge.AddChild(label);
+
+        var strip = new HBoxContainer();
+        strip.Name = "SpireOracleStrip";
+        strip.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
+        strip.AnchorTop = 1f;
+        strip.Position = new Vector2(-30, 240);
+        strip.AddChild(badge);
+        choiceHolder.AddChild(strip);
+    }
+
     public static void ShowDetail(Control cardHolder)
     {
         var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
