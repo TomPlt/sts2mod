@@ -343,26 +343,85 @@ public static class ExportCommand
 
         var mapIntelRows = conn.Query(mapIntelSql).ToList();
 
+        // Per-character win rates
+        var charWinRates = conn.Query("""
+            SELECT Character, COUNT(*) as Runs, SUM(CASE WHEN Win = 1 THEN 1 ELSE 0 END) as Wins
+            FROM Runs GROUP BY Character
+            """).ToDictionary(r => (string)r.Character, r => new { Runs = (int)(long)r.Runs, Wins = (int)(long)r.Wins });
+
+        // Per-character per-act elite count and win rate
+        var perActStats = conn.Query("""
+            SELECT r.Character, r.Win, r.Id as RunId,
+                   f.ActIndex,
+                   SUM(CASE WHEN f.MapPointType = 'elite' THEN 1 ELSE 0 END) as EliteCount
+            FROM Runs r
+            JOIN Floors f ON f.RunId = r.Id
+            GROUP BY r.Id, f.ActIndex
+            """).ToList();
+
+        // Key: (character, actIndex) -> list of (runId, win, eliteCount)
+        var actRunStats = perActStats
+            .GroupBy(r => ((string)r.Character, (int)(long)r.ActIndex))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
         var mapIntel = mapIntelRows
             .Where(r => r.Pool != null)
             .GroupBy(r => (string)r.Character)
-            .Select(charGroup => new MapIntelCharacter(
-                charGroup.Key,
-                charGroup
-                    .GroupBy(r => (int)(long)r.ActIndex)
-                    .OrderBy(g => g.Key)
-                    .Select(actGroup => new MapIntelAct(
-                        actGroup.Key,
-                        actGroup
-                            .GroupBy(r => (string)r.Pool)
-                            .Select(poolGroup => new MapIntelPool(
-                                poolGroup.Key,
-                                poolGroup.Average(r => (double)(long)r.DamageTaken),
-                                poolGroup.Count(),
-                                poolGroup.Select(r => (string)r.EncounterId).Distinct().OrderBy(e => e).ToList()))
-                            .OrderBy(p => p.Pool switch { "weak" => 0, "normal" => 1, "elite" => 2, "boss" => 3, _ => 4 })
-                            .ToList()))
-                    .ToList()))
+            .Select(charGroup =>
+            {
+                var charKey = charGroup.Key;
+                var wr = charWinRates.TryGetValue(charKey, out var w) ? w : null;
+
+                return new MapIntelCharacter(
+                    charKey,
+                    wr?.Runs ?? 0,
+                    wr?.Wins ?? 0,
+                    wr != null && wr.Runs > 0 ? (double)wr.Wins / wr.Runs : 0,
+                    charGroup
+                        .GroupBy(r => (int)(long)r.ActIndex)
+                        .OrderBy(g => g.Key)
+                        .Select(actGroup =>
+                        {
+                            var actIdx = actGroup.Key;
+                            var actRuns = actRunStats.TryGetValue((charKey, actIdx), out var ar) ? ar : null;
+                            var actRunCount = actRuns?.Count ?? 0;
+                            var actWinCount = actRuns?.Count(r => (long)r.Win == 1) ?? 0;
+                            var actWinRate = actRunCount > 0 ? (double)actWinCount / actRunCount : 0;
+
+                            // Elite correlation for this act only
+                            var eliteCorr = actRuns?
+                                .GroupBy(r => (int)(long)r.EliteCount)
+                                .Select(eg => new EliteCorrelation(
+                                    eg.Key,
+                                    eg.Count(),
+                                    eg.Count(r => (long)r.Win == 1),
+                                    eg.Count() > 0 ? (double)eg.Count(r => (long)r.Win == 1) / eg.Count() : 0))
+                                .OrderBy(e => e.EliteCount)
+                                .ToList();
+
+                            return new MapIntelAct(
+                                actIdx,
+                                actGroup
+                                    .GroupBy(r => (string)r.Pool)
+                                    .Select(poolGroup => new MapIntelPool(
+                                        poolGroup.Key,
+                                        poolGroup.Average(r => (double)(long)r.DamageTaken),
+                                        poolGroup.Count(),
+                                        poolGroup.Select(r => (string)r.EncounterId).Distinct().OrderBy(e2 => e2).ToList(),
+                                        poolGroup.GroupBy(r => (string)r.EncounterId)
+                                            .Select(eg => new EncounterDamage(
+                                                eg.Key,
+                                                eg.Average(r => (double)(long)r.DamageTaken),
+                                                eg.Count(),
+                                                (int)eg.Max(r => (long)r.DamageTaken)))
+                                            .OrderByDescending(ed => ed.AvgDamage)
+                                            .ToList()))
+                                    .OrderBy(p => p.Pool switch { "weak" => 0, "normal" => 1, "elite" => 2, "boss" => 3, _ => 4 })
+                                    .ToList(),
+                                actRunCount, actWinCount, actWinRate, eliteCorr);
+                        })
+                        .ToList());
+            })
             .ToList();
 
         var overlayData = new ModOverlayData(

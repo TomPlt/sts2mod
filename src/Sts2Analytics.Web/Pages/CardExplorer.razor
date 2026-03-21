@@ -15,6 +15,9 @@ else
 {
     <div class="card-filter-bar">
         <div class="filter-group">
+            <input type="text" class="search-input" placeholder="Search cards..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilter" />
+        </div>
+        <div class="filter-group">
             <label>Min Games:</label>
             <RadzenNumeric @bind-Value="_minGames" Min="1" Max="100" Style="width: 80px;" Change="@((int _) => ApplyFilter())" />
         </div>
@@ -52,6 +55,7 @@ else
     private int _minGames = 3;
     private int _upgradeFilter; // 0=all, 1=base, 2=upgraded
     private string? _rarityFilter;
+    private string _searchText = "";
     private List<CardRow> _allCards = [];
     private List<CardRow> _filteredCards = [];
 
@@ -122,6 +126,7 @@ else
     private void ApplyFilter()
     {
         _filteredCards = _allCards
+            .Where(c => string.IsNullOrEmpty(_searchText) || c.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
             .Where(c => c.Games >= _minGames)
             .Where(c => _upgradeFilter switch
             {
@@ -213,4 +218,19 @@ else
         border-color: #dcb43c;
         color: #dcb43c;
     }
+
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 180px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--ember); }
+    .search-input::placeholder { color: var(--text-dim); }
 </style>

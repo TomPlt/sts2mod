@@ -7,6 +7,7 @@ user_invocable: true
 Build the mod and deploy it to the game's mods folder. The game must be closed first or the copy will fail.
 
 ```bash
+set -e
 export PATH="$HOME/.dotnet:$PATH"
 cd /home/tom/projects/sts2mod
 

@@ -42,13 +42,15 @@ public class RestSiteAnalytics
         conditions.Add("f.MaxHp > 0");
         var where = "WHERE " + string.Join(" AND ", conditions);
 
+        // Use pre-decision HP: subtract HpHealed for HEAL choices since
+        // CurrentHp is recorded after the rest site event
         var sql = $"""
             SELECT
                 rsc.Choice,
                 CASE
-                    WHEN CAST(f.CurrentHp AS REAL) / f.MaxHp < 0.25 THEN 0
-                    WHEN CAST(f.CurrentHp AS REAL) / f.MaxHp < 0.50 THEN 25
-                    WHEN CAST(f.CurrentHp AS REAL) / f.MaxHp < 0.75 THEN 50
+                    WHEN CAST(f.CurrentHp - CASE WHEN rsc.Choice = 'HEAL' THEN f.HpHealed ELSE 0 END AS REAL) / f.MaxHp < 0.25 THEN 0
+                    WHEN CAST(f.CurrentHp - CASE WHEN rsc.Choice = 'HEAL' THEN f.HpHealed ELSE 0 END AS REAL) / f.MaxHp < 0.50 THEN 25
+                    WHEN CAST(f.CurrentHp - CASE WHEN rsc.Choice = 'HEAL' THEN f.HpHealed ELSE 0 END AS REAL) / f.MaxHp < 0.75 THEN 50
                     ELSE 75
                 END AS HpBucket,
                 COUNT(*) AS Count,
@@ -108,7 +110,7 @@ public class RestSiteAnalytics
                 rsc.Choice,
                 COUNT(*) AS Count,
                 SUM(CASE WHEN r.Win = 1 THEN 1 ELSE 0 END) AS Wins,
-                AVG(CAST(f.CurrentHp AS REAL) / NULLIF(f.MaxHp, 0)) AS AvgHpPercent
+                AVG(CAST(f.CurrentHp - CASE WHEN rsc.Choice = 'HEAL' THEN f.HpHealed ELSE 0 END AS REAL) / NULLIF(f.MaxHp, 0)) AS AvgHpPercent
             FROM RestSiteChoices rsc
             JOIN Floors f ON rsc.FloorId = f.Id
             JOIN Runs r ON f.RunId = r.Id

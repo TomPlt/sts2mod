@@ -33,19 +33,39 @@ public record AncientStats(
     [property: JsonPropertyName("ratingPostAct2")] double RatingPostAct2 = 0,
     [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350);
 
+public record EncounterDamage(
+    [property: JsonPropertyName("encounterId")] string EncounterId,
+    [property: JsonPropertyName("avgDamage")] double AvgDamage,
+    [property: JsonPropertyName("sampleSize")] int SampleSize,
+    [property: JsonPropertyName("maxDamage")] int MaxDamage);
+
 public record MapIntelPool(
     [property: JsonPropertyName("pool")] string Pool,
     [property: JsonPropertyName("avgDamage")] double AvgDamage,
     [property: JsonPropertyName("sampleSize")] int SampleSize,
-    [property: JsonPropertyName("encounters")] List<string> Encounters);
+    [property: JsonPropertyName("encounters")] List<string> Encounters,
+    [property: JsonPropertyName("encounterDetails")] List<EncounterDamage>? EncounterDetails = null);
+
+public record EliteWinRate(
+    [property: JsonPropertyName("eliteCount")] int EliteCount,
+    [property: JsonPropertyName("totalRuns")] int TotalRuns,
+    [property: JsonPropertyName("wins")] int Wins,
+    [property: JsonPropertyName("winRate")] double WinRate);
 
 public record MapIntelAct(
     [property: JsonPropertyName("actIndex")] int ActIndex,
-    [property: JsonPropertyName("pools")] List<MapIntelPool> Pools);
+    [property: JsonPropertyName("pools")] List<MapIntelPool> Pools,
+    [property: JsonPropertyName("runs")] int Runs = 0,
+    [property: JsonPropertyName("wins")] int Wins = 0,
+    [property: JsonPropertyName("winRate")] double WinRate = 0,
+    [property: JsonPropertyName("eliteWinRates")] List<EliteWinRate>? EliteWinRates = null);
 
 public record MapIntelCharacter(
     [property: JsonPropertyName("character")] string Character,
-    [property: JsonPropertyName("acts")] List<MapIntelAct> Acts);
+    [property: JsonPropertyName("runs")] int Runs = 0,
+    [property: JsonPropertyName("wins")] int Wins = 0,
+    [property: JsonPropertyName("winRate")] double WinRate = 0,
+    [property: JsonPropertyName("acts")] List<MapIntelAct>? Acts = null);
 
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,

@@ -3,76 +3,118 @@
 @inject FilterState Filter
 @implements IDisposable
 
-<div class="oracle-page">
-    <h2 class="page-title">Blind Spots</h2>
-    <p class="page-subtitle">Cards where your pick behavior and outcomes disagree</p>
+<PageTitle>Spire Oracle — Blind Spots</PageTitle>
 
-    @if (_loading)
+@if (_loading)
+{
+    <p class="dim-text">Consulting the oracle...</p>
+}
+else
+{
+    <h2>Blind Spots</h2>
+    <p class="dim-text" style="margin-top: -1.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        Cards where your pick behavior and outcomes disagree
+    </p>
+
+    <div class="context-filters">
+        <button class="ctx-btn @(_contextFilter == null ? "active" : "")"
+                @onclick="() => SetContext(null)">All</button>
+        @foreach (var ctx in _contexts)
+        {
+            <button class="ctx-btn @(_contextFilter == ctx ? "active" : "")"
+                    @onclick="() => SetContext(ctx)">@FormatContext(ctx)</button>
+        }
+    </div>
+
+    @if (_overPicks.Any())
     {
-        <p class="loading">Loading...</p>
-    }
-    else
-    {
-        <div class="filter-bar" style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-            <button class="filter-btn @(_contextFilter == null ? "active" : "")"
-                    @onclick="() => SetContext(null)">All</button>
-            @foreach (var ctx in _contexts)
-            {
-                <button class="filter-btn @(_contextFilter == ctx ? "active" : "")"
-                        @onclick="() => SetContext(ctx)">@FormatContext(ctx)</button>
-            }
+        <div class="panel blind-section">
+            <h3 style="color: var(--crimson);">Over-Picks — Cards Hurting You</h3>
+            <p class="dim-text" style="font-size: 0.75rem; margin-bottom: 0.75rem;">
+                High pick rate but negative win impact — you're picking these too often
+            </p>
+            <table class="oracle-table">
+                <thead>
+                    <tr>
+                        <th style="width: 2rem">#</th>
+                        <th>Card</th>
+                        <th style="text-align: right">Rating</th>
+                        <th style="text-align: right">Pick Rate</th>
+                        <th style="text-align: right">Win Delta</th>
+                        <th style="text-align: right">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var overRank = 1; }
+                    @foreach (var bs in _overPicks.Take(15))
+                    {
+                        <tr>
+                            <td class="dim-text">@overRank</td>
+                            <td>@FormatName(bs.CardId)</td>
+                            <td style="text-align: right">
+                                <span class="elo-badge @GetEloBadgeClass(GetRating(bs.CardId))">@GetRating(bs.CardId).ToString("F0")</span>
+                            </td>
+                            <td class="mono" style="text-align: right">@bs.PickRate.ToString("P0")</td>
+                            <td style="text-align: right">
+                                <span class="delta negative">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</span>
+                            </td>
+                            <td class="mono dim-text" style="text-align: right">@bs.Score.ToString("F2")</td>
+                        </tr>
+                        overRank++;
+                    }
+                </tbody>
+            </table>
         </div>
-
-        @if (_overPicks.Any())
-        {
-            <h3 style="color:var(--red, #ef4444);">Over-Picks — Cards Hurting You</h3>
-            <table class="oracle-table">
-                <thead>
-                    <tr><th>Card</th><th>Rating</th><th>Pick Rate</th><th>Win Δ</th><th>Score</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var bs in _overPicks)
-                    {
-                        <tr>
-                            <td>@FormatName(bs.CardId)</td>
-                            <td>@GetRating(bs.CardId).ToString("F0")</td>
-                            <td>@bs.PickRate.ToString("P0")</td>
-                            <td class="text-red">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</td>
-                            <td>@bs.Score.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-
-        @if (_underPicks.Any())
-        {
-            <h3 style="color:var(--amber, #f59e0b);margin-top:2rem;">Under-Picks — Cards You're Sleeping On</h3>
-            <table class="oracle-table">
-                <thead>
-                    <tr><th>Card</th><th>Rating</th><th>Pick Rate</th><th>Win Δ</th><th>Score</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var bs in _underPicks)
-                    {
-                        <tr>
-                            <td>@FormatName(bs.CardId)</td>
-                            <td>@GetRating(bs.CardId).ToString("F0")</td>
-                            <td>@bs.PickRate.ToString("P0")</td>
-                            <td class="text-green">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</td>
-                            <td>@bs.Score.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-
-        @if (!_overPicks.Any() && !_underPicks.Any())
-        {
-            <p style="color:var(--muted);margin-top:2rem;">No blind spots detected. Play more runs or adjust filters.</p>
-        }
     }
-</div>
+
+    @if (_underPicks.Any())
+    {
+        <div class="panel blind-section">
+            <h3 style="color: var(--ember-bright);">Under-Picks — Cards You're Sleeping On</h3>
+            <p class="dim-text" style="font-size: 0.75rem; margin-bottom: 0.75rem;">
+                Low pick rate but positive win impact — you should be picking these more
+            </p>
+            <table class="oracle-table">
+                <thead>
+                    <tr>
+                        <th style="width: 2rem">#</th>
+                        <th>Card</th>
+                        <th style="text-align: right">Rating</th>
+                        <th style="text-align: right">Pick Rate</th>
+                        <th style="text-align: right">Win Delta</th>
+                        <th style="text-align: right">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var underRank = 1; }
+                    @foreach (var bs in _underPicks.Take(15))
+                    {
+                        <tr>
+                            <td class="dim-text">@underRank</td>
+                            <td>@FormatName(bs.CardId)</td>
+                            <td style="text-align: right">
+                                <span class="elo-badge @GetEloBadgeClass(GetRating(bs.CardId))">@GetRating(bs.CardId).ToString("F0")</span>
+                            </td>
+                            <td class="mono" style="text-align: right">@bs.PickRate.ToString("P0")</td>
+                            <td style="text-align: right">
+                                <span class="delta positive">@bs.WinRateDelta.ToString("+0.0%;-0.0%")</span>
+                            </td>
+                            <td class="mono dim-text" style="text-align: right">@bs.Score.ToString("F2")</td>
+                        </tr>
+                        underRank++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!_overPicks.Any() && !_underPicks.Any())
+    {
+        <div class="panel" style="text-align: center; padding: 3rem;">
+            <p class="dim-text">No blind spots detected. Play more runs or adjust filters.</p>
+        </div>
+    }
+}
 
 @code {
     private bool _loading = true;
@@ -130,14 +172,76 @@
         return rating?.Rating ?? 0;
     }
 
-    private string FormatName(string cardId) =>
-        cardId.Replace("CARD.", "").Replace("_", " ").Replace("+", " +");
+    private static string FormatName(string id)
+    {
+        var dot = id.IndexOf('.');
+        var name = dot >= 0 ? id[(dot + 1)..] : id;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)).Replace(" +", "+");
+    }
+
+    private static string FormatContext(string context)
+    {
+        if (context == "overall") return "Overall";
+        var name = context.Replace("CHARACTER.", "");
+        // Handle "DEFECT ACT1" -> "Defect Act 1"
+        var parts = name.Split(' ');
+        return string.Join(" ", parts.Select(p =>
+        {
+            // Title-case each underscore-separated word
+            var words = p.Split('_');
+            return string.Join(" ", words.Select(w =>
+                w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
+        }));
+    }
+
+    static string GetEloBadgeClass(double rating) => rating switch
+    {
+        >= 1650 => "high",
+        >= 1500 => "mid",
+        _ => "low"
+    };
 
     public void Dispose()
     {
         Filter.OnChange -= OnFilterChanged;
     }
-
-    private string FormatContext(string context) =>
-        context == "overall" ? "Overall" : context.Replace("_", " ");
 }
+
+<style>
+    .context-filters {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .ctx-btn {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 0.3rem 0.7rem;
+        border-radius: 3px;
+        border: 1px solid var(--surface-border);
+        background: var(--void-2);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        letter-spacing: 0.02em;
+    }
+
+    .ctx-btn:hover {
+        border-color: var(--ember-dim);
+        color: var(--text-primary);
+    }
+
+    .ctx-btn.active {
+        background: rgba(212, 85, 42, 0.12);
+        border-color: var(--ember);
+        color: var(--ember-bright);
+    }
+
+    .blind-section {
+        margin-bottom: var(--gap-lg);
+    }
+</style>

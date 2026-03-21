@@ -13,6 +13,10 @@
 }
 else
 {
+    <div style="margin-bottom: 1rem;">
+        <input type="text" class="search-input" placeholder="Search relics..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilter" />
+    </div>
+
     <RadzenDataGrid Data="@_relics" TItem="RelicRow" AllowSorting="true" AllowPaging="true" PageSize="25"
                     Style="margin-bottom: 2rem;">
         <Columns>
@@ -30,6 +34,8 @@ else
 @code {
     private bool _loading = true;
     private ExportData? _data;
+    private string _searchText = "";
+    private List<RelicRow> _allRelics = [];
     private List<RelicRow> _relics = [];
 
     public record RelicRow(string Name, double PickRate, double WinRatePicked, double WinRateSkipped, double Delta, int TimesPicked);
@@ -58,7 +64,7 @@ else
 
         var allIds = winRates.Keys.Union(pickRates.Keys).ToList();
 
-        _relics = allIds.Select(id =>
+        _allRelics = allIds.Select(id =>
         {
             winRates.TryGetValue(id, out var rw);
             pickRates.TryGetValue(id, out var pick);
@@ -71,6 +77,14 @@ else
                 rw?.TimesPicked ?? 0
             );
         }).ToList();
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        _relics = _allRelics
+            .Where(r => string.IsNullOrEmpty(_searchText) || r.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
     public void Dispose()
@@ -96,6 +110,21 @@ else
 }
 
 <style>
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 180px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--ember); }
+    .search-input::placeholder { color: var(--text-dim); }
+
     .filter-note {
         font-size: 0.75rem;
         color: var(--text-dim);

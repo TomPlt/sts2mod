@@ -1,17 +1,50 @@
 using HarmonyLib;
 using Godot;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Events;
 using SpireOracle.Data;
 using SpireOracle.UI;
 
 namespace SpireOracle.Patches;
 
-// TODO: Discover the exact STS2 ancient choice screen class to patch.
-// The pattern follows CardRewardPatch — patch the refresh/display method,
-// iterate over UI children, look up data via DataLoader.GetAncientChoice(textKey),
-// and call OverlayFactory.AddAncientOverlay(holder, stats).
-// This requires decompiling STS2 game assemblies to find the target class.
+[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]
 public static class AncientChoicePatch
 {
-    // Placeholder — actual Harmony patch attributes and target method
-    // need to be discovered from the STS2 game code.
+    [HarmonyPostfix]
+    public static void Postfix(NEventOptionButton __instance)
+    {
+        if (!ModEntry.OverlayEnabled || !DataLoader.IsLoaded) return;
+
+        try
+        {
+            // Only apply to ancient events, not regular events
+            var eventModel = __instance.Event;
+            if (eventModel == null || eventModel is not AncientEventModel) return;
+
+            var option = __instance.Option;
+            if (option == null) return;
+
+            var textKey = option.TextKey;
+            if (string.IsNullOrEmpty(textKey)) return;
+
+            // TextKey format: "ANCIENT.pages.INITIAL.options.CHOICE_KEY"
+            // Extract the last segment as the choice key
+            var choiceKey = textKey;
+            if (choiceKey.Contains('.'))
+                choiceKey = choiceKey.Substring(choiceKey.LastIndexOf('.') + 1);
+
+            var stats = DataLoader.GetAncientChoice(choiceKey);
+            if (stats == null)
+                stats = DataLoader.GetAncientChoice(textKey);
+
+            if (stats == null) return;
+
+            GD.Print($"[SpireOracle] Ancient overlay: {choiceKey} = {stats.Rating:F0}");
+            OverlayFactory.AddAncientOverlay(__instance, stats);
+        }
+        catch (System.Exception ex)
+        {
+            GD.PrintErr($"[SpireOracle] Error in AncientChoicePatch: {ex.Message}");
+        }
+    }
 }

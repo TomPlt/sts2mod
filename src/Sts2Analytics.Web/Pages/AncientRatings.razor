@@ -1,42 +1,49 @@
 @page "/ancient-ratings"
 @inject DataService Data
 @inject FilterState Filter
+@implements IDisposable
 
-<div class="oracle-page">
-    <h2 class="page-title">Ancient Ratings</h2>
-    <p class="page-subtitle">Glicko-2 ratings for Neow rewards and post-act ancient choices</p>
+<PageTitle>Spire Oracle — Ancient Ratings</PageTitle>
 
-    @if (_loading)
-    {
-        <p class="loading">Loading...</p>
-    }
-    else
-    {
-        <div class="filter-bar" style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-            <button class="filter-btn @(_timingFilter == null ? "active" : "")"
-                    @onclick="() => SetTiming(null)">All</button>
-            <button class="filter-btn @(_timingFilter == "neow" ? "active" : "")"
-                    @onclick='() => SetTiming("neow")'>Neow</button>
-            <button class="filter-btn @(_timingFilter == "post_act1" ? "active" : "")"
-                    @onclick='() => SetTiming("post_act1")'>Post-Act 1</button>
-            <button class="filter-btn @(_timingFilter == "post_act2" ? "active" : "")"
-                    @onclick='() => SetTiming("post_act2")'>Post-Act 2</button>
-        </div>
+@if (_loading)
+{
+    <p class="dim-text">Consulting the oracle...</p>
+}
+else
+{
+    <h2>Ancient Ratings</h2>
+    <p class="dim-text" style="margin-top: -1.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        Glicko-2 ratings for Neow rewards and post-act ancient choices
+    </p>
 
+    <div class="context-filters">
+        <input type="text" class="search-input" placeholder="Search choices..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilter" />
+
+        <button class="ctx-btn @(_timingFilter == null ? "active" : "")"
+                @onclick="() => SetTiming(null)">All</button>
+        <button class="ctx-btn @(_timingFilter == "neow" ? "active" : "")"
+                @onclick='() => SetTiming("neow")'>Neow</button>
+        <button class="ctx-btn @(_timingFilter == "post_act1" ? "active" : "")"
+                @onclick='() => SetTiming("post_act1")'>Post-Act 1</button>
+        <button class="ctx-btn @(_timingFilter == "post_act2" ? "active" : "")"
+                @onclick='() => SetTiming("post_act2")'>Post-Act 2</button>
+    </div>
+
+    <div class="panel" style="padding: 0; overflow: hidden;">
         <table class="oracle-table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th style="width: 2rem">#</th>
                     <th>Choice</th>
-                    <th>Rating</th>
-                    <th>±RD</th>
+                    <th style="text-align: right;">Rating</th>
+                    <th style="text-align: right;">±RD</th>
                     @if (_timingFilter == null)
                     {
-                        <th>Neow</th>
-                        <th>Post-Act1</th>
-                        <th>Post-Act2</th>
+                        <th style="text-align: right;">Neow</th>
+                        <th style="text-align: right;">Post-Act 1</th>
+                        <th style="text-align: right;">Post-Act 2</th>
                     }
-                    <th>Games</th>
+                    <th style="text-align: right;">Games</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,27 +51,30 @@
                 @foreach (var r in _filteredRatings)
                 {
                     <tr>
-                        <td>@(rank++)</td>
-                        <td>@FormatName(r.ChoiceKey)</td>
-                        <td>@r.Rating.ToString("F0")</td>
-                        <td>@r.RatingDeviation.ToString("F0")</td>
+                        <td class="dim-text">@(rank++)</td>
+                        <td style="font-weight: 500;">@FormatName(r.ChoiceKey)</td>
+                        <td style="text-align: right;">
+                            <span class="elo-badge @GetRatingClass(r.Rating)">@r.Rating.ToString("F0")</span>
+                        </td>
+                        <td style="text-align: right;" class="dim-text mono">@r.RatingDeviation.ToString("F0")</td>
                         @if (_timingFilter == null)
                         {
-                            <td>@GetTimingRating(r.ChoiceKey, "neow")</td>
-                            <td>@GetTimingRating(r.ChoiceKey, "post_act1")</td>
-                            <td>@GetTimingRating(r.ChoiceKey, "post_act2")</td>
+                            <td style="text-align: right;">@RenderTimingRating(r.ChoiceKey, "neow")</td>
+                            <td style="text-align: right;">@RenderTimingRating(r.ChoiceKey, "post_act1")</td>
+                            <td style="text-align: right;">@RenderTimingRating(r.ChoiceKey, "post_act2")</td>
                         }
-                        <td>@r.GamesPlayed</td>
+                        <td style="text-align: right;" class="mono dim-text">@r.GamesPlayed</td>
                     </tr>
                 }
             </tbody>
         </table>
-    }
-</div>
+    </div>
+}
 
 @code {
     private bool _loading = true;
     private string? _timingFilter;
+    private string _searchText = "";
     private List<AncientRatingExport> _allRatings = [];
     private List<AncientRatingExport> _filteredRatings = [];
     private ExportData? _data;
@@ -72,9 +82,16 @@
     protected override async Task OnInitializedAsync()
     {
         _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
         _allRatings = _data.AncientRatings;
         ApplyFilter();
         _loading = false;
+    }
+
+    private void OnFilterChanged()
+    {
+        ApplyFilter();
+        InvokeAsync(StateHasChanged);
     }
 
     private void SetTiming(string? timing)
@@ -91,15 +108,92 @@
 
         _filteredRatings = _allRatings
             .Where(r => r.Character == character && r.Context == context)
+            .Where(r => string.IsNullOrEmpty(_searchText) || FormatName(r.ChoiceKey).Contains(_searchText, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(r => r.Rating)
             .ToList();
     }
 
-    private string GetTimingRating(string choiceKey, string timing)
+    private RenderFragment RenderTimingRating(string choiceKey, string timing)
     {
         var r = _allRatings.FirstOrDefault(r => r.ChoiceKey == choiceKey && r.Character == "ALL" && r.Context == timing);
-        return r != null ? r.Rating.ToString("F0") : "—";
+        if (r == null)
+            return @<span class="dim-text">—</span>;
+        return @<span class="elo-badge @GetRatingClass(r.Rating)">@r.Rating.ToString("F0")</span>;
     }
 
-    private string FormatName(string key) => key.Replace("_", " ");
+    static string GetRatingClass(double rating) => rating switch
+    {
+        >= 1600 => "high",
+        >= 1450 => "mid",
+        _ => "low"
+    };
+
+    private static string FormatName(string key)
+    {
+        var name = key.Replace("_", " ");
+        return string.Join(" ", name.Split(' ').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
+    }
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
 }
+
+<style>
+    .context-filters {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .ctx-btn {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 0.3rem 0.7rem;
+        border-radius: 3px;
+        border: 1px solid var(--surface-border);
+        background: var(--void-2);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        letter-spacing: 0.02em;
+    }
+
+    .ctx-btn:hover {
+        border-color: var(--ember-dim);
+        color: var(--text-primary);
+    }
+
+    .ctx-btn.active {
+        background: rgba(212, 85, 42, 0.12);
+        border-color: var(--ember);
+        color: var(--ember-bright);
+    }
+
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 180px;
+        outline: none;
+        transition: border-color 0.15s;
+        margin-right: 0.5rem;
+    }
+
+    .search-input:focus {
+        border-color: var(--ember);
+    }
+
+    .search-input::placeholder {
+        color: var(--text-dim);
+    }
+</style>

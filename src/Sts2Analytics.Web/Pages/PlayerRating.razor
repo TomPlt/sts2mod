@@ -108,6 +108,12 @@
         Filter.OnChange -= OnFilterChanged;
     }
 
-    private string FormatContext(string context) =>
-        context == "overall" ? "Overall" : context.Replace("_", " ");
+    private static string FormatContext(string context)
+    {
+        if (context == "overall") return "Overall";
+        // Strip "CHARACTER." prefix and title-case
+        var name = context.Replace("CHARACTER.", "");
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w));
+    }
 }

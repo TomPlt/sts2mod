@@ -67,8 +67,14 @@ public record ModOverlayData(
     List<ModAncientStats>? AncientChoices = null,
     List<MapIntelCharacter>? MapIntel = null);
 
-public record MapIntelPool(string Pool, double AvgDamage, int SampleSize, List<string> Encounters);
+public record EncounterDamage(string EncounterId, double AvgDamage, int SampleSize, int MaxDamage);
 
-public record MapIntelAct(int ActIndex, List<MapIntelPool> Pools);
+public record MapIntelPool(string Pool, double AvgDamage, int SampleSize, List<string> Encounters,
+    List<EncounterDamage>? EncounterDetails = null);
 
-public record MapIntelCharacter(string Character, List<MapIntelAct> Acts);
+public record MapIntelAct(int ActIndex, List<MapIntelPool> Pools,
+    int Runs = 0, int Wins = 0, double WinRate = 0,
+    List<EliteCorrelation>? EliteWinRates = null);
+
+public record MapIntelCharacter(string Character, int Runs, int Wins, double WinRate,
+    List<MapIntelAct> Acts);

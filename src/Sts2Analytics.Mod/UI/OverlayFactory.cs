@@ -7,6 +7,9 @@ public static class OverlayFactory
 {
     private const string OverlayGroup = "spire_oracle_overlay";
 
+    // Track show timestamps per card holder to debounce flicker
+    private static readonly System.Collections.Generic.Dictionary<ulong, bool> _hoverState = new();
+
     public static void AddOverlay(Control cardHolder, CardStats stats, double skipElo)
     {
         // Remove any existing overlay on this card
@@ -48,10 +51,13 @@ public static class OverlayFactory
         strip.AnchorTop = 1f;
         strip.Position = new Vector2(-30, 240);
         strip.Alignment = BoxContainer.AlignmentMode.Center;
+        strip.ZIndex = 5;
+        strip.MouseFilter = Control.MouseFilterEnum.Ignore;
 
         // Elo badge inside the strip
         eloBadge.SetAnchorsPreset(Control.LayoutPreset.Center);
         eloBadge.Position = Vector2.Zero;
+        eloBadge.MouseFilter = Control.MouseFilterEnum.Ignore;
         strip.AddChild(eloBadge);
 
         // No pill — just the Elo badge under the card
@@ -93,6 +99,8 @@ public static class OverlayFactory
             // Position top-right
             bsBadge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
             bsBadge.Position = new Vector2(-10, -10);
+            bsBadge.ZIndex = 5;
+            bsBadge.MouseFilter = Control.MouseFilterEnum.Ignore;
             cardHolder.AddChild(bsBadge);
         }
 
@@ -101,6 +109,7 @@ public static class OverlayFactory
         detail.Name = "SpireOracleDetail";
         detail.AddToGroup(OverlayGroup);
         detail.Visible = false;
+        detail.MouseFilter = Control.MouseFilterEnum.Ignore;
 
         var detailStyle = new StyleBoxFlat();
         detailStyle.BgColor = new Color(0.08f, 0.08f, 0.12f, 0.95f); // dark bg
@@ -162,9 +171,11 @@ public static class OverlayFactory
         detail.AddChild(vbox);
 
         detail.CustomMinimumSize = new Vector2(280, 0);
-        detail.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
-        detail.AnchorTop = 1f;
-        detail.Position = new Vector2(-20, 15);
+        detail.SetAnchorsPreset(Control.LayoutPreset.CenterBottom);
+        detail.GrowHorizontal = Control.GrowDirection.Both;
+        detail.Position = new Vector2(-140, 15);
+        detail.ZAsRelative = false;
+        detail.ZIndex = 200;
         cardHolder.AddChild(detail);
     }
 
@@ -238,29 +249,46 @@ public static class OverlayFactory
         label.AddThemeColorOverride("font_color", Colors.White);
         badge.AddChild(label);
 
-        var strip = new HBoxContainer();
-        strip.Name = "SpireOracleStrip";
-        strip.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
-        strip.AnchorTop = 1f;
-        strip.Position = new Vector2(-30, 240);
-        strip.AddChild(badge);
-        choiceHolder.AddChild(strip);
+        badge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
+        badge.Position = new Vector2(-10, -10);
+        badge.MouseFilter = Control.MouseFilterEnum.Ignore;
+        badge.ZIndex = 5;
+        choiceHolder.AddChild(badge);
     }
 
     public static void ShowDetail(Control cardHolder)
     {
+        var id = cardHolder.GetInstanceId();
+        _hoverState[id] = true;
+
         var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
         if (detail != null) detail.Visible = true;
     }
 
     public static void HideDetail(Control cardHolder)
     {
-        var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
-        if (detail != null) detail.Visible = false;
+        var id = cardHolder.GetInstanceId();
+        _hoverState[id] = false;
+
+        // Debounce: wait 150ms then check if still not hovered
+        var tree = cardHolder.GetTree();
+        if (tree == null) return;
+
+        tree.CreateTimer(0.15).Timeout += () =>
+        {
+            // Only hide if mouse hasn't re-entered during the delay
+            if (_hoverState.TryGetValue(id, out var hovering) && !hovering
+                && GodotObject.IsInstanceValid(cardHolder))
+            {
+                var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
+                if (detail != null) detail.Visible = false;
+            }
+        };
     }
 
     public static void RemoveOverlay(Control cardHolder)
     {
+        _hoverState.Remove(cardHolder.GetInstanceId());
         var toRemove = new System.Collections.Generic.List<Node>();
         foreach (var child in cardHolder.GetChildren())
         {

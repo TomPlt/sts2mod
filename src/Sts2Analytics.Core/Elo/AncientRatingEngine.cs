@@ -51,8 +51,8 @@ public class AncientRatingEngine
             foreach (var floorGroup in choicesByFloor)
             {
                 var floorChoices = floorGroup.ToList();
-                var picked = floorChoices.Where(c => c.WasChosen != 0).ToList();
-                var skipped = floorChoices.Where(c => c.WasChosen == 0).ToList();
+                var picked = floorChoices.Where(c => (long)c.WasChosen != 0).ToList();
+                var skipped = floorChoices.Where(c => (long)c.WasChosen == 0).ToList();
 
                 if (picked.Count == 0 || skipped.Count == 0) continue;
 

@@ -60,11 +60,6 @@ public class ModEntry
         _harmony.PatchAll(typeof(ModEntry).Assembly);
         GD.Print("[SpireOracle] Harmony patches applied.");
 
-        // Add F2 toggle node to scene tree
-        var toggle = new UI.OverlayToggle();
-        toggle.Name = "SpireOracleToggle";
-        ((SceneTree)Engine.GetMainLoop()).Root.CallDeferred("add_child", toggle);
-
-        GD.Print("[SpireOracle] Ready!");
+        GD.Print("[SpireOracle] Ready! Press F3 to toggle overlay.");
     }
 }
