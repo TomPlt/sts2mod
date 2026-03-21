@@ -164,6 +164,14 @@ public static class ExportCommand
             engine.ProcessAllRuns();
         }
 
+        // Process player ratings
+        var playerEngine = new PlayerRatingEngine(conn);
+        playerEngine.ProcessAllRuns();
+
+        // Compute blind spots
+        var blindSpotAnalyzer = new BlindSpotAnalyzer(conn);
+        blindSpotAnalyzer.AnalyzeAllContexts();
+
         // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
             "SELECT Rating FROM Glicko2Ratings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
@@ -187,13 +195,20 @@ public static class ExportCommand
             .Where(e => e.Context.Contains("_ACT"))
             .ToLookup(e => e.CardId);
 
-        // Skip Elo per act
+        // Skip Elo per act and per character
         var skipEloByAct = new Dictionary<string, double>();
-        foreach (var r in allRatings.Where(e => e.CardId == "SKIP" && e.Context.Contains("_ACT")))
+        foreach (var r in allRatings.Where(e => e.CardId == "SKIP"))
         {
-            var actNum = r.Context[(r.Context.LastIndexOf("ACT") + 3)..];
-            skipEloByAct[$"act{actNum}"] = r.Rating;
+            if (r.Context == "overall") continue;
+            // Per-character: context = "CHARACTER.IRONCLAD", key = "ironclad"
+            // Per-character-act: context = "CHARACTER.IRONCLAD_ACT1", key = "ironclad_act1"
+            var key = r.Context.Replace("CHARACTER.", "").ToLower();
+            skipEloByAct[key] = r.Rating;
         }
+
+        var blindSpots = conn.Query(
+            "SELECT CardId, BlindSpotType, Score, PickRate, WinRateDelta FROM BlindSpots WHERE Context = 'overall'")
+            .ToDictionary(b => (string)b.CardId);
 
         // Collect all card IDs
         var allCardIds = cardWinRates.Keys
@@ -222,11 +237,22 @@ public static class ExportCommand
                 else if (ar.Context.EndsWith("_ACT3")) { if (ar.Rating > act3) { act3 = ar.Rating; rdAct3 = ar.RatingDeviation; } }
             }
 
-            return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3);
+            string? blindSpotType = null;
+            double bsScore = 0, bsPickRate = 0, bsWinDelta = 0;
+            if (blindSpots.TryGetValue(id, out var bs))
+            {
+                blindSpotType = (string)bs.BlindSpotType;
+                bsScore = (double)bs.Score;
+                bsPickRate = (double)bs.PickRate;
+                bsWinDelta = (double)bs.WinRateDelta;
+            }
+
+            return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3,
+                blindSpotType, bsScore, bsPickRate, bsWinDelta);
         }).ToList();
 
         var overlayData = new ModOverlayData(
-            Version: 2,
+            Version: 3,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
             SkipEloByAct: skipEloByAct,
