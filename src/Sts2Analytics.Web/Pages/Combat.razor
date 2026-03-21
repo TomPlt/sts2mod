@@ -1,5 +1,7 @@
 @page "/combat"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Combat - STS2 Analytics</PageTitle>
 
@@ -11,6 +13,13 @@
 }
 else
 {
+    @if (Filter.HasAnyFilter)
+    {
+        <div style="background: #2a2a3e; border: 1px solid #4fc3f7; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; color: #4fc3f7; font-size: 0.85rem;">
+            Note: Combat data is aggregated across all ascension levels and cannot be filtered.
+        </div>
+    }
+
     <h3 style="color: #b0b0c8;">Damage by Encounter</h3>
 
     <RadzenDataGrid Data="@_encounters" TItem="EncounterRow" AllowSorting="true" AllowPaging="true" PageSize="25"
@@ -42,7 +51,18 @@ else
                 d.SampleSize
             )).ToList();
 
+        Filter.OnChange += OnFilterChanged;
         _loading = false;
+    }
+
+    private void OnFilterChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
     }
 
     private static string FormatName(string id)

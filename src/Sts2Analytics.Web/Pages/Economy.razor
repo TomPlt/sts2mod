@@ -1,5 +1,7 @@
 @page "/economy"
 @inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
 
 <PageTitle>Economy - STS2 Analytics</PageTitle>
 
@@ -11,6 +13,12 @@
 }
 else
 {
+    @if (Filter.HasAnyFilter)
+    {
+        <div style="background: #2a2a3e; border: 1px solid #4fc3f7; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; color: #4fc3f7; font-size: 0.85rem;">
+            Note: Economy data is aggregated across all runs. Summary stats below are filtered.
+        </div>
+    }
     <div style="background: #1a1a2e; border-radius: 8px; padding: 1.5rem; border: 1px solid #2a2a4a; margin-bottom: 2rem;">
         <h3 style="margin: 0 0 1rem; color: #b0b0c8;">Gold Economy Overview</h3>
         <p style="color: #aaa; margin: 0;">
@@ -62,22 +70,41 @@ else
     private int _cardCount;
     private int _relicCount;
     private List<CardPickRate> _topRemovals = [];
+    private ExportData? _data;
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await Data.GetDataAsync();
+        _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        Recompute();
+        _loading = false;
+    }
 
-        _totalRuns = data.Summary?.TotalRuns ?? 0;
-        _winRate = data.Summary?.WinRate ?? 0;
-        _cardCount = data.CardWinRates.Count;
-        _relicCount = data.RelicWinRates.Count;
+    private void OnFilterChanged()
+    {
+        Recompute();
+        InvokeAsync(StateHasChanged);
+    }
 
-        _topRemovals = data.CardPickRates
+    private void Recompute()
+    {
+        if (_data is null) return;
+
+        var filteredRuns = _data.Runs.Where(Filter.MatchesRun).ToList();
+        _totalRuns = filteredRuns.Count;
+        _winRate = filteredRuns.Count > 0 ? (double)filteredRuns.Count(r => r.Win) / filteredRuns.Count : 0;
+        _cardCount = _data.CardWinRates.Count;
+        _relicCount = _data.RelicWinRates.Count;
+
+        _topRemovals = _data.CardPickRates
             .OrderByDescending(c => c.PickRate)
             .Take(20)
             .ToList();
+    }
 
-        _loading = false;
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
     }
 
     private static string FormatName(string id)
