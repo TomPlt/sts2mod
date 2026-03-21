@@ -22,18 +22,17 @@ Each choice is identified by its `TextKey` from the `AncientChoices` table (e.g.
 
 ### Contexts
 
-Each choice is rated in 3 contexts simultaneously based on the ancient floor's position:
+Each choice is rated in 3 contexts simultaneously, producing 3 rows per matchup. The `Character` column tracks "ALL" vs a specific character, and the `Context` column tracks the semantic context.
 
-**Timing context** — determined by which act boundary the ancient floor sits at:
-- Ancient floor at start of run (ActIndex 0) → `"neow"` context
-- Ancient floor at start of Act 2 (ActIndex 1) → `"post_act1"` context
-- Ancient floor at start of Act 3 (ActIndex 2) → `"post_act2"` context
+For an Ironclad Neow choice, the 3 (Character, Context) tuples are:
+- `("ALL", "overall")` — global aggregate across all characters and timings
+- `("ALL", "neow")` — timing-specific, all characters (or `"post_act1"`, `"post_act2"`)
+- `("IRONCLAD", "neow")` — timing-specific, character-specific
 
-**Character context** — the run's character (e.g., `"IRONCLAD"`)
-
-**Overall** — `"overall"`
-
-So each matchup routes to: timing + character + overall (3 contexts).
+**Timing** is determined by which act boundary the ancient floor sits at:
+- Ancient floor at ActIndex 0 → `"neow"` context
+- Ancient floor at ActIndex 1 → `"post_act1"` context
+- Ancient floor at ActIndex 2 → `"post_act2"` context
 
 ### Temporal Decay
 
@@ -47,7 +46,7 @@ Same formula as card ratings: `φ' = √(φ² + σ²)` applied for runs where a 
 | Id | INTEGER PK | |
 | ChoiceKey | TEXT | TextKey from AncientChoices |
 | Character | TEXT | "ALL" for overall, character name otherwise |
-| Context | TEXT | "overall", "neow", "post_act1", "post_act2", character name |
+| Context | TEXT | "overall", "neow", "post_act1", "post_act2" |
 | Rating | REAL | Default 1500.0 |
 | RatingDeviation | REAL | Default 350.0 |
 | Volatility | REAL | Default 0.06 |
@@ -106,27 +105,31 @@ Respects existing `--character` and `--act` filters (act maps to timing context)
 
 ## 3. Overlay JSON
 
-Add `ancientChoices` array to the existing v3 `ModOverlayData`:
+Add optional `ancientChoices` array to `ModOverlayData`. Stay at version 3 — the field is nullable/optional so the mod's `DataLoader` handles v3 payloads with and without it (no version bump needed).
 
 ```json
 {
   "version": 3,
   "ancientChoices": [{
     "choiceKey": "BOOMING_CONCH",
-    "elo": 1620,
+    "rating": 1620,
     "rd": 110,
-    "eloNeow": 1580,
+    "ratingNeow": 1580,
     "rdNeow": 130,
-    "eloPostAct1": 1650,
+    "ratingPostAct1": 1650,
     "rdPostAct1": 100,
-    "eloPostAct2": 1600,
+    "ratingPostAct2": 1600,
     "rdPostAct2": 150
   }],
   ...existing fields unchanged...
 }
 ```
 
-The `elo`/`rd` fields are from the `"overall"` context. Per-timing fields use the timing context ratings.
+The `rating`/`rd` fields are from the `"overall"` context. Per-timing fields use the timing context ratings. New fields use `rating` instead of `elo` since this is net-new schema.
+
+### Overlay Rating Selection
+
+The mod overlay shows the **timing-specific rating** when available (e.g., `ratingNeow` on the Neow screen, `ratingPostAct1` on the post-Act-1 screen). Falls back to the overall `rating` if the timing-specific rating has default RD (350, meaning no data for that timing).
 
 ## 4. Mod Overlay
 
