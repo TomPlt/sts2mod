@@ -18,10 +18,11 @@ public static class RatingCommand
         var minGamesOption = new Option<int>("--min-games") { Description = "Minimum games played", DefaultValueFactory = _ => 0 };
         var matchupOption = new Option<string[]?>("--matchup") { Description = "Head-to-head: --matchup CARD_A CARD_B", Arity = new ArgumentArity(2, 2) };
         var playerOption = new Option<bool>("--player") { Description = "Show personal player ratings instead of card ratings" };
+        var ancientOption = new Option<bool>("--ancient") { Description = "Show ancient choice ratings" };
 
         var cmd = new Command("elo", "Show Glicko-2 rating leaderboard or card matchups")
         {
-            dbOption, topOption, characterOption, actOption, minGamesOption, matchupOption, playerOption
+            dbOption, topOption, characterOption, actOption, minGamesOption, matchupOption, playerOption, ancientOption
         };
 
         cmd.SetAction(parseResult =>
@@ -33,6 +34,7 @@ public static class RatingCommand
             var minGames = parseResult.GetValue(minGamesOption);
             var matchup = parseResult.GetValue(matchupOption);
             var player = parseResult.GetValue(playerOption);
+            var ancient = parseResult.GetValue(ancientOption);
 
             using var conn = new SqliteConnection($"Data Source={dbPath}");
             conn.Open();
@@ -55,6 +57,40 @@ public static class RatingCommand
                 foreach (var r in playerRatings)
                 {
                     Console.WriteLine($"  {(string)r.Context,-15} {(double)r.Rating,8:F0} {(double)r.RatingDeviation,6:F0} {(long)r.GamesPlayed,7}");
+                }
+
+                Console.WriteLine();
+                return;
+            }
+
+            if (ancient)
+            {
+                var ancientEngine = new AncientRatingEngine(conn);
+                ancientEngine.ProcessAllRuns();
+
+                string ancientContext = "overall";
+                if (act is not null)
+                {
+                    ancientContext = act switch { 0 => "neow", 1 => "post_act1", 2 => "post_act2", _ => "overall" };
+                }
+
+                var sql = character != null
+                    ? "SELECT ChoiceKey, Rating, RatingDeviation, GamesPlayed FROM AncientGlicko2Ratings WHERE Character = @Character AND Context = @Context ORDER BY Rating DESC"
+                    : "SELECT ChoiceKey, Rating, RatingDeviation, GamesPlayed FROM AncientGlicko2Ratings WHERE Character = 'ALL' AND Context = @Context ORDER BY Rating DESC";
+
+                var ancientRatings = conn.Query(sql, new { Character = character, Context = ancientContext })
+                    .Where(r => (long)r.GamesPlayed >= minGames)
+                    .Take(top).ToList();
+
+                Console.WriteLine();
+                Console.WriteLine("  Ancient Choice Ratings");
+                Console.WriteLine("  ─────────────────────────────────────────────");
+                Console.WriteLine($"  {"Choice",-25} {"Rating",8} {"±RD",6} {"Games",7}");
+                Console.WriteLine("  ─────────────────────────────────────────────");
+
+                foreach (var r in ancientRatings)
+                {
+                    Console.WriteLine($"  {(string)r.ChoiceKey,-25} {(double)r.Rating,8:F0} {(double)r.RatingDeviation,6:F0} {(long)r.GamesPlayed,7}");
                 }
 
                 Console.WriteLine();
