@@ -20,7 +20,7 @@ public record CardImpactScore(string CardId, double PickRate, double WinRateDelt
 
 public record Glicko2RatingResult(
     string CardId, string Character, string Context,
-    double Rating, double RatingDeviation, double Volatility, int GamesPlayed);
+    double Rating, double RatingDeviation, double Volatility, long GamesPlayed);
 
 public record Glicko2HistoryResult(
     double RatingBefore, double RatingAfter,

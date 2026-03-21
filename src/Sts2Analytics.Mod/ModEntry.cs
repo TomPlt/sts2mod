@@ -1,3 +1,4 @@
+using System.IO;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
@@ -15,14 +16,28 @@ public class ModEntry
     {
         GD.Print("[SpireOracle] Initializing...");
 
-        // Find our mod path from ModManager
+        // Find our mod path from the DLL location
+        var assemblyPath = typeof(ModEntry).Assembly.Location;
+        GD.Print($"[SpireOracle] Assembly location: {assemblyPath}");
+
         string? modPath = null;
-        foreach (var mod in ModManager.LoadedMods)
+
+        if (!string.IsNullOrEmpty(assemblyPath))
         {
-            if (mod.manifest?.id == "SpireOracle")
+            modPath = Path.GetDirectoryName(assemblyPath);
+        }
+
+        // Fallback: search ModManager
+        if (modPath == null || !File.Exists(Path.Combine(modPath, "overlay_data.json")))
+        {
+            foreach (var mod in ModManager.AllMods)
             {
-                modPath = mod.path;
-                break;
+                if (mod.manifest?.id == "SpireOracle")
+                {
+                    modPath = mod.path;
+                    GD.Print($"[SpireOracle] Found mod path via ModManager: {modPath}");
+                    break;
+                }
             }
         }
 
@@ -31,6 +46,8 @@ public class ModEntry
             GD.PrintErr("[SpireOracle] Could not find mod path!");
             return;
         }
+
+        GD.Print($"[SpireOracle] Mod path: {modPath}");
 
         if (!DataLoader.Load(modPath))
         {

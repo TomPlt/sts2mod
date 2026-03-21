@@ -1,0 +1,6071 @@
+{
+  "version": 1,
+  "exportedAt": "2026-03-21T07:51:33.6268748Z",
+  "skipElo": 1704.1605155935538,
+  "cards": [
+    {
+      "cardId": "CARD.ABRASIVE",
+      "elo": 1590.0861370866414,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.ABRASIVE\u002B1",
+      "elo": 1424.8488946294583,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ACCELERANT",
+      "elo": 1656.1987225128992,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": 0.11111111111111116
+    },
+    {
+      "cardId": "CARD.ACCURACY",
+      "elo": 1533.9846333040182,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.ACCURACY\u002B1",
+      "elo": 1575.0625022815118,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ACROBATICS",
+      "elo": 1942.714246319803,
+      "pickRate": 0.6666666666666666,
+      "winRatePicked": 0.9285714285714286,
+      "winRateSkipped": 1,
+      "delta": -0.0714285714285714
+    },
+    {
+      "cardId": "CARD.ACROBATICS\u002B1",
+      "elo": 1870.2193610798129,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ADAPTIVE_STRIKE",
+      "elo": 1607.8923675909243,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ADRENALINE",
+      "elo": 2205.3077615982593,
+      "pickRate": 1,
+      "winRatePicked": 0.8571428571428571,
+      "winRateSkipped": 0,
+      "delta": 0.8571428571428571
+    },
+    {
+      "cardId": "CARD.AFTERIMAGE",
+      "elo": 2029.4736981749406,
+      "pickRate": 0.75,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 1,
+      "delta": -0.6666666666666667
+    },
+    {
+      "cardId": "CARD.AFTERLIFE",
+      "elo": 1662.4302553665166,
+      "pickRate": 0.3,
+      "winRatePicked": 0.7777777777777778,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.0793650793650793
+    },
+    {
+      "cardId": "CARD.AFTERLIFE\u002B1",
+      "elo": 1704.2795487906642,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.AGGRESSION",
+      "elo": 1835.1889065008027,
+      "pickRate": 0.5,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.AGGRESSION\u002B1",
+      "elo": 1778.009026969168,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ALCHEMIZE",
+      "elo": 1283.684153880172,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.ALIGNMENT",
+      "elo": 1868.7014781548041,
+      "pickRate": 0.5555555555555556,
+      "winRatePicked": 0.4,
+      "winRateSkipped": 0.75,
+      "delta": -0.35
+    },
+    {
+      "cardId": "CARD.ALIGNMENT\u002B1",
+      "elo": 1827.585034059824,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ALL_FOR_ONE",
+      "elo": 1670.6288682540585,
+      "pickRate": 0.3,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.19047619047619047
+    },
+    {
+      "cardId": "CARD.ALL_FOR_ONE\u002B1",
+      "elo": 1436.3688642982784,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ANGER",
+      "elo": 1384.6177935033638,
+      "pickRate": 0.058823529411764705,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.ANGER\u002B1",
+      "elo": 1255.4807682225678,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ANOINTED",
+      "elo": 1309.8936399452384,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.ANTICIPATE",
+      "elo": 1449.4860791033364,
+      "pickRate": 0.07407407407407407,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.92,
+      "delta": -0.92
+    },
+    {
+      "cardId": "CARD.ANTICIPATE\u002B1",
+      "elo": 1241.8229512797902,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ARMAMENTS",
+      "elo": 1474.0420441895321,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.775,
+      "delta": 0.025000000000000022
+    },
+    {
+      "cardId": "CARD.ARMAMENTS\u002B1",
+      "elo": 1631.464367739045,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ARSENAL",
+      "elo": 1648.5218688606149,
+      "pickRate": 0.2,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.ASHEN_STRIKE",
+      "elo": 1499.5942851672326,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.16666666666666663
+    },
+    {
+      "cardId": "CARD.ASHEN_STRIKE\u002B1",
+      "elo": 1398.9573286905916,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ASSASSINATE",
+      "elo": 1318.8994658482252,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.ASTRAL_PULSE",
+      "elo": 1420.94996793239,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.48484848484848486,
+      "delta": -0.15151515151515155
+    },
+    {
+      "cardId": "CARD.ASTRAL_PULSE\u002B1",
+      "elo": 1358.0143985621396,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.AUTOMATION",
+      "elo": 1462.77000182977,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.BACKFLIP",
+      "elo": 1561.170723644169,
+      "pickRate": 0.26666666666666666,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 0.8636363636363636,
+      "delta": 0.011363636363636354
+    },
+    {
+      "cardId": "CARD.BACKFLIP\u002B1",
+      "elo": 1799.0929766189247,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BACKSTAB",
+      "elo": 1703.6546393163035,
+      "pickRate": 0.3125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9090909090909091,
+      "delta": 0.09090909090909094
+    },
+    {
+      "cardId": "CARD.BACKSTAB\u002B1",
+      "elo": 1358.0941843013538,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BALL_LIGHTNING",
+      "elo": 1585.5667481706573,
+      "pickRate": 0.2,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.8,
+      "delta": -0.20000000000000007
+    },
+    {
+      "cardId": "CARD.BALL_LIGHTNING\u002B1",
+      "elo": 1344.864251087793,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BANSHEES_CRY",
+      "elo": 1287.1090235432905,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.8571428571428571
+    },
+    {
+      "cardId": "CARD.BARRAGE",
+      "elo": 1164.968511583757,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": -0.8888888888888888
+    },
+    {
+      "cardId": "CARD.BARRAGE\u002B1",
+      "elo": 1239.4904461678393,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BARRICADE",
+      "elo": 1868.56883423001,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BATTLE_TRANCE",
+      "elo": 1844.5049653258088,
+      "pickRate": 0.6470588235294118,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": 0.16666666666666663
+    },
+    {
+      "cardId": "CARD.BATTLE_TRANCE\u002B1",
+      "elo": 1992.0669148063857,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BEAM_CELL",
+      "elo": 1370.125476172341,
+      "pickRate": 0.05263157894736842,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": -0.8888888888888888
+    },
+    {
+      "cardId": "CARD.BEAM_CELL\u002B1",
+      "elo": 1311.0294966027955,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BEAT_DOWN",
+      "elo": 1279.1868340569963,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.BEAT_INTO_SHAPE",
+      "elo": 1290.5728880169663,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.BEGONE",
+      "elo": 1547.2698839505317,
+      "pickRate": 0.12121212121212122,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.41379310344827586,
+      "delta": 0.08620689655172414
+    },
+    {
+      "cardId": "CARD.BEGONE\u002B1",
+      "elo": 1328.1245515101218,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BIG_BANG",
+      "elo": 1880.4128786973843,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BIG_BANG\u002B1",
+      "elo": 1431.8147784065272,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLACK_HOLE",
+      "elo": 1683.336587844605,
+      "pickRate": 0.26666666666666666,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.5454545454545454,
+      "delta": 0.20454545454545459
+    },
+    {
+      "cardId": "CARD.BLACK_HOLE\u002B1",
+      "elo": 1438.0387897621322,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLADE_DANCE",
+      "elo": 1710.9534794902315,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 1,
+      "delta": -0.125
+    },
+    {
+      "cardId": "CARD.BLADE_DANCE\u002B1",
+      "elo": 1867.344470952145,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLADE_OF_INK",
+      "elo": 1155.1688970995035,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.BLIGHT_STRIKE",
+      "elo": 1393.0302941069413,
+      "pickRate": 0.05555555555555555,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9117647058823529,
+      "delta": 0.08823529411764708
+    },
+    {
+      "cardId": "CARD.BLIGHT_STRIKE\u002B1",
+      "elo": 1278.8584394018542,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLOOD_WALL",
+      "elo": 1460.9067409652653,
+      "pickRate": 0.1,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": -0.7777777777777778
+    },
+    {
+      "cardId": "CARD.BLOOD_WALL\u002B1",
+      "elo": 1267.9346615980137,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLOODLETTING",
+      "elo": 1750.5193442027671,
+      "pickRate": 0.4230769230769231,
+      "winRatePicked": 0.6363636363636364,
+      "winRateSkipped": 0.7333333333333333,
+      "delta": -0.09696969696969693
+    },
+    {
+      "cardId": "CARD.BLOODLETTING\u002B1",
+      "elo": 1801.5884607869593,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLUDGEON",
+      "elo": 1142.9177292247805,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6428571428571429,
+      "delta": -0.6428571428571429
+    },
+    {
+      "cardId": "CARD.BLUDGEON\u002B1",
+      "elo": 1379.2991093123226,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BLUR",
+      "elo": 1680.288649530089,
+      "pickRate": 0.375,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.BLUR\u002B1",
+      "elo": 1801.4709076068523,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BODY_SLAM",
+      "elo": 1215.1971856317662,
+      "pickRate": 0.03125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7741935483870968,
+      "delta": 0.22580645161290325
+    },
+    {
+      "cardId": "CARD.BODY_SLAM\u002B1",
+      "elo": 1280.5544944882072,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BOLAS",
+      "elo": 1193.581354983799,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6153846153846154,
+      "delta": -0.6153846153846154
+    },
+    {
+      "cardId": "CARD.BOMBARDMENT",
+      "elo": 1231.5513493623268,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.BONE_SHARDS",
+      "elo": 1575.9804690652943,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7272727272727273,
+      "delta": -0.7272727272727273
+    },
+    {
+      "cardId": "CARD.BOOST_AWAY",
+      "elo": 1444.435192348027,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.9444444444444444,
+      "delta": -0.2777777777777778
+    },
+    {
+      "cardId": "CARD.BOOST_AWAY\u002B1",
+      "elo": 1570.2230079653414,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BOOT_SEQUENCE",
+      "elo": 1832.0848640089766,
+      "pickRate": 0.4444444444444444,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 1,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.BOOT_SEQUENCE\u002B1",
+      "elo": 1390.2312527857575,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BORROWED_TIME",
+      "elo": 1744.2655714498273,
+      "pickRate": 0.4375,
+      "winRatePicked": 0.8571428571428571,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": -0.031746031746031744
+    },
+    {
+      "cardId": "CARD.BORROWED_TIME\u002B1",
+      "elo": 1840.660578153829,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BOUNCING_FLASK",
+      "elo": 1369.1371043483682,
+      "pickRate": 0.125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9285714285714286,
+      "delta": 0.0714285714285714
+    },
+    {
+      "cardId": "CARD.BOUNCING_FLASK\u002B1",
+      "elo": 1692.243066527574,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BRAND",
+      "elo": 1628.4074778621662,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.75,
+      "delta": 0.25
+    },
+    {
+      "cardId": "CARD.BRAND\u002B1",
+      "elo": 1767.718113546756,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BREAKTHROUGH",
+      "elo": 1546.6343961642435,
+      "pickRate": 0.2962962962962963,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.5263157894736842,
+      "delta": -0.02631578947368418
+    },
+    {
+      "cardId": "CARD.BREAKTHROUGH\u002B1",
+      "elo": 1878.1311215359021,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BUBBLE_BUBBLE",
+      "elo": 1149.7556080579704,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.BUFFER",
+      "elo": 1645.3847947733543,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BULK_UP",
+      "elo": 1711.8160054947825,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.BULK_UP\u002B1",
+      "elo": 1242.383359236288,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BULLET_TIME",
+      "elo": 1478.0407267131382,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BULLY",
+      "elo": 1233.0567713934113,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.BULLY\u002B1",
+      "elo": 1471.5326257940196,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BULWARK",
+      "elo": 1857.23137022848,
+      "pickRate": 0.5,
+      "winRatePicked": 0.5714285714285714,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BULWARK\u002B1",
+      "elo": 1909.7082767884579,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BUNDLE_OF_JOY",
+      "elo": 1530.6676033152653,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.BURNING_PACT",
+      "elo": 1855.8671293151783,
+      "pickRate": 0.5882352941176471,
+      "winRatePicked": 0.7,
+      "winRateSkipped": 1,
+      "delta": -0.30000000000000004
+    },
+    {
+      "cardId": "CARD.BURNING_PACT\u002B1",
+      "elo": 1974.4102523312686,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BURST",
+      "elo": 1950.651745877091,
+      "pickRate": 0.8333333333333334,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BURST\u002B1",
+      "elo": 1854.8087670412413,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.BURY",
+      "elo": 1206.284114557547,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.BURY\u002B1",
+      "elo": 1313.0138802581826,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CALAMITY",
+      "elo": 1282.0552601381487,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.CALCIFY",
+      "elo": 1577.0754322781645,
+      "pickRate": 0.23076923076923078,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 1,
+      "delta": -0.33333333333333337
+    },
+    {
+      "cardId": "CARD.CALCIFY\u002B1",
+      "elo": 1674.9734173865777,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CALCULATED_GAMBLE",
+      "elo": 1970.326287972248,
+      "pickRate": 0.7692307692307693,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CALCULATED_GAMBLE\u002B1",
+      "elo": 1988.9503088071308,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CALL_OF_THE_VOID",
+      "elo": 1214.348148147094,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.CAPACITOR",
+      "elo": 1924.2580452980892,
+      "pickRate": 0.8888888888888888,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 0,
+      "delta": 0.875
+    },
+    {
+      "cardId": "CARD.CAPACITOR\u002B1",
+      "elo": 2042.7280544314908,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CAPTURE_SPIRIT",
+      "elo": 1826.2318672383012,
+      "pickRate": 0.46153846153846156,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": 0.261904761904762
+    },
+    {
+      "cardId": "CARD.CAPTURE_SPIRIT\u002B1",
+      "elo": 1738.0385900973524,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CASCADE",
+      "elo": 1640.0152397157628,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CATASTROPHE",
+      "elo": 1574.2938900621002,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CELESTIAL_MIGHT",
+      "elo": 1096.098296749754,
+      "pickRate": 0.03125,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6774193548387096,
+      "delta": -0.6774193548387096
+    },
+    {
+      "cardId": "CARD.CELESTIAL_MIGHT\u002B1",
+      "elo": 1493.8915922362587,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CHAOS",
+      "elo": 1257.9552299266115,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6,
+      "delta": 0.4
+    },
+    {
+      "cardId": "CARD.CHAOS\u002B1",
+      "elo": 1885.989526092713,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CHARGE",
+      "elo": 1661.8266975257382,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.CHARGE_BATTERY",
+      "elo": 1444.268280841517,
+      "pickRate": 0.14814814814814814,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.9130434782608695,
+      "delta": -0.1630434782608695
+    },
+    {
+      "cardId": "CARD.CHARGE_BATTERY\u002B1",
+      "elo": 1590.9804630651417,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CHILD_OF_THE_STARS",
+      "elo": 1733.0667706690917,
+      "pickRate": 0.4117647058823529,
+      "winRatePicked": 0.2857142857142857,
+      "winRateSkipped": 0.4,
+      "delta": -0.11428571428571432
+    },
+    {
+      "cardId": "CARD.CHILD_OF_THE_STARS\u002B1",
+      "elo": 1852.521949811834,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CHILL",
+      "elo": 1853.0526080221277,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CHILL\u002B1",
+      "elo": 1678.3073580743364,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CINDER",
+      "elo": 1050.6122096914053,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6923076923076923,
+      "delta": -0.6923076923076923
+    },
+    {
+      "cardId": "CARD.CINDER\u002B1",
+      "elo": 1247.0702255175302,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CLAW",
+      "elo": 1454.4306335292806,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.3571428571428571
+    },
+    {
+      "cardId": "CARD.CLAW\u002B1",
+      "elo": 1755.7446490579898,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CLEANSE",
+      "elo": 1741.316362364234,
+      "pickRate": 0.23076923076923078,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.9,
+      "delta": -0.2333333333333334
+    },
+    {
+      "cardId": "CARD.CLEANSE\u002B1",
+      "elo": 1424.5363061928615,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CLOAK_AND_DAGGER",
+      "elo": 1658.815004104041,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": 0.1428571428571429
+    },
+    {
+      "cardId": "CARD.CLOAK_AND_DAGGER\u002B1",
+      "elo": 1599.0830854185583,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CLOAK_OF_STARS",
+      "elo": 1552.7588438453706,
+      "pickRate": 0.21621621621621623,
+      "winRatePicked": 0.375,
+      "winRateSkipped": 0.5172413793103449,
+      "delta": -0.14224137931034486
+    },
+    {
+      "cardId": "CARD.CLOAK_OF_STARS\u002B1",
+      "elo": 1815.3106367683076,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COLD_SNAP",
+      "elo": 1634.1848059172014,
+      "pickRate": 0.25925925925925924,
+      "winRatePicked": 0.5714285714285714,
+      "winRateSkipped": 0.8,
+      "delta": -0.22857142857142865
+    },
+    {
+      "cardId": "CARD.COLD_SNAP\u002B1",
+      "elo": 1648.6511257749316,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COLLISION_COURSE",
+      "elo": 1028.1900547982127,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4883720930232558,
+      "delta": -0.4883720930232558
+    },
+    {
+      "cardId": "CARD.COLLISION_COURSE\u002B1",
+      "elo": 1298.8313403834916,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COLOSSUS",
+      "elo": 1709.7216131202792,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6,
+      "delta": 0.4
+    },
+    {
+      "cardId": "CARD.COMET",
+      "elo": 1728.58228677002,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.COMPACT",
+      "elo": 1275.7788025081602,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6,
+      "delta": -0.6
+    },
+    {
+      "cardId": "CARD.COMPACT\u002B1",
+      "elo": 1402.0148511460472,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COMPILE_DRIVER",
+      "elo": 1693.3329188850464,
+      "pickRate": 0.19230769230769232,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.8095238095238095,
+      "delta": -0.20952380952380956
+    },
+    {
+      "cardId": "CARD.COMPILE_DRIVER\u002B1",
+      "elo": 1344.6174212696765,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CONFLAGRATION",
+      "elo": 1498.66140447889,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.CONQUEROR",
+      "elo": 1657.1776566183314,
+      "pickRate": 0.3,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": 0.09523809523809523
+    },
+    {
+      "cardId": "CARD.CONQUEROR\u002B1",
+      "elo": 1675.9993366549854,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CONSUMING_SHADOW",
+      "elo": 1326.1111929440742,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.CONVERGENCE",
+      "elo": 1262.831104695794,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5555555555555556,
+      "delta": -0.5555555555555556
+    },
+    {
+      "cardId": "CARD.CONVERGENCE\u002B1",
+      "elo": 1359.9183987308702,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COOLANT",
+      "elo": 1866.952970500369,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COOLHEADED",
+      "elo": 1691.736094013111,
+      "pickRate": 0.45161290322580644,
+      "winRatePicked": 0.9285714285714286,
+      "winRateSkipped": 0.8235294117647058,
+      "delta": 0.10504201680672276
+    },
+    {
+      "cardId": "CARD.COOLHEADED\u002B1",
+      "elo": 2004.0601519831275,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COORDINATE",
+      "elo": 1346.0044802966165,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.CORROSIVE_WAVE",
+      "elo": 1684.8737731096019,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.75,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.COSMIC_INDIFFERENCE",
+      "elo": 1763.9702098551115,
+      "pickRate": 0.35294117647058826,
+      "winRatePicked": 0.4166666666666667,
+      "winRateSkipped": 0.36363636363636365,
+      "delta": 0.05303030303030304
+    },
+    {
+      "cardId": "CARD.COSMIC_INDIFFERENCE\u002B1",
+      "elo": 1731.5882496253582,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.COUNTDOWN",
+      "elo": 1784.567302383689,
+      "pickRate": 0.391304347826087,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.9285714285714286,
+      "delta": -0.261904761904762
+    },
+    {
+      "cardId": "CARD.COUNTDOWN\u002B1",
+      "elo": 1218.9298369799399,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CRASH_LANDING",
+      "elo": 1698.2560036273576,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.CREATIVE_AI",
+      "elo": 1718.165670652877,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6,
+      "delta": 0.4
+    },
+    {
+      "cardId": "CARD.CRESCENT_SPEAR",
+      "elo": 1476.7820548847715,
+      "pickRate": 0.08571428571428572,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.CRESCENT_SPEAR\u002B1",
+      "elo": 1320.368635906319,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CRIMSON_MANTLE",
+      "elo": 1859.9077583438002,
+      "pickRate": 0.625,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CRUELTY",
+      "elo": 1328.3732471646874,
+      "pickRate": 0.25,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.CRUELTY\u002B1",
+      "elo": 1815.904009647622,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.CRUSH_UNDER",
+      "elo": 1476.3040643347501,
+      "pickRate": 0.10810810810810811,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6060606060606061,
+      "delta": -0.10606060606060608
+    },
+    {
+      "cardId": "CARD.CRUSH_UNDER\u002B1",
+      "elo": 1241.7824755761358,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DAGGER_SPRAY",
+      "elo": 1313.3817394262992,
+      "pickRate": 0.03571428571428571,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DAGGER_SPRAY\u002B1",
+      "elo": 1193.9536211088077,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DAGGER_THROW",
+      "elo": 1507.224619634484,
+      "pickRate": 0.17857142857142858,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.8695652173913043,
+      "delta": -0.06956521739130428
+    },
+    {
+      "cardId": "CARD.DAGGER_THROW\u002B1",
+      "elo": 1759.100606088437,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DANSE_MACABRE",
+      "elo": 1158.7618534466833,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7222222222222222,
+      "delta": -0.7222222222222222
+    },
+    {
+      "cardId": "CARD.DANSE_MACABRE\u002B1",
+      "elo": 1223.476872009484,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DARK_EMBRACE",
+      "elo": 1722.2087608008962,
+      "pickRate": 0.5,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DARK_EMBRACE\u002B1",
+      "elo": 1920.3589873247943,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DARK_SHACKLES",
+      "elo": 1256.7867578937316,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.DARKNESS",
+      "elo": 1236.7260453188896,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9166666666666666,
+      "delta": 0.08333333333333337
+    },
+    {
+      "cardId": "CARD.DARKNESS\u002B1",
+      "elo": 1758.8056224780885,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DASH",
+      "elo": 1484.2340999785529,
+      "pickRate": 0.125,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.9285714285714286,
+      "delta": -0.4285714285714286
+    },
+    {
+      "cardId": "CARD.DASH\u002B1",
+      "elo": 1316.1070095998164,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEADLY_POISON",
+      "elo": 1500.7413896577887,
+      "pickRate": 0.15625,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.9629629629629629,
+      "delta": -0.16296296296296287
+    },
+    {
+      "cardId": "CARD.DEADLY_POISON\u002B1",
+      "elo": 1669.9448763282612,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEATH_MARCH",
+      "elo": 1065.2337947985243,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8636363636363636,
+      "delta": -0.8636363636363636
+    },
+    {
+      "cardId": "CARD.DEATH_MARCH\u002B1",
+      "elo": 1358.5698358890875,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEATHBRINGER",
+      "elo": 1608.0719130379896,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7333333333333333,
+      "delta": 0.2666666666666667
+    },
+    {
+      "cardId": "CARD.DEATHBRINGER\u002B1",
+      "elo": 1770.1105307310977,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEATHS_DOOR",
+      "elo": 1561.3326274017609,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.75,
+      "delta": 0.25
+    },
+    {
+      "cardId": "CARD.DEATHS_DOOR\u002B1",
+      "elo": 1376.172735058457,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEBILITATE",
+      "elo": 1648.6897063477638,
+      "pickRate": 0.13636363636363635,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7368421052631579,
+      "delta": 0.26315789473684215
+    },
+    {
+      "cardId": "CARD.DEBILITATE\u002B1",
+      "elo": 1287.7649228919,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DECISIONS_DECISIONS",
+      "elo": 1856.8401199809753,
+      "pickRate": 0.625,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.06666666666666665
+    },
+    {
+      "cardId": "CARD.DECISIONS_DECISIONS\u002B1",
+      "elo": 1846.3349356243102,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEFILE",
+      "elo": 1615.2560718805423,
+      "pickRate": 0.20689655172413793,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.8695652173913043,
+      "delta": -0.2028985507246377
+    },
+    {
+      "cardId": "CARD.DEFILE\u002B1",
+      "elo": 1312.9302062590164,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEFLECT",
+      "elo": 1348.303926642598,
+      "pickRate": 0.1724137931034483,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.875,
+      "delta": -0.07499999999999996
+    },
+    {
+      "cardId": "CARD.DEFLECT\u002B1",
+      "elo": 1669.8310786046895,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEFRAGMENT",
+      "elo": 1794.1524738132387,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.DEFY",
+      "elo": 1733.9816568572874,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.84,
+      "delta": 0.16000000000000003
+    },
+    {
+      "cardId": "CARD.DEFY\u002B1",
+      "elo": 1720.8528222914954,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DELAY",
+      "elo": 1584.189057439106,
+      "pickRate": 0.2,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.DELAY\u002B1",
+      "elo": 2001.5422428328861,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEMESNE",
+      "elo": 1860.949595511866,
+      "pickRate": 0.5,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 1,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.DEMON_FORM",
+      "elo": 1668.6635379089896,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.75,
+      "delta": 0.25
+    },
+    {
+      "cardId": "CARD.DEMONIC_SHIELD",
+      "elo": 1744.7012310807295,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DEVASTATE",
+      "elo": 1558.7930403023145,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.4444444444444444,
+      "delta": 0.05555555555555558
+    },
+    {
+      "cardId": "CARD.DEVOUR_LIFE",
+      "elo": 1642.3213515235077,
+      "pickRate": 0.4,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.DIRGE",
+      "elo": 1863.495949666155,
+      "pickRate": 0.46153846153846156,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.11904761904761907
+    },
+    {
+      "cardId": "CARD.DIRGE\u002B1",
+      "elo": 1392.4123923213058,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DISCOVERY",
+      "elo": 1230.9526536420665,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.DISMANTLE",
+      "elo": 1476.832146715044,
+      "pickRate": 0.10526315789473684,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.7058823529411765,
+      "delta": -0.20588235294117652
+    },
+    {
+      "cardId": "CARD.DISMANTLE\u002B1",
+      "elo": 1329.918330029172,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DODGE_AND_ROLL",
+      "elo": 1484.9984828586512,
+      "pickRate": 0.07407407407407407,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.DODGE_AND_ROLL\u002B1",
+      "elo": 1256.1944654490972,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DOMINATE",
+      "elo": 1617.841329601619,
+      "pickRate": 0.2777777777777778,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.9230769230769231,
+      "delta": -0.12307692307692308
+    },
+    {
+      "cardId": "CARD.DOMINATE\u002B1",
+      "elo": 1398.9573286905916,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DOUBLE_ENERGY",
+      "elo": 1750.8019110531159,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DRAIN_POWER",
+      "elo": 1491.5100458679217,
+      "pickRate": 0.13793103448275862,
+      "winRatePicked": 0.25,
+      "winRateSkipped": 0.76,
+      "delta": -0.51
+    },
+    {
+      "cardId": "CARD.DRAIN_POWER\u002B1",
+      "elo": 1325.730140923769,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DRAMATIC_ENTRANCE",
+      "elo": 1633.0447376329525,
+      "pickRate": 0.5,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.DRAMATIC_ENTRANCE\u002B1",
+      "elo": 1896.5313867011141,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DREDGE",
+      "elo": 1642.5219820354257,
+      "pickRate": 0.26666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9090909090909091,
+      "delta": 0.09090909090909094
+    },
+    {
+      "cardId": "CARD.DREDGE\u002B1",
+      "elo": 1607.6384599590215,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DRUM_OF_BATTLE",
+      "elo": 1394.7935698272415,
+      "pickRate": 0.07142857142857142,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7692307692307693,
+      "delta": 0.23076923076923073
+    },
+    {
+      "cardId": "CARD.DRUM_OF_BATTLE\u002B1",
+      "elo": 1227.3550775029858,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.DYING_STAR",
+      "elo": 1563.3859038941985,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.ECHO_FORM",
+      "elo": 2087.7807302518086,
+      "pickRate": 0.8571428571428571,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 1,
+      "delta": -0.16666666666666663
+    },
+    {
+      "cardId": "CARD.ECHOING_SLASH",
+      "elo": 1208.4564644285292,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.ECHOING_SLASH\u002B1",
+      "elo": 1424.8488946294583,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EIDOLON",
+      "elo": 1622.1718664810237,
+      "pickRate": 0.2,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.END_OF_DAYS",
+      "elo": 1828.9837097014058,
+      "pickRate": 0.4,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.ENERGY_SURGE",
+      "elo": 1988.039573475086,
+      "pickRate": 1,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.ENFEEBLING_TOUCH",
+      "elo": 1713.5354724317244,
+      "pickRate": 0.47619047619047616,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.9090909090909091,
+      "delta": -0.3090909090909091
+    },
+    {
+      "cardId": "CARD.ENFEEBLING_TOUCH\u002B1",
+      "elo": 1998.84520651193,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ENTROPY",
+      "elo": 1184.639486195955,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8181818181818182,
+      "delta": -0.8181818181818182
+    },
+    {
+      "cardId": "CARD.ENVENOM",
+      "elo": 1532.323001458817,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5454545454545454,
+      "delta": 0.4545454545454546
+    },
+    {
+      "cardId": "CARD.ENVENOM\u002B1",
+      "elo": 1408.9471407289673,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EQUILIBRIUM",
+      "elo": 1239.779211616659,
+      "pickRate": 0.125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.42857142857142855,
+      "delta": 0.5714285714285714
+    },
+    {
+      "cardId": "CARD.EQUILIBRIUM\u002B1",
+      "elo": 1854.5942243537556,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ERADICATE",
+      "elo": 1266.427227782667,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.ESCAPE_PLAN",
+      "elo": 1739.6881383980738,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ESCAPE_PLAN\u002B1",
+      "elo": 1813.7175715207204,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ETERNAL_ARMOR",
+      "elo": 1391.8596301924786,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7272727272727273,
+      "delta": 0.2727272727272727
+    },
+    {
+      "cardId": "CARD.ETERNAL_ARMOR\u002B1",
+      "elo": 1412.3587498932202,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EVIL_EYE",
+      "elo": 1591.5669613358182,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8666666666666667,
+      "delta": 0.1333333333333333
+    },
+    {
+      "cardId": "CARD.EVIL_EYE\u002B1",
+      "elo": 1356.2861598779134,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EXPECT_A_FIGHT",
+      "elo": 1637.9811722113955,
+      "pickRate": 0.4166666666666667,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.05714285714285705
+    },
+    {
+      "cardId": "CARD.EXPECT_A_FIGHT\u002B1",
+      "elo": 2072.1245235837987,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EXPERTISE",
+      "elo": 1662.3482639313447,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.2142857142857143
+    },
+    {
+      "cardId": "CARD.EXPERTISE\u002B1",
+      "elo": 1421.4672927346369,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EXPOSE",
+      "elo": 1565.4126753901626,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.EXPOSE\u002B1",
+      "elo": 1201.3874073217862,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FAN_OF_KNIVES",
+      "elo": 1781.1691261606784,
+      "pickRate": 0.4,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.3333333333333333,
+      "delta": 0.16666666666666669
+    },
+    {
+      "cardId": "CARD.FASTEN",
+      "elo": 1319.2628857624127,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.FEAR",
+      "elo": 1366.9794629382575,
+      "pickRate": 0.06666666666666667,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8214285714285714,
+      "delta": -0.3214285714285714
+    },
+    {
+      "cardId": "CARD.FEAR\u002B1",
+      "elo": 1598.1912214867946,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FEED",
+      "elo": 1605.9610211801466,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FEEL_NO_PAIN",
+      "elo": 1871.9643551082656,
+      "pickRate": 0.5555555555555556,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.75,
+      "delta": 0.050000000000000044
+    },
+    {
+      "cardId": "CARD.FEEL_NO_PAIN\u002B1",
+      "elo": 1839.8349975832639,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FERAL",
+      "elo": 1481.3998952720226,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.9,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.FERAL\u002B1",
+      "elo": 1424.7101721534707,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FETCH",
+      "elo": 1789.334221355546,
+      "pickRate": 0.26666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8181818181818182,
+      "delta": 0.18181818181818177
+    },
+    {
+      "cardId": "CARD.FETCH\u002B1",
+      "elo": 1288.9644095455367,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FIEND_FIRE",
+      "elo": 1856.7580298863102,
+      "pickRate": 0.5555555555555556,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.5,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.FIGHT_ME",
+      "elo": 1479.1734100518875,
+      "pickRate": 0.25,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.75,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.FIGHT_ME\u002B1",
+      "elo": 1637.660974232113,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FIGHT_THROUGH",
+      "elo": 1521.468098382524,
+      "pickRate": 0.25,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.33333333333333337
+    },
+    {
+      "cardId": "CARD.FIGHT_THROUGH\u002B1",
+      "elo": 1899.5730917883384,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FINESSE",
+      "elo": 1216.694113486418,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4444444444444444,
+      "delta": -0.4444444444444444
+    },
+    {
+      "cardId": "CARD.FINESSE\u002B1",
+      "elo": 1433.493421661228,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FINISHER",
+      "elo": 1391.403189721973,
+      "pickRate": 0.058823529411764705,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FINISHER\u002B1",
+      "elo": 1295.990739124105,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FISTICUFFS",
+      "elo": 1566.466593933023,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLAK_CANNON",
+      "elo": 1725.3362239850464,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.FLAK_CANNON\u002B1",
+      "elo": 1436.3688642982784,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLAME_BARRIER",
+      "elo": 1592.3823417115286,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9166666666666666,
+      "delta": 0.08333333333333337
+    },
+    {
+      "cardId": "CARD.FLAME_BARRIER\u002B1",
+      "elo": 1802.4683777268106,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLANKING",
+      "elo": 0,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.FLANKING\u002B1",
+      "elo": 1409.9770540545983,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLASH_OF_STEEL",
+      "elo": 1275.4123973564037,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.FLATTEN",
+      "elo": 1457.582407068333,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.84,
+      "delta": -0.039999999999999925
+    },
+    {
+      "cardId": "CARD.FLATTEN\u002B1",
+      "elo": 1682.3946832539225,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLECHETTES",
+      "elo": 1203.3263555338822,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.FLECHETTES\u002B1",
+      "elo": 1438.1607794294373,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FLICK_FLACK",
+      "elo": 1425.2298064317008,
+      "pickRate": 0.07692307692307693,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9166666666666666,
+      "delta": 0.08333333333333337
+    },
+    {
+      "cardId": "CARD.FLICK_FLACK\u002B1",
+      "elo": 1208.4460751141282,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FOCUSED_STRIKE",
+      "elo": 1600.5136276632222,
+      "pickRate": 0.13636363636363635,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.7368421052631579,
+      "delta": -0.07017543859649122
+    },
+    {
+      "cardId": "CARD.FOCUSED_STRIKE\u002B1",
+      "elo": 1613.00628271528,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FOLLOW_THROUGH",
+      "elo": 1551.5761259084668,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9090909090909091,
+      "delta": 0.09090909090909094
+    },
+    {
+      "cardId": "CARD.FOOTWORK",
+      "elo": 1999.1615473123386,
+      "pickRate": 0.8333333333333334,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 1,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.FOOTWORK\u002B1",
+      "elo": 1904.3555150839138,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FOREGONE_CONCLUSION",
+      "elo": 1866.4526748850953,
+      "pickRate": 0.42857142857142855,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.5,
+      "delta": 0.16666666666666663
+    },
+    {
+      "cardId": "CARD.FORGOTTEN_RITUAL",
+      "elo": 1377.4165626312533,
+      "pickRate": 0.11764705882352941,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8666666666666667,
+      "delta": 0.1333333333333333
+    },
+    {
+      "cardId": "CARD.FORGOTTEN_RITUAL\u002B1",
+      "elo": 1509.750328749332,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FRIENDSHIP",
+      "elo": 1787.8372104640505,
+      "pickRate": 0.3888888888888889,
+      "winRatePicked": 0.5714285714285714,
+      "winRateSkipped": 0.6363636363636364,
+      "delta": -0.06493506493506496
+    },
+    {
+      "cardId": "CARD.FRIENDSHIP\u002B1",
+      "elo": 1339.1746923143137,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FTL",
+      "elo": 1516.717089427321,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FTL\u002B1",
+      "elo": 1677.598114433241,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FURNACE",
+      "elo": 1640.3784886939525,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.FURNACE\u002B1",
+      "elo": 1405.1994317418128,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.FUSION",
+      "elo": 1524.8422062685238,
+      "pickRate": 0.25,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.16666666666666663
+    },
+    {
+      "cardId": "CARD.GAMMA_BLAST",
+      "elo": 1765.6968267157802,
+      "pickRate": 0.35714285714285715,
+      "winRatePicked": 0.4,
+      "winRateSkipped": 0.4444444444444444,
+      "delta": -0.0444444444444444
+    },
+    {
+      "cardId": "CARD.GAMMA_BLAST\u002B1",
+      "elo": 1332.3254429960107,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GATHER_LIGHT",
+      "elo": 1654.8859545772314,
+      "pickRate": 0.24390243902439024,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6774193548387096,
+      "delta": -0.17741935483870963
+    },
+    {
+      "cardId": "CARD.GATHER_LIGHT\u002B1",
+      "elo": 1493.4844950900883,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GENESIS",
+      "elo": 1736.5759426781028,
+      "pickRate": 0.4,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.GENETIC_ALGORITHM",
+      "elo": 2038.2079395236378,
+      "pickRate": 0.6666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.GLACIER",
+      "elo": 1976.2597496237427,
+      "pickRate": 1,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0,
+      "delta": 0.75
+    },
+    {
+      "cardId": "CARD.GLACIER\u002B1",
+      "elo": 1913.9116430755528,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GLASSWORK",
+      "elo": 1245.8430198797598,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.GLIMMER",
+      "elo": 1627.90152555083,
+      "pickRate": 0.23076923076923078,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.GLIMPSE_BEYOND",
+      "elo": 1687.9398833390537,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GLITTERSTREAM",
+      "elo": 1270.3200182740925,
+      "pickRate": 0.02702702702702703,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5833333333333334,
+      "delta": -0.5833333333333334
+    },
+    {
+      "cardId": "CARD.GLITTERSTREAM\u002B1",
+      "elo": 1220.3819731677627,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GLOW",
+      "elo": 1671.6760955941377,
+      "pickRate": 0.40625,
+      "winRatePicked": 0.3076923076923077,
+      "winRateSkipped": 0.5789473684210527,
+      "delta": -0.27125506072874495
+    },
+    {
+      "cardId": "CARD.GLOW\u002B1",
+      "elo": 1878.537506167601,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GO_FOR_THE_EYES",
+      "elo": 1364.0372236189146,
+      "pickRate": 0.07692307692307693,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.75,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.GO_FOR_THE_EYES\u002B1",
+      "elo": 1353.2189711277542,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GOLD_AXE",
+      "elo": 1233.4388129028591,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.7142857142857143
+    },
+    {
+      "cardId": "CARD.GRAND_FINALE",
+      "elo": 1232.9240195235056,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.GRAPPLE",
+      "elo": 1351.5481660254216,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5833333333333334,
+      "delta": -0.5833333333333334
+    },
+    {
+      "cardId": "CARD.GRAPPLE\u002B1",
+      "elo": 1656.661596801106,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GRAVE_WARDEN",
+      "elo": 1818.7243964103072,
+      "pickRate": 0.43243243243243246,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.20833333333333337
+    },
+    {
+      "cardId": "CARD.GRAVE_WARDEN\u002B1",
+      "elo": 1897.8759298043585,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GRAVEBLAST",
+      "elo": 1574.277639201366,
+      "pickRate": 0.24324324324324326,
+      "winRatePicked": 0.7777777777777778,
+      "winRateSkipped": 0.6428571428571429,
+      "delta": 0.13492063492063489
+    },
+    {
+      "cardId": "CARD.GRAVEBLAST\u002B1",
+      "elo": 1933.8225898511062,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GUARDS",
+      "elo": 1836.2341140483313,
+      "pickRate": 0.5,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.75,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.GUIDING_STAR",
+      "elo": 1614.0288419599415,
+      "pickRate": 0.1935483870967742,
+      "winRatePicked": 0.16666666666666666,
+      "winRateSkipped": 0.4,
+      "delta": -0.23333333333333336
+    },
+    {
+      "cardId": "CARD.GUIDING_STAR\u002B1",
+      "elo": 1827.7722279293916,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.GUNK_UP",
+      "elo": 1441.5418814059158,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6818181818181818,
+      "delta": -0.18181818181818177
+    },
+    {
+      "cardId": "CARD.GUNK_UP\u002B1",
+      "elo": 1403.5508555665094,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HAILSTORM",
+      "elo": 1428.031165109883,
+      "pickRate": 0.05555555555555555,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8823529411764706,
+      "delta": 0.11764705882352944
+    },
+    {
+      "cardId": "CARD.HAILSTORM\u002B1",
+      "elo": 1339.3370258036118,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HAND_OF_GREED",
+      "elo": 1200.3481406433511,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.9166666666666666,
+      "delta": -0.9166666666666666
+    },
+    {
+      "cardId": "CARD.HAND_TRICK",
+      "elo": 1671.5843040203206,
+      "pickRate": 0.3,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HAND_TRICK\u002B1",
+      "elo": 1394.0419626928945,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HANG",
+      "elo": 1092.5854067238993,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.HAUNT",
+      "elo": 1679.2097911325886,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6428571428571429,
+      "delta": 0.3571428571428571
+    },
+    {
+      "cardId": "CARD.HAUNT\u002B1",
+      "elo": 1421.6030934495636,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HAVOC",
+      "elo": 1021.9089191758476,
+      "pickRate": 0.034482758620689655,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.HAVOC\u002B1",
+      "elo": 1678.5433862856917,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HAZE",
+      "elo": 1387.9553709317634,
+      "pickRate": 0.0625,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8666666666666667,
+      "delta": -0.8666666666666667
+    },
+    {
+      "cardId": "CARD.HAZE\u002B1",
+      "elo": 1295.5247947558921,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HEADBUTT",
+      "elo": 1409.6333980729926,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HEADBUTT\u002B1",
+      "elo": 1572.2362155666644,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HEAVENLY_DRILL",
+      "elo": 1251.967001701289,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.7142857142857143
+    },
+    {
+      "cardId": "CARD.HEGEMONY",
+      "elo": 1151.3727228779408,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.47058823529411764,
+      "delta": -0.47058823529411764
+    },
+    {
+      "cardId": "CARD.HEGEMONY\u002B1",
+      "elo": 1401.3864973177265,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HEIRLOOM_HAMMER",
+      "elo": 1493.0336060315485,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.625,
+      "delta": -0.625
+    },
+    {
+      "cardId": "CARD.HELIX_DRILL",
+      "elo": 1332.9902839476883,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.HELLRAISER",
+      "elo": 1544.1946996697613,
+      "pickRate": 0.2,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.HEMOKINESIS",
+      "elo": 1376.9055706912413,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7272727272727273,
+      "delta": 0.2727272727272727
+    },
+    {
+      "cardId": "CARD.HEMOKINESIS\u002B1",
+      "elo": 1363.2691686148314,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HIDDEN_CACHE",
+      "elo": 1459.4528940567416,
+      "pickRate": 0.2,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.4166666666666667,
+      "delta": 0.08333333333333331
+    },
+    {
+      "cardId": "CARD.HIDDEN_CACHE\u002B1",
+      "elo": 1764.0427703898313,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HIDDEN_DAGGERS",
+      "elo": 1677.4728853930528,
+      "pickRate": 0.36363636363636365,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.HIDDEN_DAGGERS\u002B1",
+      "elo": 1446.6150777142748,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HIDDEN_GEM",
+      "elo": 1166.1099489865169,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5454545454545454,
+      "delta": -0.5454545454545454
+    },
+    {
+      "cardId": "CARD.HIGH_FIVE",
+      "elo": 1680.7822844124516,
+      "pickRate": 0.2727272727272727,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.875,
+      "delta": -0.20833333333333337
+    },
+    {
+      "cardId": "CARD.HIGH_FIVE\u002B1",
+      "elo": 1722.5003949200259,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HOLOGRAM",
+      "elo": 1659.4037769348433,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.75,
+      "delta": 0.25
+    },
+    {
+      "cardId": "CARD.HOLOGRAM\u002B1",
+      "elo": 1405.5398748574069,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HOTFIX",
+      "elo": 1664.1801197760062,
+      "pickRate": 0.42857142857142855,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.6875,
+      "delta": 0.14583333333333337
+    },
+    {
+      "cardId": "CARD.HOTFIX\u002B1",
+      "elo": 2037.9195013472938,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HOWL_FROM_BEYOND",
+      "elo": 1201.1306897875534,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.HOWL_FROM_BEYOND\u002B1",
+      "elo": 1350.3238388639386,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HUDDLE_UP",
+      "elo": 1391.4645725450707,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.HYPERBEAM",
+      "elo": 1306.1415061369296,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.I_AM_INVINCIBLE",
+      "elo": 1557.9573146289317,
+      "pickRate": 0.125,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.8571428571428571
+    },
+    {
+      "cardId": "CARD.I_AM_INVINCIBLE\u002B1",
+      "elo": 1383.550235467918,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ICE_LANCE",
+      "elo": 1754.3867576714101,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ICE_LANCE\u002B1",
+      "elo": 1869.1729567429954,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.IGNITION",
+      "elo": 1460.7804587824896,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.IMPATIENCE",
+      "elo": 1436.2778191802051,
+      "pickRate": 0.125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.IMPERVIOUS",
+      "elo": 1588.4119249337996,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.INFERNAL_BLADE",
+      "elo": 1174.0106801186823,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.INFERNAL_BLADE\u002B1",
+      "elo": 1395.2117985298928,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.INFERNO",
+      "elo": 1550.233956130526,
+      "pickRate": 0.2,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.75,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.INFERNO\u002B1",
+      "elo": 1769.3781865922783,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.INFINITE_BLADES",
+      "elo": 1507.3654351695432,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.INFLAME",
+      "elo": 1478.1835704873424,
+      "pickRate": 0.13043478260869565,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 1,
+      "delta": -0.33333333333333337
+    },
+    {
+      "cardId": "CARD.INFLAME\u002B1",
+      "elo": 1302.0711051166077,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.INVOKE",
+      "elo": 1056.7708091621357,
+      "pickRate": 0.046511627906976744,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8292682926829268,
+      "delta": -0.8292682926829268
+    },
+    {
+      "cardId": "CARD.INVOKE\u002B1",
+      "elo": 1596.8957170710096,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.IRON_WAVE",
+      "elo": 1414.1642213313696,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6818181818181818,
+      "delta": 0.31818181818181823
+    },
+    {
+      "cardId": "CARD.IRON_WAVE\u002B1",
+      "elo": 1316.870372982545,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ITERATION",
+      "elo": 1224.637853937113,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": -0.8888888888888888
+    },
+    {
+      "cardId": "CARD.ITERATION\u002B1",
+      "elo": 1355.947741343223,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.JACK_OF_ALL_TRADES",
+      "elo": 1197.159753304292,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.JACKPOT",
+      "elo": 1171.5197891495511,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7692307692307693,
+      "delta": -0.7692307692307693
+    },
+    {
+      "cardId": "CARD.JACKPOT\u002B1",
+      "elo": 1359.6221050918316,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.JUGGERNAUT",
+      "elo": 1344.0151424502676,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.JUGGERNAUT\u002B1",
+      "elo": 1424.7035374828927,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.JUGGLING",
+      "elo": 1410.275199277497,
+      "pickRate": 0.06666666666666667,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7857142857142857,
+      "delta": 0.2142857142857143
+    },
+    {
+      "cardId": "CARD.JUGGLING\u002B1",
+      "elo": 1340.086167946426,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.KINGLY_KICK",
+      "elo": 1391.9201810192942,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.KINGLY_KICK\u002B1",
+      "elo": 1875.1133192633606,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.KINGLY_PUNCH",
+      "elo": 1592.2222049310737,
+      "pickRate": 0.21739130434782608,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4444444444444444,
+      "delta": -0.4444444444444444
+    },
+    {
+      "cardId": "CARD.KINGLY_PUNCH\u002B1",
+      "elo": 1420.1646089967628,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.KNIFE_TRAP",
+      "elo": 1616.7616411658923,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.KNOCKDOWN",
+      "elo": 1360.149623245921,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.KNOCKOUT_BLOW",
+      "elo": 1526.1299553701785,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4666666666666667,
+      "delta": -0.4666666666666667
+    },
+    {
+      "cardId": "CARD.KNOCKOUT_BLOW\u002B1",
+      "elo": 1301.2165008387883,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.KNOW_THY_PLACE",
+      "elo": 1524.1627661482428,
+      "pickRate": 0.20930232558139536,
+      "winRatePicked": 0.7777777777777778,
+      "winRateSkipped": 0.6764705882352942,
+      "delta": 0.10130718954248363
+    },
+    {
+      "cardId": "CARD.KNOW_THY_PLACE\u002B1",
+      "elo": 1647.978156500514,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LEADING_STRIKE",
+      "elo": 1353.546186169659,
+      "pickRate": 0.058823529411764705,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.875,
+      "delta": 0.125
+    },
+    {
+      "cardId": "CARD.LEADING_STRIKE\u002B1",
+      "elo": 1255.79933324091,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LEAP",
+      "elo": 1076.6594267095404,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7692307692307693,
+      "delta": -0.7692307692307693
+    },
+    {
+      "cardId": "CARD.LEAP\u002B1",
+      "elo": 1273.3893019609234,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LEG_SWEEP",
+      "elo": 1679.7671133009617,
+      "pickRate": 0.375,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.LEG_SWEEP\u002B1",
+      "elo": 1746.6316554029113,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LEGION_OF_BONE",
+      "elo": 1421.5535599513207,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LETHALITY",
+      "elo": 1506.696777379674,
+      "pickRate": 0.1875,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.9230769230769231,
+      "delta": -0.5897435897435899
+    },
+    {
+      "cardId": "CARD.LETHALITY\u002B1",
+      "elo": 1358.4547602518342,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LIFT",
+      "elo": 1399.7197527540611,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.LIGHTNING_ROD",
+      "elo": 1353.2082450372739,
+      "pickRate": 0.14814814814814814,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.782608695652174,
+      "delta": 0.21739130434782605
+    },
+    {
+      "cardId": "CARD.LIGHTNING_ROD\u002B1",
+      "elo": 1717.8415914858144,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LOOP",
+      "elo": 1413.6547180301263,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.LOOP\u002B1",
+      "elo": 1866.0280875362205,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.LUNAR_BLAST",
+      "elo": 1248.5453894999036,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5555555555555556,
+      "delta": -0.5555555555555556
+    },
+    {
+      "cardId": "CARD.LUNAR_BLAST\u002B1",
+      "elo": 1454.5789862972542,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MACHINE_LEARNING",
+      "elo": 1246.3777977978316,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.MAKE_IT_SO",
+      "elo": 1311.2575436857107,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.MALAISE",
+      "elo": 2032.2454111438014,
+      "pickRate": 0.875,
+      "winRatePicked": 0.8571428571428571,
+      "winRateSkipped": 0,
+      "delta": 0.8571428571428571
+    },
+    {
+      "cardId": "CARD.MANGLE",
+      "elo": 1251.0546067445773,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6,
+      "delta": -0.6
+    },
+    {
+      "cardId": "CARD.MANIFEST_AUTHORITY",
+      "elo": 1233.9213351618857,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.MASTER_OF_STRATEGY",
+      "elo": 1271.7614624155706,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.MASTER_OF_STRATEGY\u002B1",
+      "elo": 1351.1843551536035,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MASTER_PLANNER",
+      "elo": 1904.0474764413857,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MAYHEM",
+      "elo": 1195.8138043112583,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7,
+      "delta": -0.7
+    },
+    {
+      "cardId": "CARD.MELANCHOLY",
+      "elo": 1384.0565763714615,
+      "pickRate": 0.0625,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7333333333333333,
+      "delta": -0.7333333333333333
+    },
+    {
+      "cardId": "CARD.MELANCHOLY\u002B1",
+      "elo": 1255.31582911892,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MEMENTO_MORI",
+      "elo": 1213.3693692411907,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.MEMENTO_MORI\u002B1",
+      "elo": 1324.3683229339942,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.METEOR_STRIKE",
+      "elo": 1300.2510257892206,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.MIMIC",
+      "elo": 1415.043476876338,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MIND_BLAST",
+      "elo": 1231.1990328228553,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.MIRAGE",
+      "elo": 1425.6398014753559,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.1071428571428571
+    },
+    {
+      "cardId": "CARD.MIRAGE\u002B1",
+      "elo": 1762.0661442698074,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MISERY",
+      "elo": 1727.0109612350732,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MODDED",
+      "elo": 1995.3439486240998,
+      "pickRate": 0.6,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.MOLTEN_FIST",
+      "elo": 1434.0794171304285,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8181818181818182,
+      "delta": 0.18181818181818177
+    },
+    {
+      "cardId": "CARD.MOLTEN_FIST\u002B1",
+      "elo": 1806.7995596323199,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MOMENTUM_STRIKE",
+      "elo": 1448.3989016405328,
+      "pickRate": 0.1,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.7222222222222222,
+      "delta": -0.2222222222222222
+    },
+    {
+      "cardId": "CARD.MOMENTUM_STRIKE\u002B1",
+      "elo": 1489.8003167757001,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MONARCHS_GAZE",
+      "elo": 1741.1590187716383,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.MONOLOGUE",
+      "elo": 1505.3866257976115,
+      "pickRate": 0.09090909090909091,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.MONOLOGUE\u002B1",
+      "elo": 1405.1994317418128,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MULTI_CAST",
+      "elo": 1716.3277559328199,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.5,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.MURDER",
+      "elo": 1555.9809365279812,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.NECRO_MASTERY",
+      "elo": 1729.3722171401278,
+      "pickRate": 0.4,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.NEGATIVE_PULSE",
+      "elo": 1584.4071588551806,
+      "pickRate": 0.13043478260869565,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.725,
+      "delta": 0.10833333333333339
+    },
+    {
+      "cardId": "CARD.NEGATIVE_PULSE\u002B1",
+      "elo": 1497.6290019270216,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.NEUROSURGE",
+      "elo": 2067.2550061990173,
+      "pickRate": 0.8571428571428571,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 1,
+      "delta": -0.16666666666666663
+    },
+    {
+      "cardId": "CARD.NEUTRON_AEGIS",
+      "elo": 1340.3153223074985,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.NIGHTMARE",
+      "elo": 1698.0126931819093,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.NO_ESCAPE",
+      "elo": 1445.4481426504663,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.NO_ESCAPE\u002B1",
+      "elo": 1899.9488696597427,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.NOSTALGIA",
+      "elo": 1269.588583882734,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.NOXIOUS_FUMES",
+      "elo": 1681.383559903721,
+      "pickRate": 0.5714285714285714,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 1,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.NOXIOUS_FUMES\u002B1",
+      "elo": 1809.9592275160012,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.NULL",
+      "elo": 1670.34883956127,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8,
+      "delta": -0.30000000000000004
+    },
+    {
+      "cardId": "CARD.NULL\u002B1",
+      "elo": 1421.5179777654866,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.OBLIVION",
+      "elo": 1756.5690401463753,
+      "pickRate": 0.42857142857142855,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.OFFERING",
+      "elo": 2150.5041103995413,
+      "pickRate": 1,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 0,
+      "delta": 0.875
+    },
+    {
+      "cardId": "CARD.OMNISLICE",
+      "elo": 1263.0194851129552,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.ONE_TWO_PUNCH",
+      "elo": 1732.9397275860795,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8,
+      "delta": -0.30000000000000004
+    },
+    {
+      "cardId": "CARD.ORBIT",
+      "elo": 1801.6737564208277,
+      "pickRate": 0.46153846153846156,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": -0.5714285714285714
+    },
+    {
+      "cardId": "CARD.ORBIT\u002B1",
+      "elo": 1985.6092737017086,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.OUTBREAK",
+      "elo": 1193.674652903742,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7,
+      "delta": -0.7
+    },
+    {
+      "cardId": "CARD.OUTBREAK\u002B1",
+      "elo": 1459.3485884624986,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.OVERCLOCK",
+      "elo": 1483.8217428906732,
+      "pickRate": 0.1,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.PACTS_END",
+      "elo": 1335.8514448506776,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.PAGESTORM",
+      "elo": 1611.695116657698,
+      "pickRate": 0.25,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.16666666666666674
+    },
+    {
+      "cardId": "CARD.PAGESTORM\u002B1",
+      "elo": 1419.1958788985723,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PALE_BLUE_DOT",
+      "elo": 1501.7861106606117,
+      "pickRate": 0.22727272727272727,
+      "winRatePicked": 0.4,
+      "winRateSkipped": 0.4117647058823529,
+      "delta": -0.0117647058823529
+    },
+    {
+      "cardId": "CARD.PALE_BLUE_DOT\u002B1",
+      "elo": 1835.78436065708,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PANACHE",
+      "elo": 1519.8312910773116,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6,
+      "delta": 0.4
+    },
+    {
+      "cardId": "CARD.PANIC_BUTTON",
+      "elo": 1222.299196309148,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": -0.7777777777777778
+    },
+    {
+      "cardId": "CARD.PARRY",
+      "elo": 1179.915309616995,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.PARRY\u002B1",
+      "elo": 1407.1641735249614,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PARSE",
+      "elo": 1723.8047390580086,
+      "pickRate": 0.4117647058823529,
+      "winRatePicked": 0.7142857142857143,
+      "winRateSkipped": 0.9,
+      "delta": -0.18571428571428572
+    },
+    {
+      "cardId": "CARD.PARSE\u002B1",
+      "elo": 1891.1419186877972,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PARTICLE_WALL",
+      "elo": 1516.027373757397,
+      "pickRate": 0.13333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6153846153846154,
+      "delta": 0.3846153846153846
+    },
+    {
+      "cardId": "CARD.PARTICLE_WALL\u002B1",
+      "elo": 1325.341890836038,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PATTER",
+      "elo": 1345.2358707928108,
+      "pickRate": 0.03333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6206896551724138,
+      "delta": 0.3793103448275862
+    },
+    {
+      "cardId": "CARD.PATTER\u002B1",
+      "elo": 1306.9594757477123,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PERFECTED_STRIKE",
+      "elo": 1567.5421656910253,
+      "pickRate": 0.3,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.7857142857142857,
+      "delta": -0.4523809523809524
+    },
+    {
+      "cardId": "CARD.PERFECTED_STRIKE\u002B1",
+      "elo": 1565.6705941996718,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PHANTOM_BLADES",
+      "elo": 1520.3332773341892,
+      "pickRate": 0.07142857142857142,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PHANTOM_BLADES\u002B1",
+      "elo": 1348.188904648955,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PHOTON_CUT",
+      "elo": 1413.7319580539606,
+      "pickRate": 0.1,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4074074074074074,
+      "delta": -0.4074074074074074
+    },
+    {
+      "cardId": "CARD.PHOTON_CUT\u002B1",
+      "elo": 1306.4710966156254,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PIERCING_WAIL",
+      "elo": 1696.1735095075605,
+      "pickRate": 0.4,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9333333333333333,
+      "delta": 0.06666666666666665
+    },
+    {
+      "cardId": "CARD.PIERCING_WAIL\u002B1",
+      "elo": 1898.3759656409313,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PILLAGE",
+      "elo": 1903.652627359445,
+      "pickRate": 0.6923076923076923,
+      "winRatePicked": 0.8888888888888888,
+      "winRateSkipped": 1,
+      "delta": -0.11111111111111116
+    },
+    {
+      "cardId": "CARD.PILLAGE\u002B1",
+      "elo": 1828.0865420522855,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PILLAR_OF_CREATION",
+      "elo": 1169.903356615359,
+      "pickRate": 0.05263157894736842,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.PILLAR_OF_CREATION\u002B1",
+      "elo": 1777.0654860273273,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PINPOINT",
+      "elo": 1553.8067061035285,
+      "pickRate": 0.25,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 1,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.PINPOINT\u002B1",
+      "elo": 1817.0796830378904,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.POISONED_STAB",
+      "elo": 1482.190520397267,
+      "pickRate": 0.06060606060606061,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8387096774193549,
+      "delta": 0.16129032258064513
+    },
+    {
+      "cardId": "CARD.POISONED_STAB\u002B1",
+      "elo": 1268.0554771445663,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.POKE",
+      "elo": 1450.996862245801,
+      "pickRate": 0.10344827586206896,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.9615384615384616,
+      "delta": -0.6282051282051282
+    },
+    {
+      "cardId": "CARD.POKE\u002B1",
+      "elo": 1268.470453987984,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.POMMEL_STRIKE",
+      "elo": 1791.7500583001158,
+      "pickRate": 0.5161290322580645,
+      "winRatePicked": 0.6875,
+      "winRateSkipped": 0.8,
+      "delta": -0.11250000000000004
+    },
+    {
+      "cardId": "CARD.POMMEL_STRIKE\u002B1",
+      "elo": 2019.0564725682325,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.POUNCE",
+      "elo": 1581.2831561114604,
+      "pickRate": 0.09090909090909091,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.POUNCE\u002B1",
+      "elo": 1289.654323918406,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PRECISE_CUT",
+      "elo": 1536.4271149760284,
+      "pickRate": 0.1,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.PRECISE_CUT\u002B1",
+      "elo": 1356.1533783580098,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PREDATOR",
+      "elo": 1713.3211097124627,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9166666666666666,
+      "delta": 0.08333333333333337
+    },
+    {
+      "cardId": "CARD.PREDATOR\u002B1",
+      "elo": 1349.238761707814,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PREP_TIME",
+      "elo": 1209.1154392638896,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5555555555555556,
+      "delta": -0.5555555555555556
+    },
+    {
+      "cardId": "CARD.PREPARE",
+      "elo": 1559.620012274886,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PREPARED",
+      "elo": 1728.251505725283,
+      "pickRate": 0.45454545454545453,
+      "winRatePicked": 0.9,
+      "winRateSkipped": 1,
+      "delta": -0.09999999999999998
+    },
+    {
+      "cardId": "CARD.PREPARED\u002B1",
+      "elo": 1914.0810259693828,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PRIMAL_FORCE",
+      "elo": 1320.4464562654264,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.PRIMAL_FORCE\u002B1",
+      "elo": 1351.1843551536035,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PRODUCTION",
+      "elo": 1517.6457106161104,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PROLONG",
+      "elo": 1495.0696517818367,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PROPHESIZE",
+      "elo": 1431.5002578568617,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.3333333333333333,
+      "delta": 0.16666666666666669
+    },
+    {
+      "cardId": "CARD.PROPHESIZE\u002B1",
+      "elo": 1946.3777082668776,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PROWESS",
+      "elo": 1461.527297943952,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.PULL_AGGRO",
+      "elo": 1230.4654639523048,
+      "pickRate": 0.043478260869565216,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.7045454545454546,
+      "delta": -0.20454545454545459
+    },
+    {
+      "cardId": "CARD.PULL_AGGRO\u002B1",
+      "elo": 1527.680910155194,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PULL_FROM_BELOW",
+      "elo": 1171.376305678977,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8461538461538461,
+      "delta": -0.8461538461538461
+    },
+    {
+      "cardId": "CARD.PULL_FROM_BELOW\u002B1",
+      "elo": 1333.7870759661994,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PURITY",
+      "elo": 1194.5263024554265,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6363636363636364,
+      "delta": -0.6363636363636364
+    },
+    {
+      "cardId": "CARD.PURITY\u002B1",
+      "elo": 1441.4958307090585,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PUTREFY",
+      "elo": 1657.4758474814912,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.PUTREFY\u002B1",
+      "elo": 1920.4643807937628,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.PYRE",
+      "elo": 1701.403144476608,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8,
+      "delta": -0.30000000000000004
+    },
+    {
+      "cardId": "CARD.QUASAR",
+      "elo": 1597.97317939328,
+      "pickRate": 0.23076923076923078,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.4,
+      "delta": -0.06666666666666671
+    },
+    {
+      "cardId": "CARD.QUASAR\u002B1",
+      "elo": 1419.8399652647095,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RADIATE",
+      "elo": 1148.5464205765707,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6428571428571429,
+      "delta": -0.6428571428571429
+    },
+    {
+      "cardId": "CARD.RAGE",
+      "elo": 1486.5096900519268,
+      "pickRate": 0.1875,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.5384615384615384,
+      "delta": -0.20512820512820512
+    },
+    {
+      "cardId": "CARD.RAGE\u002B1",
+      "elo": 1343.5722746293975,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RAINBOW",
+      "elo": 1918.3976522723942,
+      "pickRate": 1,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.RAMPAGE",
+      "elo": 1410.074648032723,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.RAMPAGE\u002B1",
+      "elo": 1374.2075967266364,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RATTLE",
+      "elo": 1311.4058140660522,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.9444444444444444,
+      "delta": -0.19444444444444442
+    },
+    {
+      "cardId": "CARD.RATTLE\u002B1",
+      "elo": 1892.933069340349,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REANIMATE",
+      "elo": 1315.9843859293424,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.REAP",
+      "elo": 1068.4505860648242,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8529411764705882,
+      "delta": -0.8529411764705882
+    },
+    {
+      "cardId": "CARD.REAP\u002B1",
+      "elo": 1330.1417225129976,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REAPER_FORM",
+      "elo": 1901.1836262786037,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REAVE",
+      "elo": 1403.9131134257138,
+      "pickRate": 0.07407407407407407,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.72,
+      "delta": 0.28
+    },
+    {
+      "cardId": "CARD.REAVE\u002B1",
+      "elo": 1307.8982660809047,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REBOOT",
+      "elo": 1869.1809759530352,
+      "pickRate": 0.6,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 1,
+      "delta": -0.33333333333333337
+    },
+    {
+      "cardId": "CARD.REFINE_BLADE",
+      "elo": 1426.6557527379753,
+      "pickRate": 0.10526315789473684,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.47058823529411764,
+      "delta": 0.27941176470588236
+    },
+    {
+      "cardId": "CARD.REFINE_BLADE\u002B1",
+      "elo": 1681.2063276780784,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REFLECT",
+      "elo": 1681.7001315165946,
+      "pickRate": 0.4166666666666667,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.42857142857142855,
+      "delta": 0.3714285714285715
+    },
+    {
+      "cardId": "CARD.REFLECT\u002B1",
+      "elo": 1940.96213028744,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REFLEX",
+      "elo": 1804.594564103239,
+      "pickRate": 0.625,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0,
+      "delta": 0.8
+    },
+    {
+      "cardId": "CARD.REFRACT",
+      "elo": 1545.9005678927651,
+      "pickRate": 0.09090909090909091,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9,
+      "delta": 0.09999999999999998
+    },
+    {
+      "cardId": "CARD.REFRACT\u002B1",
+      "elo": 1373.0864928480605,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.REND",
+      "elo": 1244.4466431615726,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.625,
+      "delta": -0.625
+    },
+    {
+      "cardId": "CARD.RESONANCE",
+      "elo": 1666.1676785665454,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.5,
+      "delta": 0.16666666666666663
+    },
+    {
+      "cardId": "CARD.RESONANCE\u002B1",
+      "elo": 1774.498859635422,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RESTLESSNESS",
+      "elo": 1214.0045891586738,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.RICOCHET",
+      "elo": 1313.2658340369915,
+      "pickRate": 0.05263157894736842,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": 0.11111111111111116
+    },
+    {
+      "cardId": "CARD.RICOCHET\u002B1",
+      "elo": 1272.3100390176855,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RIGHT_HAND_HAND",
+      "elo": 1232.5022531463237,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.RIGHT_HAND_HAND\u002B1",
+      "elo": 1324.711896095283,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ROCKET_PUNCH",
+      "elo": 1513.5660796768957,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.875,
+      "delta": -0.875
+    },
+    {
+      "cardId": "CARD.ROCKET_PUNCH\u002B1",
+      "elo": 1402.0148511460472,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ROLLING_BOULDER",
+      "elo": 1244.3854908444482,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": -0.5714285714285714
+    },
+    {
+      "cardId": "CARD.ROYAL_GAMBLE",
+      "elo": 1699.4752658846885,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.4166666666666667,
+      "delta": 0.5833333333333333
+    },
+    {
+      "cardId": "CARD.ROYAL_GAMBLE\u002B1",
+      "elo": 1711.4596387046279,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.ROYALTIES",
+      "elo": 1773.2413061631307,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.RUPTURE",
+      "elo": 1732.361366358104,
+      "pickRate": 0.5,
+      "winRatePicked": 0.8181818181818182,
+      "winRateSkipped": 0.6363636363636364,
+      "delta": 0.18181818181818188
+    },
+    {
+      "cardId": "CARD.RUPTURE\u002B1",
+      "elo": 1963.3249982683983,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SACRIFICE",
+      "elo": 1793.322127178673,
+      "pickRate": 0.5,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.SALVO",
+      "elo": 1276.969404907103,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.SCAVENGE",
+      "elo": 1922.3065616045265,
+      "pickRate": 0.6666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SCAVENGE\u002B1",
+      "elo": 1878.7025438479193,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SCOURGE",
+      "elo": 1462.4863343332224,
+      "pickRate": 0.14634146341463414,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.8285714285714286,
+      "delta": 0.004761904761904745
+    },
+    {
+      "cardId": "CARD.SCOURGE\u002B1",
+      "elo": 1697.3310965070789,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SCRAPE",
+      "elo": 1532.2544739218272,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.9,
+      "delta": -0.4
+    },
+    {
+      "cardId": "CARD.SCRAWL",
+      "elo": 1651.5675431613308,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.3333333333333333,
+      "delta": 0.6666666666666667
+    },
+    {
+      "cardId": "CARD.SCULPTING_STRIKE",
+      "elo": 1595.4056956099405,
+      "pickRate": 0.17391304347826086,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.6842105263157895,
+      "delta": -0.1842105263157895
+    },
+    {
+      "cardId": "CARD.SCULPTING_STRIKE\u002B1",
+      "elo": 1605.0831552403747,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SEANCE",
+      "elo": 1814.5804244837636,
+      "pickRate": 0.4444444444444444,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 1,
+      "delta": -0.25
+    },
+    {
+      "cardId": "CARD.SECOND_WIND",
+      "elo": 1746.5114161235474,
+      "pickRate": 0.4166666666666667,
+      "winRatePicked": 0.6,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.11428571428571432
+    },
+    {
+      "cardId": "CARD.SECOND_WIND\u002B1",
+      "elo": 1351.1843551536035,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SECRET_TECHNIQUE",
+      "elo": 1391.4018107558516,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.625,
+      "delta": 0.375
+    },
+    {
+      "cardId": "CARD.SECRET_TECHNIQUE\u002B1",
+      "elo": 1359.6221050918316,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SECRET_WEAPON",
+      "elo": 1173.816239478878,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.9230769230769231,
+      "delta": -0.9230769230769231
+    },
+    {
+      "cardId": "CARD.SECRET_WEAPON\u002B1",
+      "elo": 1383.550235467918,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SEEKER_STRIKE",
+      "elo": 1447.89491717756,
+      "pickRate": 0.125,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.7142857142857143
+    },
+    {
+      "cardId": "CARD.SEEKING_EDGE",
+      "elo": 1908.115661377959,
+      "pickRate": 0.5555555555555556,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.75,
+      "delta": 0.050000000000000044
+    },
+    {
+      "cardId": "CARD.SENTRY_MODE",
+      "elo": 1603.8197314302686,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.SERPENT_FORM",
+      "elo": 1212.7227435228783,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6,
+      "delta": -0.6
+    },
+    {
+      "cardId": "CARD.SETUP_STRIKE",
+      "elo": 1443.1388566750059,
+      "pickRate": 0.13333333333333333,
+      "winRatePicked": 0.25,
+      "winRateSkipped": 0.8076923076923077,
+      "delta": -0.5576923076923077
+    },
+    {
+      "cardId": "CARD.SETUP_STRIKE\u002B1",
+      "elo": 1284.0519034771246,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SEVEN_STARS",
+      "elo": 1234.0432380201896,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.SEVERANCE",
+      "elo": 1210.0810661805392,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7,
+      "delta": -0.7
+    },
+    {
+      "cardId": "CARD.SEVERANCE\u002B1",
+      "elo": 1397.22983926331,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHADOW_SHIELD",
+      "elo": 1509.4897354330167,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHADOW_SHIELD\u002B1",
+      "elo": 1452.4937154553747,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHADOW_STEP",
+      "elo": 1246.7668930711432,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.7142857142857143
+    },
+    {
+      "cardId": "CARD.SHADOW_STEP\u002B1",
+      "elo": 1424.8488946294583,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHADOWMELD",
+      "elo": 1639.1191985757787,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHADOWMELD\u002B1",
+      "elo": 1813.7175715207204,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHARED_FATE",
+      "elo": 1762.9619535522709,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8,
+      "delta": 0.19999999999999996
+    },
+    {
+      "cardId": "CARD.SHATTER",
+      "elo": 1613.3175188698879,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": 0.11111111111111116
+    },
+    {
+      "cardId": "CARD.SHINING_STRIKE",
+      "elo": 1341.5104657264549,
+      "pickRate": 0.0625,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6,
+      "delta": -0.6
+    },
+    {
+      "cardId": "CARD.SHINING_STRIKE\u002B1",
+      "elo": 1374.3377431482063,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHOCKWAVE",
+      "elo": 1380.314934156465,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.625,
+      "delta": 0.375
+    },
+    {
+      "cardId": "CARD.SHROUD",
+      "elo": 1209.2364298954594,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.4444444444444444,
+      "delta": 0.5555555555555556
+    },
+    {
+      "cardId": "CARD.SHROUD\u002B1",
+      "elo": 1914.6883552756487,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHRUG_IT_OFF",
+      "elo": 1652.4855762070595,
+      "pickRate": 0.375,
+      "winRatePicked": 0.8333333333333334,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SHRUG_IT_OFF\u002B1",
+      "elo": 1926.0723637870062,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SIC_EM",
+      "elo": 1221.1052124034304,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.SIC_EM\u002B1",
+      "elo": 1309.5838486166679,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SIGNAL_BOOST",
+      "elo": 1885.6449907263907,
+      "pickRate": 0.6,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.SKEWER",
+      "elo": 1209.7107550436967,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.SKEWER\u002B1",
+      "elo": 1282.4740459128775,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SKIM",
+      "elo": 1975.7909304392902,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.SLEIGHT_OF_FLESH",
+      "elo": 1623.1813482601497,
+      "pickRate": 0.19047619047619047,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7058823529411765,
+      "delta": 0.2941176470588235
+    },
+    {
+      "cardId": "CARD.SLEIGHT_OF_FLESH\u002B1",
+      "elo": 1606.1095749044823,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SLICE",
+      "elo": 988.8204354211753,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8648648648648649,
+      "delta": -0.8648648648648649
+    },
+    {
+      "cardId": "CARD.SLICE\u002B1",
+      "elo": 1231.228950260107,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SMOKESTACK",
+      "elo": 1582.5752408659432,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.SNAKEBITE",
+      "elo": 1470.4642172572535,
+      "pickRate": 0.08,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.9130434782608695,
+      "delta": -0.4130434782608695
+    },
+    {
+      "cardId": "CARD.SNAKEBITE\u002B1",
+      "elo": 1328.27633142859,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SNAP",
+      "elo": 1454.900251818999,
+      "pickRate": 0.13333333333333333,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.8076923076923077,
+      "delta": -0.05769230769230771
+    },
+    {
+      "cardId": "CARD.SNAP\u002B1",
+      "elo": 1676.082548976149,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SNEAKY",
+      "elo": 0,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SNEAKY\u002B1",
+      "elo": 1742.830830145774,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SOLAR_STRIKE",
+      "elo": 1360.6493228357308,
+      "pickRate": 0.07692307692307693,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.5416666666666666,
+      "delta": -0.04166666666666663
+    },
+    {
+      "cardId": "CARD.SOLAR_STRIKE\u002B1",
+      "elo": 1404.2485571169334,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SOUL_STORM",
+      "elo": 1353.1780549090743,
+      "pickRate": 0.07142857142857142,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7692307692307693,
+      "delta": 0.23076923076923073
+    },
+    {
+      "cardId": "CARD.SOW",
+      "elo": 1306.2258666329574,
+      "pickRate": 0.02702702702702703,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.SOW\u002B1",
+      "elo": 1278.33433309676,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPECTRUM_SHIFT",
+      "elo": 1569.8325455281158,
+      "pickRate": 0.23529411764705882,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.38461538461538464,
+      "delta": 0.36538461538461536
+    },
+    {
+      "cardId": "CARD.SPECTRUM_SHIFT\u002B1",
+      "elo": 1842.9249079541687,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPEEDSTER",
+      "elo": 1490.6988885956353,
+      "pickRate": 0.18181818181818182,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": 0.2222222222222222
+    },
+    {
+      "cardId": "CARD.SPEEDSTER\u002B1",
+      "elo": 1559.2584350097693,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPINNER",
+      "elo": 1861.1241225026592,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPIRIT_OF_ASH",
+      "elo": 1530.421053891735,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": 0.16666666666666663
+    },
+    {
+      "cardId": "CARD.SPITE",
+      "elo": 1371.3925141541788,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPITE\u002B1",
+      "elo": 1586.484996572177,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPLASH",
+      "elo": 1220.0457643082284,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.SPLASH\u002B1",
+      "elo": 1433.493421661228,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPOILS_OF_BATTLE",
+      "elo": 1475.5059904129876,
+      "pickRate": 0.11538461538461539,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.5652173913043478,
+      "delta": -0.23188405797101447
+    },
+    {
+      "cardId": "CARD.SPOILS_OF_BATTLE\u002B1",
+      "elo": 1518.8741729324072,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SPUR",
+      "elo": 1597.8306038450871,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.3571428571428571
+    },
+    {
+      "cardId": "CARD.SPUR\u002B1",
+      "elo": 1351.287577126936,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SQUEEZE",
+      "elo": 1672.6010292951808,
+      "pickRate": 0.2857142857142857,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STAMPEDE",
+      "elo": 1585.7988777464334,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STAMPEDE\u002B1",
+      "elo": 1887.9911427994014,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STARDUST",
+      "elo": 1572.2256126362308,
+      "pickRate": 0.125,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.5714285714285714,
+      "delta": -0.0714285714285714
+    },
+    {
+      "cardId": "CARD.STARDUST\u002B1",
+      "elo": 1339.3191356850052,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STOKE",
+      "elo": 1829.623869673173,
+      "pickRate": 0.5,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STOKE\u002B1",
+      "elo": 1351.1843551536035,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STOMP",
+      "elo": 1536.2891144746814,
+      "pickRate": 0.1875,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.5384615384615384,
+      "delta": 0.1282051282051282
+    },
+    {
+      "cardId": "CARD.STOMP\u002B1",
+      "elo": 1350.4560045208286,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STONE_ARMOR",
+      "elo": 1382.7991329232523,
+      "pickRate": 0.125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.STORM",
+      "elo": 1188.6105508151968,
+      "pickRate": 0.06666666666666667,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": 0.2857142857142857
+    },
+    {
+      "cardId": "CARD.STORM_OF_STEEL",
+      "elo": 1317.959370743188,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.STORM\u002B1",
+      "elo": 1561.21161299129,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STRANGLE",
+      "elo": 1342.3335745689103,
+      "pickRate": 0.05263157894736842,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": 0.11111111111111116
+    },
+    {
+      "cardId": "CARD.STRANGLE\u002B1",
+      "elo": 1237.56683354412,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.STRATAGEM",
+      "elo": 1195.6013463680831,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.7777777777777778,
+      "delta": -0.7777777777777778
+    },
+    {
+      "cardId": "CARD.SUBROUTINE",
+      "elo": 1270.151381947457,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.9,
+      "delta": -0.9
+    },
+    {
+      "cardId": "CARD.SUBROUTINE\u002B1",
+      "elo": 1320.6820429716806,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SUCKER_PUNCH",
+      "elo": 1081.3997430068746,
+      "pickRate": 0.05128205128205128,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.972972972972973,
+      "delta": 0.027027027027026973
+    },
+    {
+      "cardId": "CARD.SUCKER_PUNCH\u002B1",
+      "elo": 1605.0532246384507,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SUMMON_FORTH",
+      "elo": 1738.933859405835,
+      "pickRate": 0.3076923076923077,
+      "winRatePicked": 0.25,
+      "winRateSkipped": 0.2222222222222222,
+      "delta": 0.02777777777777779
+    },
+    {
+      "cardId": "CARD.SUMMON_FORTH\u002B1",
+      "elo": 1414.9331432110132,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SUNDER",
+      "elo": 1256.3852491601447,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.SUNDER\u002B1",
+      "elo": 1385.4396711716838,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SUPERCRITICAL",
+      "elo": 2004.035915563867,
+      "pickRate": 0.6666666666666666,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SUPERMASSIVE",
+      "elo": 1171.5717832084238,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.4166666666666667,
+      "delta": -0.4166666666666667
+    },
+    {
+      "cardId": "CARD.SUPERMASSIVE\u002B1",
+      "elo": 1404.2485571169334,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SWEEPING_BEAM",
+      "elo": 1115.5264125863594,
+      "pickRate": 0.10526315789473684,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8235294117647058,
+      "delta": 0.17647058823529416
+    },
+    {
+      "cardId": "CARD.SWEEPING_BEAM\u002B1",
+      "elo": 1796.901924817871,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SWORD_BOOMERANG",
+      "elo": 1379.2539657368425,
+      "pickRate": 0.16666666666666666,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.64,
+      "delta": 0.16000000000000003
+    },
+    {
+      "cardId": "CARD.SWORD_BOOMERANG\u002B1",
+      "elo": 1634.3662990206865,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SWORD_SAGE",
+      "elo": 1792.9935063030896,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 0,
+      "delta": 1
+    },
+    {
+      "cardId": "CARD.SYNCHRONIZE",
+      "elo": 1628.8440791495038,
+      "pickRate": 0.45454545454545453,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.SYNCHRONIZE\u002B1",
+      "elo": 2016.7247053856152,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.SYNTHESIS",
+      "elo": 1239.7851567490711,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8888888888888888,
+      "delta": -0.8888888888888888
+    },
+    {
+      "cardId": "CARD.SYNTHESIS\u002B1",
+      "elo": 1385.9630857172046,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TACTICIAN",
+      "elo": 1668.3712524657508,
+      "pickRate": 0.3333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6,
+      "delta": 0.4
+    },
+    {
+      "cardId": "CARD.TACTICIAN\u002B1",
+      "elo": 1942.7656058352463,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TAUNT",
+      "elo": 1570.2543717661988,
+      "pickRate": 0.2631578947368421,
+      "winRatePicked": 0.4,
+      "winRateSkipped": 0.6428571428571429,
+      "delta": -0.24285714285714288
+    },
+    {
+      "cardId": "CARD.TAUNT\u002B1",
+      "elo": 1656.152207179108,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TEAR_ASUNDER",
+      "elo": 1698.1608568330466,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TEMPEST",
+      "elo": 1467.7237610036493,
+      "pickRate": 0.125,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8095238095238095,
+      "delta": 0.19047619047619047
+    },
+    {
+      "cardId": "CARD.TEMPEST\u002B1",
+      "elo": 1769.8604260794098,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TERRAFORMING",
+      "elo": 1230.3578584564439,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.TERRAFORMING\u002B1",
+      "elo": 1366.7417688061364,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TESLA_COIL",
+      "elo": 1171.222019658728,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.TESLA_COIL\u002B1",
+      "elo": 1323.2596250007682,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.THE_BOMB",
+      "elo": 1320.4404658297751,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.THE_GAMBIT",
+      "elo": 1287.3659576966352,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.75,
+      "delta": -0.75
+    },
+    {
+      "cardId": "CARD.THE_HUNT",
+      "elo": 1677.4992005406423,
+      "pickRate": 0.4,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": 0.33333333333333337
+    },
+    {
+      "cardId": "CARD.THE_HUNT\u002B1",
+      "elo": 1716.8412938279173,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.THE_SCYTHE",
+      "elo": 1221.8242916747786,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.THE_SMITH",
+      "elo": 1766.547322074156,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.42857142857142855,
+      "delta": 0.5714285714285714
+    },
+    {
+      "cardId": "CARD.THE_SMITH\u002B1",
+      "elo": 1383.550235467918,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.THINKING_AHEAD",
+      "elo": 1251.62753250905,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8,
+      "delta": -0.8
+    },
+    {
+      "cardId": "CARD.THRASH",
+      "elo": 1685.1281026503775,
+      "pickRate": 0.36363636363636365,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.1071428571428571
+    },
+    {
+      "cardId": "CARD.THRUMMING_HATCHET",
+      "elo": 1222.6054617954012,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.THUNDER",
+      "elo": 1227.0202203539757,
+      "pickRate": 0.08333333333333333,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9090909090909091,
+      "delta": 0.09090909090909094
+    },
+    {
+      "cardId": "CARD.THUNDER\u002B1",
+      "elo": 1618.6701503062736,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.THUNDERCLAP",
+      "elo": 1167.984467895286,
+      "pickRate": 0.02631578947368421,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.7027027027027027,
+      "delta": 0.29729729729729726
+    },
+    {
+      "cardId": "CARD.THUNDERCLAP\u002B1",
+      "elo": 1224.8522942278485,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TIMES_UP",
+      "elo": 1237.4423628338232,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.875,
+      "delta": -0.875
+    },
+    {
+      "cardId": "CARD.TOOLS_OF_THE_TRADE",
+      "elo": 1732.4761882056396,
+      "pickRate": 0.5,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TOOLS_OF_THE_TRADE\u002B1",
+      "elo": 1813.7175715207204,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TRACKING",
+      "elo": 1638.560080741702,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.75,
+      "delta": 0.25
+    },
+    {
+      "cardId": "CARD.TRACKING\u002B1",
+      "elo": 1711.5777613799423,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TRANSFIGURE",
+      "elo": 1613.1673578686364,
+      "pickRate": 0.25,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.33333333333333337
+    },
+    {
+      "cardId": "CARD.TRASH_TO_TREASURE",
+      "elo": 1364.7443244026333,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.TREMBLE",
+      "elo": 1284.7363560765648,
+      "pickRate": 0.05405405405405406,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.7142857142857143,
+      "delta": -0.2142857142857143
+    },
+    {
+      "cardId": "CARD.TREMBLE\u002B1",
+      "elo": 1256.5872966581162,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TRUE_GRIT",
+      "elo": 1407.4162866074114,
+      "pickRate": 0.12903225806451613,
+      "winRatePicked": 0.75,
+      "winRateSkipped": 0.6296296296296297,
+      "delta": 0.12037037037037035
+    },
+    {
+      "cardId": "CARD.TRUE_GRIT\u002B1",
+      "elo": 1773.8108813441977,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TURBO",
+      "elo": 1725.9038034033188,
+      "pickRate": 0.3888888888888889,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TURBO\u002B1",
+      "elo": 1731.2571202966906,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TWIN_STRIKE",
+      "elo": 1421.8436355720855,
+      "pickRate": 0.1111111111111111,
+      "winRatePicked": 0.3333333333333333,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.3333333333333333
+    },
+    {
+      "cardId": "CARD.TWIN_STRIKE\u002B1",
+      "elo": 1289.6682981797494,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.TYRANNY",
+      "elo": 1255.2644879509885,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.8333333333333334,
+      "delta": -0.8333333333333334
+    },
+    {
+      "cardId": "CARD.ULTIMATE_DEFEND",
+      "elo": 1580.853837280359,
+      "pickRate": 0.2,
+      "winRatePicked": 0,
+      "winRateSkipped": 1,
+      "delta": -1
+    },
+    {
+      "cardId": "CARD.ULTIMATE_STRIKE",
+      "elo": 1263.7350400488865,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.5,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.ULTIMATE_STRIKE\u002B1",
+      "elo": 1441.4958307090585,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UNDEATH",
+      "elo": 1787.816000397109,
+      "pickRate": 0.3,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.8571428571428571,
+      "delta": -0.19047619047619047
+    },
+    {
+      "cardId": "CARD.UNMOVABLE",
+      "elo": 1600.9602619610419,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UNRELENTING",
+      "elo": 1553.9116044850641,
+      "pickRate": 0.25,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.3333333333333333,
+      "delta": 0.6666666666666667
+    },
+    {
+      "cardId": "CARD.UNRELENTING\u002B1",
+      "elo": 1411.4428799645716,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UNTOUCHABLE",
+      "elo": 1633.8653118287336,
+      "pickRate": 0.2222222222222222,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.9523809523809523,
+      "delta": 0.04761904761904767
+    },
+    {
+      "cardId": "CARD.UNTOUCHABLE\u002B1",
+      "elo": 1718.7360236337065,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UP_MY_SLEEVE",
+      "elo": 1375.811228629888,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.8181818181818182,
+      "delta": 0.18181818181818177
+    },
+    {
+      "cardId": "CARD.UP_MY_SLEEVE\u002B1",
+      "elo": 1715.6140280295572,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UPPERCUT",
+      "elo": 1649.3006810735837,
+      "pickRate": 0.38461538461538464,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.75,
+      "delta": 0.050000000000000044
+    },
+    {
+      "cardId": "CARD.UPPERCUT\u002B1",
+      "elo": 1845.7298247272788,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.UPROAR",
+      "elo": 1414.3918094479093,
+      "pickRate": 0.10344827586206896,
+      "winRatePicked": 0.6666666666666666,
+      "winRateSkipped": 0.7307692307692307,
+      "delta": -0.0641025641025641
+    },
+    {
+      "cardId": "CARD.UPROAR\u002B1",
+      "elo": 1393.000213156905,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.VEILPIERCER",
+      "elo": 1491.754014124968,
+      "pickRate": 0.15384615384615385,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.8181818181818182,
+      "delta": -0.31818181818181823
+    },
+    {
+      "cardId": "CARD.VEILPIERCER\u002B1",
+      "elo": 1797.512928147599,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.VICIOUS",
+      "elo": 1256.640679205182,
+      "pickRate": 0.2,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0.875,
+      "delta": -0.375
+    },
+    {
+      "cardId": "CARD.VICIOUS\u002B1",
+      "elo": 1797.234450749799,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.VOID_FORM",
+      "elo": 2109.0464835406033,
+      "pickRate": 1,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 0,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.VOLLEY",
+      "elo": 1227.3498879742497,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.875,
+      "delta": -0.875
+    },
+    {
+      "cardId": "CARD.VOLTAIC",
+      "elo": 1715.8411214432128,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 1,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.WELL_LAID_PLANS",
+      "elo": 1780.651000462949,
+      "pickRate": 0.4444444444444444,
+      "winRatePicked": 0.5,
+      "winRateSkipped": 1,
+      "delta": -0.5
+    },
+    {
+      "cardId": "CARD.WELL_LAID_PLANS\u002B1",
+      "elo": 1797.9144196900725,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.WHIRLWIND",
+      "elo": 1504.187566790341,
+      "pickRate": 0.14285714285714285,
+      "winRatePicked": 0,
+      "winRateSkipped": 0.6666666666666666,
+      "delta": -0.6666666666666666
+    },
+    {
+      "cardId": "CARD.WHIRLWIND\u002B1",
+      "elo": 1395.2117985298928,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.WHITE_NOISE",
+      "elo": 1533.7564936987822,
+      "pickRate": 0.2,
+      "winRatePicked": 1,
+      "winRateSkipped": 0.5,
+      "delta": 0.5
+    },
+    {
+      "cardId": "CARD.WISP",
+      "elo": 1747.3584374270451,
+      "pickRate": 0.41379310344827586,
+      "winRatePicked": 0.875,
+      "winRateSkipped": 0.8235294117647058,
+      "delta": 0.05147058823529416
+    },
+    {
+      "cardId": "CARD.WISP\u002B1",
+      "elo": 2040.9195856834024,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    },
+    {
+      "cardId": "CARD.WROUGHT_IN_WAR",
+      "elo": 1552.9327295494745,
+      "pickRate": 0.15151515151515152,
+      "winRatePicked": 0.8,
+      "winRateSkipped": 0.5357142857142857,
+      "delta": 0.26428571428571435
+    },
+    {
+      "cardId": "CARD.WROUGHT_IN_WAR\u002B1",
+      "elo": 1378.2164243347945,
+      "pickRate": 0,
+      "winRatePicked": 0,
+      "winRateSkipped": 0,
+      "delta": 0
+    }
+  ]
+}

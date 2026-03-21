@@ -90,7 +90,7 @@ else
     private int _showCount = 40;
     private int? _actFilter;
 
-    record RatingRow(int Rank, string CardId, string Name, double Rating, double Rd, int Games, bool LowConfidence);
+    record RatingRow(int Rank, string CardId, string Name, double Rating, double Rd, long Games, bool LowConfidence);
 
     protected override async Task OnInitializedAsync()
     {

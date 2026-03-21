@@ -127,18 +127,18 @@ public static class ExportCommand
 
         Console.WriteLine("Exporting mod overlay data...");
 
-        // Ensure Elo ratings exist
-        var eloCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM EloRatings") ?? 0;
-        if (eloCount == 0)
+        // Ensure Glicko-2 ratings exist
+        var g2Count = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM Glicko2Ratings") ?? 0;
+        if (g2Count == 0)
         {
-            Console.WriteLine("Processing Elo ratings...");
-            var engine = new EloEngine(conn);
+            Console.WriteLine("Processing Glicko-2 ratings...");
+            var engine = new Glicko2Engine(conn);
             engine.ProcessAllRuns();
         }
 
-        // Query Skip Elo
+        // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
-            "SELECT Rating FROM EloRatings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
+            "SELECT Rating FROM Glicko2Ratings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
             ?? 1500.0;
 
         // Get analytics data
@@ -148,8 +148,8 @@ public static class ExportCommand
         var cardPickRates = cardAnalytics.GetCardPickRates()
             .ToDictionary(c => c.CardId);
 
-        var eloAnalytics = new EloAnalytics(conn);
-        var eloRatings = eloAnalytics.GetCardEloRatings()
+        var g2Analytics = new Glicko2Analytics(conn);
+        var eloRatings = g2Analytics.GetRatings()
             .Where(e => e.Context == "overall")
             .ToDictionary(e => e.CardId);
 

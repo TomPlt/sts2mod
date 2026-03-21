@@ -18,10 +18,10 @@ public static class DataLoader
     {
         try
         {
-            var filePath = Path.Combine(modPath, "data.json");
+            var filePath = Path.Combine(modPath, "overlay_data.json");
             if (!File.Exists(filePath))
             {
-                GD.PrintErr($"[SpireOracle] data.json not found at: {filePath}");
+                GD.PrintErr($"[SpireOracle] overlay_data.json not found at: {filePath}");
                 return false;
             }
 
@@ -30,7 +30,7 @@ public static class DataLoader
 
             if (data == null || data.Cards == null)
             {
-                GD.PrintErr("[SpireOracle] Failed to deserialize data.json");
+                GD.PrintErr("[SpireOracle] Failed to deserialize overlay_data.json");
                 return false;
             }
 
