@@ -11,6 +11,7 @@ public static class DataLoader
     private static Dictionary<string, CardStats>? _cards;
     private static double _skipElo;
     private static Dictionary<string, double>? _skipEloByAct;
+    private static Dictionary<string, AncientStats>? _ancientChoices;
 
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
@@ -76,6 +77,17 @@ public static class DataLoader
             }
 
             GD.Print($"[SpireOracle] Loaded {_cards.Count} cards, skip Elo = {_skipElo:F0}");
+
+            _ancientChoices = new Dictionary<string, AncientStats>(StringComparer.OrdinalIgnoreCase);
+            if (data.AncientChoices != null)
+            {
+                foreach (var ac in data.AncientChoices)
+                {
+                    if (!string.IsNullOrEmpty(ac.ChoiceKey))
+                        _ancientChoices[ac.ChoiceKey] = ac;
+                }
+            }
+            GD.Print($"[SpireOracle] Loaded {_ancientChoices.Count} ancient choices");
             return true;
         }
         catch (Exception ex)
@@ -90,4 +102,7 @@ public static class DataLoader
         if (_cards == null) return null;
         return _cards.TryGetValue(cardId, out var stats) ? stats : null;
     }
+
+    public static AncientStats? GetAncientChoice(string choiceKey) =>
+        _ancientChoices?.TryGetValue(choiceKey, out var stats) == true ? stats : null;
 }

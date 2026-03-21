@@ -22,9 +22,21 @@ public record CardStats(
     [property: JsonPropertyName("blindSpotPickRate")] double BlindSpotPickRate = 0,
     [property: JsonPropertyName("blindSpotWinRateDelta")] double BlindSpotWinRateDelta = 0);
 
+public record AncientStats(
+    [property: JsonPropertyName("choiceKey")] string ChoiceKey,
+    [property: JsonPropertyName("rating")] double Rating,
+    [property: JsonPropertyName("rd")] double Rd = 350,
+    [property: JsonPropertyName("ratingNeow")] double RatingNeow = 0,
+    [property: JsonPropertyName("rdNeow")] double RdNeow = 350,
+    [property: JsonPropertyName("ratingPostAct1")] double RatingPostAct1 = 0,
+    [property: JsonPropertyName("rdPostAct1")] double RdPostAct1 = 350,
+    [property: JsonPropertyName("ratingPostAct2")] double RatingPostAct2 = 0,
+    [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350);
+
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,
     [property: JsonPropertyName("exportedAt")] string ExportedAt,
     [property: JsonPropertyName("skipElo")] double SkipElo,
     [property: JsonPropertyName("skipEloByAct")] Dictionary<string, double>? SkipEloByAct,
-    [property: JsonPropertyName("cards")] List<CardStats> Cards);
+    [property: JsonPropertyName("cards")] List<CardStats> Cards,
+    [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null);
