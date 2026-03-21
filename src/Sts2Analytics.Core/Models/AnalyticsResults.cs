@@ -50,7 +50,14 @@ public record ModCardStats(
     string? BlindSpot = null, double BlindSpotScore = 0,
     double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0);
 
+public record ModAncientStats(
+    string ChoiceKey, double Rating, double Rd,
+    double RatingNeow, double RdNeow,
+    double RatingPostAct1, double RdPostAct1,
+    double RatingPostAct2, double RdPostAct2);
+
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
     Dictionary<string, double> SkipEloByAct,
-    List<ModCardStats> Cards);
+    List<ModCardStats> Cards,
+    List<ModAncientStats>? AncientChoices = null);
