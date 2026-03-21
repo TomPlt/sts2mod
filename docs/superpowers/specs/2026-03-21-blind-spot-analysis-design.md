@@ -93,18 +93,39 @@ A card is flagged as a blind spot only when BOTH conditions are true:
 
 **Under-pick:** Card rated above SKIP threshold + low pick rate + positive win rate delta (win rate improves when picked). The player skips a card that helps their runs.
 
-### Scoring
+### Expected Pick Rate
 
-Each card gets a blind spot score combining:
+A card's expected pick rate is derived from its Glicko-2 rating relative to SKIP using a logistic function:
 
-- `pickRateDeviation` — how far pick rate diverges from expected based on rating position relative to SKIP
-- `winRateDelta` — `winRateWhenPicked - winRateWhenSkipped` (negative = picking hurts)
-- `confidence` — inverse of card's Glicko-2 RD; high-uncertainty cards get dampened
+```
+expectedPickRate = 1 / (1 + e^(-(cardRating - skipRating) / 200))
+```
+
+This maps the rating difference to a 0-1 probability curve:
+- Card rated equal to SKIP → 50% expected pick rate
+- Card rated 200 above SKIP → ~73% expected
+- Card rated 200 below SKIP → ~27% expected
+- The 200 divisor controls curve steepness (tunable)
+
+### Scoring Formula
+
+Blind spot score is the product of pick deviation magnitude and outcome signal, dampened by uncertainty:
+
+```
+pickRateDeviation = actualPickRate - expectedPickRate
+winRateDelta = winRateWhenPicked - winRateWhenSkipped
+confidenceWeight = max(0, 1 - (cardRD / 350))  // 0 at default RD, 1 at RD=0
+
+blindSpotScore = |pickRateDeviation| * |winRateDelta| * confidenceWeight
+```
+
+**Over-pick** when: `pickRateDeviation > 0` AND `winRateDelta < 0` (picks too much, hurts win rate)
+**Under-pick** when: `pickRateDeviation < 0` AND `winRateDelta > 0` (skips too much, helps when picked)
 
 A card is only flagged when:
-- Score crosses a configurable threshold
+- `blindSpotScore >= 0.02` (tunable threshold, starting default)
 - Minimum sample size met (offered at least 5 times)
-- Card's RD is below a confidence threshold (the system is reasonably sure about the card's rating)
+- `confidenceWeight > 0.3` (card RD below ~245, system is reasonably confident)
 
 ### Per-Context Analysis
 
@@ -147,25 +168,32 @@ Bump `ModOverlayData` to version 3. New fields per card:
 ```json
 {
   "version": 3,
+  "exportedAt": "2026-03-21T08:49:49Z",
+  "skipElo": 1704.16,
+  "skipEloByAct": { "act1": 1404.23, "act2": 1734.09, "act3": 1818.40 },
   "cards": [{
     "cardId": "CARD.INFLAME",
     "elo": 1280,
+    "rd": 85,
     "pickRate": 0.85,
     "winRatePicked": 0.72,
     "winRateSkipped": 0.31,
     "delta": 0.41,
     "eloAct1": 1540,
+    "rdAct1": 90,
     "eloAct2": 1650,
+    "rdAct2": 110,
     "eloAct3": 1580,
+    "rdAct3": 120,
     "blindSpot": "over_pick",
-    "blindSpotScore": 0.82,
+    "blindSpotScore": 0.04,
     "blindSpotPickRate": 0.78,
     "blindSpotWinRateDelta": -0.12
   }]
 }
 ```
 
-`blindSpot` is null for cards without a blind spot flag. The overlay reads this field and conditionally renders the badge.
+All existing `CardStats` fields (`elo`, `rd`, `pickRate`, `winRatePicked`, `winRateSkipped`, `delta`, `eloAct1`-`3`, `rdAct1`-`3`) are retained. New fields added: `blindSpot` (null when no flag), `blindSpotScore`, `blindSpotPickRate`, `blindSpotWinRateDelta`. The overlay reads `blindSpot` and conditionally renders the badge.
 
 Player rating is NOT included in the mod export — it's dashboard-only.
 
