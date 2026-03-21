@@ -205,6 +205,34 @@ public static class Schema
             Timestamp TEXT NOT NULL DEFAULT ''
         );
 
+        CREATE TABLE IF NOT EXISTS PlayerRatings (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Context TEXT NOT NULL UNIQUE,
+            Rating REAL NOT NULL DEFAULT 1500.0,
+            RatingDeviation REAL NOT NULL DEFAULT 350.0,
+            Volatility REAL NOT NULL DEFAULT 0.06,
+            GamesPlayed INTEGER NOT NULL DEFAULT 0,
+            LastUpdatedRunId INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS PlayerRatingHistory (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            PlayerRatingId INTEGER NOT NULL REFERENCES PlayerRatings(Id),
+            RunId INTEGER NOT NULL REFERENCES Runs(Id),
+            RatingBefore REAL NOT NULL DEFAULT 0,
+            RatingAfter REAL NOT NULL DEFAULT 0,
+            RdBefore REAL NOT NULL DEFAULT 0,
+            RdAfter REAL NOT NULL DEFAULT 0,
+            VolatilityBefore REAL NOT NULL DEFAULT 0,
+            VolatilityAfter REAL NOT NULL DEFAULT 0,
+            Opponent TEXT NOT NULL DEFAULT '',
+            OpponentRating REAL NOT NULL DEFAULT 0,
+            Outcome REAL NOT NULL DEFAULT 0
+        );
+
+        CREATE INDEX IF NOT EXISTS IX_PlayerRatingHistory_PlayerRatingId ON PlayerRatingHistory(PlayerRatingId);
+        CREATE INDEX IF NOT EXISTS IX_PlayerRatingHistory_RunId ON PlayerRatingHistory(RunId);
+
         CREATE INDEX IF NOT EXISTS IX_Floors_RunId ON Floors(RunId);
         CREATE INDEX IF NOT EXISTS IX_CardChoices_FloorId ON CardChoices(FloorId);
         CREATE INDEX IF NOT EXISTS IX_CardChoices_CardId ON CardChoices(CardId);

@@ -38,6 +38,20 @@ public class SchemaTests
     }
 
     [Fact]
+    public void Initialize_CreatesPlayerRatingsTables()
+    {
+        using var conn = new SqliteConnection("Data Source=:memory:");
+        conn.Open();
+        Schema.Initialize(conn);
+
+        var playerRatings = conn.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerRatings'").ToList();
+        Assert.Single(playerRatings);
+
+        var playerRatingHistory = conn.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerRatingHistory'").ToList();
+        Assert.Single(playerRatingHistory);
+    }
+
+    [Fact]
     public void Initialize_IsIdempotent()
     {
         using var conn = new SqliteConnection("Data Source=:memory:");
