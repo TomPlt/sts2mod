@@ -35,6 +35,10 @@ public record PotionWasteRate(string PotionId, int TimesUsed, int TimesDiscarded
 public record PathPatternWinRate(string PathSignature, int TotalRuns, int Wins, double WinRate);
 public record EliteCorrelation(int EliteCount, int TotalRuns, int Wins, double WinRate);
 public record EliteCorrelationByAct(int Act, int EliteCount, int TotalRuns, int Wins, double WinRate);
+public record RestSiteDecisionRate(string Choice, int Count, int Wins, double WinRate);
+public record RestSiteHpBucket(string Choice, int HpBucketMin, int HpBucketMax, int Count, int Wins, double WinRate);
+public record RestSiteUpgradeImpact(string CardId, int TimesUpgraded, int Wins, double WinRate);
+public record RestSiteActBreakdown(int Act, string Choice, int Count, int Wins, double WinRate, double AvgHpPercent);
 public record GoldEfficiency(string Category, int TotalSpent, int RunCount, double WinRate);
 public record ShopPurchasePattern(string Category, int Count);
 public record CardRemovalImpact(string CardId, int TimesRemoved, int WinsAfterRemoval, double WinRate);
