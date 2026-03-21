@@ -1,0 +1,235 @@
+@page "/rest-sites"
+@inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
+
+<PageTitle>Rest Site Analysis — STS2 Analytics</PageTitle>
+
+<h2>Rest Site Analysis</h2>
+
+@if (_loading)
+{
+    <p class="dim-text">Loading...</p>
+}
+else
+{
+    <div class="rest-section">
+        <h3>Decision Win Rates</h3>
+        <p class="section-note">Win rate of runs where you made each choice at a rest site.</p>
+        <div class="panel" style="padding: 0; overflow: hidden;">
+            <table class="oracle-table">
+                <thead>
+                    <tr>
+                        <th>Choice</th>
+                        <th style="text-align: right;">Count</th>
+                        <th style="text-align: right;">Wins</th>
+                        <th style="text-align: right;">Win Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in _decisions)
+                    {
+                        <tr>
+                            <td style="font-weight: 500;">@d.Choice</td>
+                            <td style="text-align: right;" class="mono">@d.Count</td>
+                            <td style="text-align: right;" class="mono">@d.Wins</td>
+                            <td style="text-align: right;">
+                                <span class="elo-badge @WinRateClass(d.WinRate)">@d.WinRate.ToString("P0")</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="rest-section">
+        <h3>Smith vs Heal by HP%</h3>
+        <p class="section-note">Should you upgrade or rest? Win rate by HP threshold when making the decision.</p>
+        <div class="hp-grid">
+            @foreach (var bucket in _hpBuckets.GroupBy(b => new { b.HpBucketMin, b.HpBucketMax }).OrderBy(g => g.Key.HpBucketMin))
+            {
+                <div class="hp-bucket-card">
+                    <div class="hp-bucket-label">@bucket.Key.HpBucketMin–@bucket.Key.HpBucketMax% HP</div>
+                    @foreach (var row in bucket.OrderByDescending(r => r.Count))
+                    {
+                        <div class="hp-bucket-row">
+                            <span class="choice-name">@row.Choice</span>
+                            <span class="choice-count">@row.Count×</span>
+                            <span class="elo-badge @WinRateClass(row.WinRate)">@row.WinRate.ToString("P0")</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="rest-section">
+        <h3>Card Upgrade Impact</h3>
+        <p class="section-note">Which cards you upgrade at rest sites, and the run win rate when you do.</p>
+        <div class="panel" style="padding: 0; overflow: hidden;">
+            <table class="oracle-table">
+                <thead>
+                    <tr>
+                        <th>Card</th>
+                        <th style="text-align: right;">Times Upgraded</th>
+                        <th style="text-align: right;">Win Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in _upgrades.Where(u => u.TimesUpgraded >= 2).OrderByDescending(u => u.WinRate))
+                    {
+                        <tr>
+                            <td style="font-weight: 500;">@FormatName(u.CardId)</td>
+                            <td style="text-align: right;" class="mono">@u.TimesUpgraded</td>
+                            <td style="text-align: right;">
+                                <span class="elo-badge @WinRateClass(u.WinRate)">@u.WinRate.ToString("P0")</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="rest-section">
+        <h3>Decisions by Act</h3>
+        <p class="section-note">How your rest site choices change through the run.</p>
+        @foreach (var actGroup in _actBreakdown.GroupBy(a => a.Act).OrderBy(g => g.Key))
+        {
+            <h4 style="color: var(--frost, #4fc3f7); margin-top: 1rem;">Act @(actGroup.Key + 1)</h4>
+            <div class="panel" style="padding: 0; overflow: hidden; margin-bottom: 1rem;">
+                <table class="oracle-table">
+                    <thead>
+                        <tr>
+                            <th>Choice</th>
+                            <th style="text-align: right;">Count</th>
+                            <th style="text-align: right;">Win Rate</th>
+                            <th style="text-align: right;">Avg HP%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in actGroup.OrderByDescending(r => r.Count))
+                        {
+                            <tr>
+                                <td style="font-weight: 500;">@row.Choice</td>
+                                <td style="text-align: right;" class="mono">@row.Count</td>
+                                <td style="text-align: right;">
+                                    <span class="elo-badge @WinRateClass(row.WinRate)">@row.WinRate.ToString("P0")</span>
+                                </td>
+                                <td style="text-align: right;" class="mono">@row.AvgHpPercent.ToString("P0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private List<RestSiteDecisionExport> _decisions = [];
+    private List<RestSiteHpBucketExport> _hpBuckets = [];
+    private List<RestSiteUpgradeExport> _upgrades = [];
+    private List<RestSiteActExport> _actBreakdown = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+        LoadData();
+        _loading = false;
+    }
+
+    private void LoadData()
+    {
+        if (_data is null) return;
+        _decisions = _data.RestSiteDecisions;
+        _hpBuckets = _data.RestSiteHpBuckets;
+        _upgrades = _data.RestSiteUpgrades;
+        _actBreakdown = _data.RestSiteActBreakdown;
+    }
+
+    private void OnFilterChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => Filter.OnChange -= OnFilterChanged;
+
+    static string WinRateClass(double wr) => wr switch
+    {
+        >= 0.6 => "high",
+        >= 0.4 => "mid",
+        _ => "low"
+    };
+
+    static string FormatName(string id)
+    {
+        var plusIdx = id.IndexOf('+');
+        var suffix = "";
+        var baseId = id;
+        if (plusIdx >= 0) { suffix = " " + id[plusIdx..]; baseId = id[..plusIdx]; }
+        var dot = baseId.IndexOf('.');
+        var name = dot >= 0 ? baseId[(dot + 1)..] : baseId;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)) + suffix;
+    }
+}
+
+<style>
+    .rest-section {
+        margin-bottom: 2rem;
+    }
+
+    .rest-section h3 {
+        color: var(--text-secondary, #b0b0c8);
+        margin-bottom: 0.25rem;
+    }
+
+    .section-note {
+        font-size: 0.8rem;
+        color: var(--text-dim, #666);
+        margin-bottom: 0.75rem;
+    }
+
+    .hp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .hp-bucket-card {
+        background: var(--void-1, #1a1a2e);
+        border: 1px solid var(--surface-border, #2a2a4a);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .hp-bucket-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--frost, #4fc3f7);
+        margin-bottom: 0.5rem;
+    }
+
+    .hp-bucket-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.2rem 0;
+    }
+
+    .choice-name {
+        flex: 1;
+        font-size: 0.85rem;
+    }
+
+    .choice-count {
+        font-size: 0.75rem;
+        color: var(--text-dim, #666);
+        font-family: 'JetBrains Mono', monospace;
+    }
+</style>
