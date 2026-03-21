@@ -33,6 +33,7 @@ public class ExportData
     public List<PlayerRatingExport> PlayerRatings { get; set; } = [];
     public List<PlayerRatingHistoryExport> PlayerRatingHistory { get; set; } = [];
     public List<BlindSpotExport> BlindSpots { get; set; } = [];
+    public List<AncientRatingExport> AncientRatings { get; set; } = [];
 }
 
 public class CardChoiceExport
@@ -87,6 +88,16 @@ public class BlindSpotExport
     public double ExpectedPickRate { get; set; }
     public double WinRateDelta { get; set; }
     public int GamesAnalyzed { get; set; }
+}
+
+public class AncientRatingExport
+{
+    public string ChoiceKey { get; set; } = "";
+    public string Character { get; set; } = "";
+    public string Context { get; set; } = "";
+    public double Rating { get; set; }
+    public double RatingDeviation { get; set; }
+    public int GamesPlayed { get; set; }
 }
 
 public class DataService

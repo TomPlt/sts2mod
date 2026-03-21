@@ -1,0 +1,105 @@
+@page "/ancient-ratings"
+@inject DataService Data
+@inject FilterState Filter
+
+<div class="oracle-page">
+    <h2 class="page-title">Ancient Ratings</h2>
+    <p class="page-subtitle">Glicko-2 ratings for Neow rewards and post-act ancient choices</p>
+
+    @if (_loading)
+    {
+        <p class="loading">Loading...</p>
+    }
+    else
+    {
+        <div class="filter-bar" style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <button class="filter-btn @(_timingFilter == null ? "active" : "")"
+                    @onclick="() => SetTiming(null)">All</button>
+            <button class="filter-btn @(_timingFilter == "neow" ? "active" : "")"
+                    @onclick='() => SetTiming("neow")'>Neow</button>
+            <button class="filter-btn @(_timingFilter == "post_act1" ? "active" : "")"
+                    @onclick='() => SetTiming("post_act1")'>Post-Act 1</button>
+            <button class="filter-btn @(_timingFilter == "post_act2" ? "active" : "")"
+                    @onclick='() => SetTiming("post_act2")'>Post-Act 2</button>
+        </div>
+
+        <table class="oracle-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Choice</th>
+                    <th>Rating</th>
+                    <th>±RD</th>
+                    @if (_timingFilter == null)
+                    {
+                        <th>Neow</th>
+                        <th>Post-Act1</th>
+                        <th>Post-Act2</th>
+                    }
+                    <th>Games</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int rank = 1; }
+                @foreach (var r in _filteredRatings)
+                {
+                    <tr>
+                        <td>@(rank++)</td>
+                        <td>@FormatName(r.ChoiceKey)</td>
+                        <td>@r.Rating.ToString("F0")</td>
+                        <td>@r.RatingDeviation.ToString("F0")</td>
+                        @if (_timingFilter == null)
+                        {
+                            <td>@GetTimingRating(r.ChoiceKey, "neow")</td>
+                            <td>@GetTimingRating(r.ChoiceKey, "post_act1")</td>
+                            <td>@GetTimingRating(r.ChoiceKey, "post_act2")</td>
+                        }
+                        <td>@r.GamesPlayed</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private bool _loading = true;
+    private string? _timingFilter;
+    private List<AncientRatingExport> _allRatings = [];
+    private List<AncientRatingExport> _filteredRatings = [];
+    private ExportData? _data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+        _allRatings = _data.AncientRatings;
+        ApplyFilter();
+        _loading = false;
+    }
+
+    private void SetTiming(string? timing)
+    {
+        _timingFilter = timing;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var charFilter = Filter.Character;
+        var character = charFilter ?? "ALL";
+        var context = _timingFilter ?? "overall";
+
+        _filteredRatings = _allRatings
+            .Where(r => r.Character == character && r.Context == context)
+            .OrderByDescending(r => r.Rating)
+            .ToList();
+    }
+
+    private string GetTimingRating(string choiceKey, string timing)
+    {
+        var r = _allRatings.FirstOrDefault(r => r.ChoiceKey == choiceKey && r.Character == "ALL" && r.Context == timing);
+        return r != null ? r.Rating.ToString("F0") : "—";
+    }
+
+    private string FormatName(string key) => key.Replace("_", " ");
+}
