@@ -20,7 +20,7 @@ public class CardAnalytics
 
         var sql = $"""
             SELECT
-                cc.CardId,
+                CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END AS CardId,
                 SUM(CASE WHEN cc.WasPicked = 1 THEN 1 ELSE 0 END) AS TimesPicked,
                 SUM(CASE WHEN cc.WasPicked = 0 THEN 1 ELSE 0 END) AS TimesSkipped,
                 SUM(CASE WHEN cc.WasPicked = 1 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
@@ -29,7 +29,7 @@ public class CardAnalytics
             JOIN Floors f ON cc.FloorId = f.Id
             JOIN Runs r ON f.RunId = r.Id
             {where}
-            GROUP BY cc.CardId
+            GROUP BY CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END
             """;
 
         var rows = _connection.Query(sql, parameters).ToList();
@@ -57,14 +57,14 @@ public class CardAnalytics
 
         var sql = $"""
             SELECT
-                cc.CardId,
+                CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END AS CardId,
                 COUNT(*) AS TimesOffered,
                 SUM(CASE WHEN cc.WasPicked = 1 THEN 1 ELSE 0 END) AS TimesPicked
             FROM CardChoices cc
             JOIN Floors f ON cc.FloorId = f.Id
             JOIN Runs r ON f.RunId = r.Id
             {where}
-            GROUP BY cc.CardId
+            GROUP BY CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END
             """;
 
         var rows = _connection.Query(sql, parameters).ToList();
