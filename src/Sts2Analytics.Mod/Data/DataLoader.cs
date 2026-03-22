@@ -14,6 +14,10 @@ public static class DataLoader
     private static Dictionary<string, double>? _skipEloByAct;
     private static Dictionary<string, AncientStats>? _ancientChoices;
     private static Dictionary<string, MapIntelCharacter>? _mapIntel;
+    private static Dictionary<string, RefAct>? _refActs;
+    private static List<RefEvent>? _sharedEvents;
+    private static Dictionary<string, PoolRating>? _encounterPools;
+    private static Dictionary<string, PoolRating>? _encounterRatings;
 
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
@@ -101,6 +105,39 @@ public static class DataLoader
                 }
             }
             GD.Print($"[SpireOracle] Loaded map intel for {_mapIntel.Count} characters");
+
+            _encounterPools = data.EncounterPools ?? new Dictionary<string, PoolRating>();
+            _encounterRatings = data.EncounterRatings ?? new Dictionary<string, PoolRating>();
+            GD.Print($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings");
+
+            // Load reference data (events, encounters per act)
+            _refActs = new Dictionary<string, RefAct>(StringComparer.OrdinalIgnoreCase);
+            _sharedEvents = new List<RefEvent>();
+            var refPath = Path.Combine(modPath, "sts2_reference.json");
+            if (File.Exists(refPath))
+            {
+                try
+                {
+                    var refJson = File.ReadAllText(refPath);
+                    var refData = JsonSerializer.Deserialize<RefData>(refJson);
+                    if (refData?.Acts != null)
+                    {
+                        foreach (var act in refData.Acts)
+                            _refActs[act.Name] = act;
+                    }
+                    _sharedEvents = refData?.SharedEvents ?? new List<RefEvent>();
+                    GD.Print($"[SpireOracle] Loaded reference data: {_refActs.Count} acts, {_sharedEvents.Count} shared events");
+                }
+                catch (Exception refEx)
+                {
+                    GD.PrintErr($"[SpireOracle] Error loading reference data: {refEx.Message}");
+                }
+            }
+            else
+            {
+                GD.Print("[SpireOracle] sts2_reference.json not found, events will not be shown");
+            }
+
             return true;
         }
         catch (Exception ex)
@@ -124,4 +161,18 @@ public static class DataLoader
 
     public static List<string> GetMapIntelCharacters() =>
         _mapIntel?.Keys.ToList() ?? new List<string>();
+
+    public static RefAct? GetActReference(string actName) =>
+        _refActs?.TryGetValue(actName, out var act) == true ? act : null;
+
+    public static List<RefEvent> GetSharedEvents() =>
+        _sharedEvents ?? new List<RefEvent>();
+
+    public static PoolRating? GetPoolRating(string context) =>
+        _encounterPools?.TryGetValue(context, out var rating) == true ? rating : null;
+
+    public static PoolRating? GetEncounterRating(string encounterId) =>
+        _encounterRatings?.TryGetValue(encounterId, out var rating) == true ? rating : null;
+
+    public static Dictionary<string, PoolRating>? EncounterPools => _encounterPools;
 }

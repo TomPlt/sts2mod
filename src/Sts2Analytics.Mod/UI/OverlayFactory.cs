@@ -1,5 +1,6 @@
 using Godot;
 using SpireOracle.Data;
+using System.Collections.Generic;
 
 namespace SpireOracle.UI;
 
@@ -132,6 +133,8 @@ public static class OverlayFactory
         vbox.AddThemeConstantOverride("separation", 2);
 
         AddStatRow(vbox, "Rating", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+        if (stats.CombatElo > 0)
+            AddStatRow(vbox, "Combat", $"{stats.CombatElo:F0} ±{stats.CombatRd:F0}");
         AddStatRow(vbox, "Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
         AddStatRow(vbox, "Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
         AddStatRow(vbox, "Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
@@ -254,6 +257,91 @@ public static class OverlayFactory
         badge.MouseFilter = Control.MouseFilterEnum.Ignore;
         badge.ZIndex = 5;
         choiceHolder.AddChild(badge);
+
+        // --- Detail Panel (hidden by default, shown on hover) ---
+        var detail = new PanelContainer();
+        detail.Name = "SpireOracleDetail";
+        detail.AddToGroup(OverlayGroup);
+        detail.Visible = false;
+        detail.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+        var detailStyle = new StyleBoxFlat();
+        detailStyle.BgColor = new Color(0.08f, 0.08f, 0.12f, 0.95f);
+        detailStyle.BorderColor = new Color(0.83f, 0.33f, 0.16f);
+        detailStyle.BorderWidthBottom = 2;
+        detailStyle.BorderWidthTop = 2;
+        detailStyle.BorderWidthLeft = 2;
+        detailStyle.BorderWidthRight = 2;
+        detailStyle.CornerRadiusBottomLeft = 6;
+        detailStyle.CornerRadiusBottomRight = 6;
+        detailStyle.CornerRadiusTopLeft = 6;
+        detailStyle.CornerRadiusTopRight = 6;
+        detailStyle.ContentMarginLeft = 12;
+        detailStyle.ContentMarginRight = 12;
+        detailStyle.ContentMarginTop = 8;
+        detailStyle.ContentMarginBottom = 8;
+        detail.AddThemeStyleboxOverride("panel", detailStyle);
+
+        var vbox = new VBoxContainer();
+        vbox.AddThemeConstantOverride("separation", 2);
+
+        AddStatRow(vbox, "Overall", $"{stats.Rating:F0} ±{stats.Rd:F0}");
+        AddStatRow(vbox, "Neow", stats.RatingNeow > 0 ? $"{stats.RatingNeow:F0} ±{stats.RdNeow:F0}" : "—");
+        AddStatRow(vbox, "Post Act 1", stats.RatingPostAct1 > 0 ? $"{stats.RatingPostAct1:F0} ±{stats.RdPostAct1:F0}" : "—");
+        AddStatRow(vbox, "Post Act 2", stats.RatingPostAct2 > 0 ? $"{stats.RatingPostAct2:F0} ±{stats.RdPostAct2:F0}" : "—");
+
+        detail.AddChild(vbox);
+
+        detail.CustomMinimumSize = new Vector2(260, 0);
+        detail.SetAnchorsPreset(Control.LayoutPreset.CenterBottom);
+        detail.GrowHorizontal = Control.GrowDirection.Both;
+        detail.Position = new Vector2(-130, 5);
+        detail.ZAsRelative = false;
+        detail.ZIndex = 200;
+        choiceHolder.AddChild(detail);
+    }
+
+    /// <summary>
+    /// Append a combat forecast section to an existing detail panel on a card holder.
+    /// Call after AddOverlay.
+    /// </summary>
+    public static void AddForecast(Control cardHolder, DamageForcast forecast)
+    {
+        var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
+        if (detail == null) return;
+
+        var vbox = detail.GetChildOrNull<VBoxContainer>(0);
+        if (vbox == null) return;
+
+        var sep = new HSeparator();
+        sep.AddThemeConstantOverride("separation", 6);
+        vbox.AddChild(sep);
+
+        var headerLabel = new Label();
+        headerLabel.Text = "Combat Forecast";
+        headerLabel.AddThemeFontSizeOverride("font_size", 18);
+        headerLabel.AddThemeColorOverride("font_color", new Color(0.36f, 0.72f, 0.83f));
+        vbox.AddChild(headerLabel);
+
+        AddStatRow(vbox, "Deck Elo", $"{forecast.CurrentDeckElo:F0} → {forecast.NewDeckElo:F0}");
+
+        var eloDeltaStr = forecast.EloDelta >= 0
+            ? $"+{forecast.EloDelta:F0}"
+            : $"{forecast.EloDelta:F0}";
+        var eloColor = forecast.EloDelta >= 0
+            ? new Color(0.3f, 0.85f, 0.3f) // green
+            : new Color(0.95f, 0.3f, 0.3f); // red
+        AddColoredStatRow(vbox, "Elo Change", eloDeltaStr, eloColor);
+
+        var dmgDeltaStr = forecast.DmgDelta <= 0
+            ? $"{forecast.DmgDelta:F1} HP"
+            : $"+{forecast.DmgDelta:F1} HP";
+        var dmgColor = forecast.DmgDelta <= 0
+            ? new Color(0.3f, 0.85f, 0.3f) // green — less damage is good
+            : new Color(0.95f, 0.3f, 0.3f); // red — more damage is bad
+        AddColoredStatRow(vbox, "Next Fight", dmgDeltaStr, dmgColor);
+
+        AddStatRow(vbox, "Exp. Damage", $"{forecast.NewExpectedDmg:F1} HP");
     }
 
     public static void ShowDetail(Control cardHolder)

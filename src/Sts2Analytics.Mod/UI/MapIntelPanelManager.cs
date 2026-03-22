@@ -24,10 +24,10 @@ public static class MapIntelPanelManager
 
     public static bool IsVisible => _panel != null && IsInstanceValid(_panel) && _panel.Visible;
 
-    public static void Show(string character, int actIndex)
+    public static void Show(string character, int actIndex, string actName = "")
     {
         EnsurePanel();
-        _panel?.UpdateForContext(character, actIndex);
+        _panel?.UpdateForContext(character, actIndex, actName);
     }
 
     public static void Hide()

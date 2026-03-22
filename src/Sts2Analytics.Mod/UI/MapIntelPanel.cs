@@ -7,13 +7,15 @@ namespace SpireOracle.UI;
 public partial class MapIntelPanel : PanelContainer
 {
     private VBoxContainer _content;
+    private ScrollContainer _scroll;
     private string? _currentCharacter;
     private int _currentAct = -1;
+    private string? _currentActName;
 
     public MapIntelPanel()
     {
         Name = "SpireOracleMapIntel";
-        MouseFilter = MouseFilterEnum.Ignore;
+        MouseFilter = MouseFilterEnum.Pass;
         Visible = false;
 
         var style = new StyleBoxFlat();
@@ -33,21 +35,27 @@ public partial class MapIntelPanel : PanelContainer
         style.ContentMarginBottom = 12;
         AddThemeStyleboxOverride("panel", style);
 
-        _content = new VBoxContainer();
-        _content.AddThemeConstantOverride("separation", 4);
-        AddChild(_content);
+        _scroll = new ScrollContainer();
+        _scroll.MouseFilter = MouseFilterEnum.Pass;
+        _scroll.SizeFlagsVertical = SizeFlags.ExpandFill;
+        _scroll.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        AddChild(_scroll);
 
-        // Position: bottom-left
-        SetAnchorsPreset(LayoutPreset.BottomLeft);
-        Position = new Vector2(20, -40);
-        GrowVertical = GrowDirection.Begin;
-        CustomMinimumSize = new Vector2(340, 0);
+        _content = new VBoxContainer();
+        _content.AddThemeConstantOverride("separation", 3);
+        _content.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        _scroll.AddChild(_content);
+
+        // Position: top-left, fixed size
+        SetAnchorsPreset(LayoutPreset.TopLeft);
+        Position = new Vector2(20, 80);
+        Size = new Vector2(800, 700);
         ZIndex = 10;
     }
 
-    public void UpdateForContext(string character, int actIndex)
+    public void UpdateForContext(string character, int actIndex, string actName = "")
     {
-        if (character == _currentCharacter && actIndex == _currentAct)
+        if (character == _currentCharacter && actIndex == _currentAct && actName == _currentActName)
         {
             Visible = true;
             return;
@@ -55,6 +63,7 @@ public partial class MapIntelPanel : PanelContainer
 
         _currentCharacter = character;
         _currentAct = actIndex;
+        _currentActName = actName;
 
         foreach (var child in _content.GetChildren())
         {
@@ -63,109 +72,168 @@ public partial class MapIntelPanel : PanelContainer
         }
 
         var intel = DataLoader.GetMapIntel(character);
-        if (intel == null)
-        {
-            AddNoDataLabel();
-            return;
-        }
+        var refAct = !string.IsNullOrEmpty(actName)
+            ? DataLoader.GetActReference(actName)
+            : null;
 
         // Header
         var charName = character.Replace("CHARACTER.", "");
+        var actDisplayName = refAct?.DisplayName ?? $"Act {actIndex + 1}";
         var header = new Label();
-        header.Text = $"{charName} \u2014 Act {actIndex + 1}";
-        header.AddThemeFontSizeOverride("font_size", 24);
+        header.Text = $"{charName} \u2014 {actDisplayName}";
+        header.AddThemeFontSizeOverride("font_size", 22);
         header.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
         _content.AddChild(header);
 
-        // Find act data
-        MapIntelAct? actData = null;
-        foreach (var act in intel.Acts)
+        // Win rates from analytics
+        if (intel != null)
         {
-            if (act.ActIndex == actIndex)
+            AddStatRow("Overall Win Rate", $"{intel.WinRate:P0} ({intel.Wins}/{intel.Runs})",
+                intel.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
+
+            MapIntelAct? actData = null;
+            if (intel.Acts != null)
             {
-                actData = act;
-                break;
+                foreach (var act in intel.Acts)
+                    if (act.ActIndex == actIndex) { actData = act; break; }
             }
-        }
 
-        if (actData == null)
-        {
-            AddNoDataLabel();
-            return;
-        }
-
-        // Win rates
-        AddStatRow("Overall Win Rate", $"{intel.WinRate:P0} ({intel.Wins}/{intel.Runs})",
-            intel.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
-        if (actData.Runs > 0)
-        {
-            AddStatRow($"Survived Act {actIndex + 1}", $"{actData.WinRate:P0} ({actData.Wins}/{actData.Runs})",
-                actData.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
-        }
-
-        AddSeparator();
-
-        // Damage summary
-        var summaryHeader = new Label();
-        summaryHeader.Text = "Expected Damage";
-        summaryHeader.AddThemeFontSizeOverride("font_size", 20);
-        summaryHeader.AddThemeColorOverride("font_color", Colors.White);
-        _content.AddChild(summaryHeader);
-
-        foreach (var pool in actData.Pools)
-        {
-            AddPoolSummaryRow(pool);
-
-            if (pool.Pool is "elite" or "boss" && pool.EncounterDetails != null)
+            if (actData != null)
             {
-                foreach (var enc in pool.EncounterDetails)
+                if (actData.Runs > 0)
+                    AddStatRow($"Survived Act {actIndex + 1}", $"{actData.WinRate:P0} ({actData.Wins}/{actData.Runs})",
+                        actData.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f));
+
+                AddSeparator();
+
+                // Damage summary
+                AddSectionHeader("Expected Damage");
+                foreach (var pool in actData.Pools)
                 {
-                    AddEncounterRow(enc);
+                    AddPoolSummaryRow(pool, actIndex);
+                    if (pool.EncounterDetails != null)
+                        foreach (var enc in pool.EncounterDetails)
+                            AddEncounterRow(enc);
+                }
+
+                // Elite win rate correlation
+                if (actData.EliteWinRates != null && actData.EliteWinRates.Count > 0)
+                {
+                    AddSeparator();
+                    AddSectionHeader($"Act {actIndex + 1} Elites \u2192 Win Rate");
+                    foreach (var ec in actData.EliteWinRates)
+                    {
+                        if (ec.TotalRuns < 2) continue;
+                        AddStatRow($"  {ec.EliteCount} elites", $"{ec.WinRate:P0} ({ec.Wins}/{ec.TotalRuns})",
+                            ec.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f), 16);
+                    }
                 }
             }
         }
 
-        // Per-act elite count correlation
-        if (actData.EliteWinRates != null && actData.EliteWinRates.Count > 0)
+        // Reference data: encounter pools, elites, bosses, events
+        if (refAct != null)
         {
-            AddSeparator();
-            var eliteHeader = new Label();
-            eliteHeader.Text = $"Act {actIndex + 1} Elites \u2192 Win Rate";
-            eliteHeader.AddThemeFontSizeOverride("font_size", 20);
-            eliteHeader.AddThemeColorOverride("font_color", Colors.White);
-            _content.AddChild(eliteHeader);
-
-            foreach (var ec in actData.EliteWinRates)
+            // Encounter pools
+            if (refAct.EasyPool != null && refAct.EasyPool.Count > 0)
             {
-                if (ec.TotalRuns < 2) continue;
-                AddStatRow($"  {ec.EliteCount} elites", $"{ec.WinRate:P0} ({ec.Wins}/{ec.TotalRuns})",
-                    ec.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f), 17);
+                AddSeparator();
+                AddSectionHeader("Encounter Pools");
+                AddLabelRow("Easy:", string.Join(", ", refAct.EasyPool), new Color(0.3f, 0.85f, 0.3f));
             }
+            if (refAct.HardPool != null && refAct.HardPool.Count > 0)
+                AddLabelRow("Hard:", string.Join(", ", refAct.HardPool), new Color(0.95f, 0.85f, 0.2f));
+
+            // Elites & Bosses (names only — damage stats already shown above)
+            if (refAct.Elites != null && refAct.Elites.Count > 0)
+                AddLabelRow("Elites:", string.Join(", ", refAct.Elites), new Color(0.95f, 0.3f, 0.3f));
+            if (refAct.Bosses != null && refAct.Bosses.Count > 0)
+                AddLabelRow("Bosses:", string.Join(", ", refAct.Bosses), new Color(0.7f, 0.3f, 0.9f));
+
+            // Events
+            if (refAct.Events != null && refAct.Events.Count > 0)
+            {
+                AddSeparator();
+                AddSectionHeader($"Events ({refAct.Events.Count})");
+                foreach (var evt in refAct.Events)
+                {
+                    var evtRow = new HBoxContainer();
+                    var evtName = new Label();
+                    evtName.Text = $"  \u2022 {evt.Name}";
+                    evtName.AddThemeFontSizeOverride("font_size", 15);
+                    evtName.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.8f));
+                    evtName.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                    evtRow.AddChild(evtName);
+
+                    if (evt.Condition != null)
+                    {
+                        var condLabel = new Label();
+                        condLabel.Text = "\u26a0";
+                        condLabel.AddThemeFontSizeOverride("font_size", 13);
+                        condLabel.AddThemeColorOverride("font_color", new Color(0.95f, 0.85f, 0.2f));
+                        condLabel.TooltipText = evt.Condition;
+                        evtRow.AddChild(condLabel);
+                    }
+                    _content.AddChild(evtRow);
+
+                    // Compact options
+                    foreach (var opt in evt.Options)
+                    {
+                        var effectShort = opt.Effect.Length > 45 ? opt.Effect.Substring(0, 42) + "..." : opt.Effect;
+                        var optLabel = new Label();
+                        optLabel.Text = $"      {opt.Name}: {effectShort}";
+                        optLabel.AddThemeFontSizeOverride("font_size", 13);
+                        optLabel.AddThemeColorOverride("font_color", new Color(0.45f, 0.45f, 0.55f));
+                        if (opt.Effect.Length > 45 || opt.Notes != null)
+                            optLabel.TooltipText = opt.Effect + (opt.Notes != null ? $"\n\n{opt.Notes}" : "");
+                        _content.AddChild(optLabel);
+                    }
+                }
+
+                // Shared events count
+                var shared = DataLoader.GetSharedEvents();
+                if (shared.Count > 0)
+                {
+                    var sharedLabel = new Label();
+                    sharedLabel.Text = $"  + {shared.Count} shared events";
+                    sharedLabel.AddThemeFontSizeOverride("font_size", 14);
+                    sharedLabel.AddThemeColorOverride("font_color", new Color(0.4f, 0.4f, 0.5f));
+                    _content.AddChild(sharedLabel);
+                }
+            }
+        }
+
+        if (_content.GetChildCount() <= 1)
+        {
+            AddNoDataLabel();
+            return;
         }
 
         Visible = true;
     }
 
-    private void AddPoolSummaryRow(MapIntelPool pool)
+    private void AddPoolSummaryRow(MapIntelPool pool, int actIndex)
     {
         var row = new HBoxContainer();
 
         var dot = new Label();
         dot.Text = "\u25cf ";
-        dot.AddThemeFontSizeOverride("font_size", 18);
+        dot.AddThemeFontSizeOverride("font_size", 17);
         dot.AddThemeColorOverride("font_color", GetPoolColor(pool.Pool));
         row.AddChild(dot);
 
+        var poolRating = DataLoader.GetPoolRating($"act{actIndex + 1}_{pool.Pool}");
+        var poolEloText = poolRating != null ? $" [{poolRating.Elo:F0}]" : "";
         var poolLabel = new Label();
-        poolLabel.Text = GetPoolDisplayName(pool.Pool);
-        poolLabel.AddThemeFontSizeOverride("font_size", 18);
+        poolLabel.Text = $"{GetPoolDisplayName(pool.Pool)}{poolEloText}";
+        poolLabel.AddThemeFontSizeOverride("font_size", 17);
         poolLabel.AddThemeColorOverride("font_color", Colors.White);
         poolLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         row.AddChild(poolLabel);
 
         var dmgLabel = new Label();
-        dmgLabel.Text = $"~{pool.AvgDamage:F0} dmg";
-        dmgLabel.AddThemeFontSizeOverride("font_size", 18);
+        dmgLabel.Text = $"~{pool.AvgDamage:F0}\u00b1{pool.StdDev:F0} dmg  (n={pool.SampleSize})";
+        dmgLabel.AddThemeFontSizeOverride("font_size", 17);
         dmgLabel.AddThemeColorOverride("font_color", GetDamageColor(pool.AvgDamage));
         row.AddChild(dmgLabel);
 
@@ -177,28 +245,33 @@ public partial class MapIntelPanel : PanelContainer
         var row = new HBoxContainer();
 
         var nameLabel = new Label();
-        nameLabel.Text = $"    {FormatEncounterName(enc.EncounterId)}";
-        nameLabel.AddThemeFontSizeOverride("font_size", 16);
+        var encRating = DataLoader.GetEncounterRating(enc.EncounterId);
+        var eloText = encRating != null ? $" [{encRating.Elo:F0}]" : "";
+        nameLabel.Text = $"    {FormatEncounterName(enc.EncounterId)}{eloText}";
+        nameLabel.AddThemeFontSizeOverride("font_size", 15);
         nameLabel.AddThemeColorOverride("font_color", new Color(0.55f, 0.55f, 0.65f));
         nameLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         row.AddChild(nameLabel);
 
         var dmgLabel = new Label();
-        dmgLabel.Text = $"~{enc.AvgDamage:F0}";
-        dmgLabel.AddThemeFontSizeOverride("font_size", 16);
+        dmgLabel.Text = $"~{enc.AvgDamage:F0}\u00b1{enc.StdDev:F0}  (n={enc.SampleSize})";
+        dmgLabel.AddThemeFontSizeOverride("font_size", 15);
         dmgLabel.AddThemeColorOverride("font_color", GetDamageColor(enc.AvgDamage));
         row.AddChild(dmgLabel);
-
-        var maxLabel = new Label();
-        maxLabel.Text = $" (max {enc.MaxDamage})";
-        maxLabel.AddThemeFontSizeOverride("font_size", 14);
-        maxLabel.AddThemeColorOverride("font_color", new Color(0.4f, 0.4f, 0.5f));
-        row.AddChild(maxLabel);
 
         _content.AddChild(row);
     }
 
-    private void AddStatRow(string label, string value, Color valueColor, int fontSize = 18)
+    private void AddSectionHeader(string text)
+    {
+        var label = new Label();
+        label.Text = text;
+        label.AddThemeFontSizeOverride("font_size", 18);
+        label.AddThemeColorOverride("font_color", Colors.White);
+        _content.AddChild(label);
+    }
+
+    private void AddStatRow(string label, string value, Color valueColor, int fontSize = 17)
     {
         var row = new HBoxContainer();
         var lbl = new Label();
@@ -216,10 +289,26 @@ public partial class MapIntelPanel : PanelContainer
         _content.AddChild(row);
     }
 
+    private void AddLabelRow(string label, string value, Color labelColor)
+    {
+        var lbl = new Label();
+        lbl.Text = label;
+        lbl.AddThemeFontSizeOverride("font_size", 16);
+        lbl.AddThemeColorOverride("font_color", labelColor);
+        _content.AddChild(lbl);
+
+        var val = new Label();
+        val.Text = $"  {value}";
+        val.AddThemeFontSizeOverride("font_size", 14);
+        val.AddThemeColorOverride("font_color", new Color(0.55f, 0.55f, 0.65f));
+        val.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        _content.AddChild(val);
+    }
+
     private void AddSeparator()
     {
         var sep = new HSeparator();
-        sep.AddThemeConstantOverride("separation", 6);
+        sep.AddThemeConstantOverride("separation", 4);
         _content.AddChild(sep);
     }
 
@@ -227,7 +316,7 @@ public partial class MapIntelPanel : PanelContainer
     {
         var label = new Label();
         label.Text = "No map intel data available";
-        label.AddThemeFontSizeOverride("font_size", 20);
+        label.AddThemeFontSizeOverride("font_size", 18);
         label.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.6f));
         _content.AddChild(label);
         Visible = true;

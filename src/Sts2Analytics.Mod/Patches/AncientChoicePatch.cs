@@ -41,6 +41,12 @@ public static class AncientChoicePatch
 
             GD.Print($"[SpireOracle] Ancient overlay: {choiceKey} = {stats.Rating:F0}");
             OverlayFactory.AddAncientOverlay(__instance, stats);
+
+            // Wire up hover to show/hide detail panel
+            __instance.MouseEntered += () => OverlayFactory.ShowDetail(__instance);
+            __instance.MouseExited += () => OverlayFactory.HideDetail(__instance);
+            __instance.FocusEntered += () => OverlayFactory.ShowDetail(__instance);
+            __instance.FocusExited += () => OverlayFactory.HideDetail(__instance);
         }
         catch (System.Exception ex)
         {

@@ -14,13 +14,14 @@ public static class MapScreenOpenPatch
     public static void Postfix()
     {
         if (!ModEntry.OverlayEnabled || !DataLoader.IsLoaded) return;
+        if (!MapIntelPanelManager.IsVisible) return;
 
         try
         {
-            // Refresh context when map opens (act may have changed)
-            var (character, actIndex) = InputPatch.DetectContext();
-            GD.Print($"[SpireOracle] Map opened, refreshing intel: {character} Act {actIndex + 1}");
-            MapIntelPanelManager.Show(character, actIndex);
+            // Refresh context when map opens (act may have changed), only if panel already visible
+            var (character, actIndex, actName) = InputPatch.DetectContext();
+            GD.Print($"[SpireOracle] Map opened, refreshing intel: {character} Act {actIndex + 1} ({actName})");
+            MapIntelPanelManager.Show(character, actIndex, actName);
         }
         catch (Exception ex)
         {

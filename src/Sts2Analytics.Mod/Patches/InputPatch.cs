@@ -28,13 +28,13 @@ public static class InputPatch
         }
         else
         {
-            var (character, actIndex) = DetectContext();
-            GD.Print($"[SpireOracle] Showing map intel: {character} Act {actIndex + 1}");
-            MapIntelPanelManager.Show(character, actIndex);
+            var (character, actIndex, actName) = DetectContext();
+            GD.Print($"[SpireOracle] Showing map intel: {character} Act {actIndex + 1} ({actName})");
+            MapIntelPanelManager.Show(character, actIndex, actName);
         }
     }
 
-    internal static (string character, int actIndex) DetectContext()
+    internal static (string character, int actIndex, string actName) DetectContext()
     {
         try
         {
@@ -45,6 +45,20 @@ public static class InputPatch
             if (state != null)
             {
                 var actIndex = state.CurrentActIndex;
+                var actName = "";
+                try
+                {
+                    var acts = state.Acts;
+                    if (acts != null && actIndex < acts.Count)
+                    {
+                        var actId = acts[actIndex]?.ToString() ?? "";
+                        var spaceIdx = actId.IndexOf(' ');
+                        if (spaceIdx > 0) actId = actId.Substring(0, spaceIdx);
+                        actName = actId;
+                    }
+                }
+                catch { }
+
                 var players = state.Players;
                 if (players != null && players.Count > 0)
                 {
@@ -53,7 +67,7 @@ public static class InputPatch
                     var spaceIdx = characterId.IndexOf(' ');
                     if (spaceIdx > 0) characterId = characterId.Substring(0, spaceIdx);
                     if (!string.IsNullOrEmpty(characterId))
-                        return (characterId, actIndex);
+                        return (characterId, actIndex, actName);
                 }
             }
         }
@@ -63,6 +77,6 @@ public static class InputPatch
         }
 
         var characters = DataLoader.GetMapIntelCharacters();
-        return (characters.Count > 0 ? characters[0] : "CHARACTER.IRONCLAD", 0);
+        return (characters.Count > 0 ? characters[0] : "CHARACTER.IRONCLAD", 0, "");
     }
 }

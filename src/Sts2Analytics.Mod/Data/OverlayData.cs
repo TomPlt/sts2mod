@@ -20,7 +20,14 @@ public record CardStats(
     [property: JsonPropertyName("blindSpot")] string? BlindSpot = null,
     [property: JsonPropertyName("blindSpotScore")] double BlindSpotScore = 0,
     [property: JsonPropertyName("blindSpotPickRate")] double BlindSpotPickRate = 0,
-    [property: JsonPropertyName("blindSpotWinRateDelta")] double BlindSpotWinRateDelta = 0);
+    [property: JsonPropertyName("blindSpotWinRateDelta")] double BlindSpotWinRateDelta = 0,
+    [property: JsonPropertyName("combatElo")] double CombatElo = 0,
+    [property: JsonPropertyName("combatRd")] double CombatRd = 350,
+    [property: JsonPropertyName("combatByPool")] Dictionary<string, PoolRating>? CombatByPool = null);
+
+public record PoolRating(
+    [property: JsonPropertyName("elo")] double Elo,
+    [property: JsonPropertyName("rd")] double Rd);
 
 public record AncientStats(
     [property: JsonPropertyName("choiceKey")] string ChoiceKey,
@@ -36,14 +43,16 @@ public record AncientStats(
 public record EncounterDamage(
     [property: JsonPropertyName("encounterId")] string EncounterId,
     [property: JsonPropertyName("avgDamage")] double AvgDamage,
-    [property: JsonPropertyName("sampleSize")] int SampleSize,
-    [property: JsonPropertyName("maxDamage")] int MaxDamage);
+    [property: JsonPropertyName("stdDev")] double StdDev = 0,
+    [property: JsonPropertyName("sampleSize")] int SampleSize = 0,
+    [property: JsonPropertyName("maxDamage")] int MaxDamage = 0);
 
 public record MapIntelPool(
     [property: JsonPropertyName("pool")] string Pool,
     [property: JsonPropertyName("avgDamage")] double AvgDamage,
-    [property: JsonPropertyName("sampleSize")] int SampleSize,
-    [property: JsonPropertyName("encounters")] List<string> Encounters,
+    [property: JsonPropertyName("stdDev")] double StdDev = 0,
+    [property: JsonPropertyName("sampleSize")] int SampleSize = 0,
+    [property: JsonPropertyName("encounters")] List<string>? Encounters = null,
     [property: JsonPropertyName("encounterDetails")] List<EncounterDamage>? EncounterDetails = null);
 
 public record EliteWinRate(
@@ -74,4 +83,6 @@ public record OverlayData(
     [property: JsonPropertyName("skipEloByAct")] Dictionary<string, double>? SkipEloByAct,
     [property: JsonPropertyName("cards")] List<CardStats> Cards,
     [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null,
-    [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null);
+    [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null,
+    [property: JsonPropertyName("encounterPools")] Dictionary<string, PoolRating>? EncounterPools = null,
+    [property: JsonPropertyName("encounterRatings")] Dictionary<string, PoolRating>? EncounterRatings = null);
