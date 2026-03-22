@@ -3,75 +3,421 @@
 @inject FilterState Filter
 @implements IDisposable
 
-<PageTitle>Combat - STS2 Analytics</PageTitle>
+<PageTitle>Spire Oracle — Combat</PageTitle>
 
 <h2>Combat</h2>
 
 @if (_loading)
 {
-    <p><em>Loading...</em></p>
+    <p class="dim-text">Consulting the oracle...</p>
 }
 else
 {
     @if (Filter.HasAnyFilter)
     {
-        <div style="background: #2a2a3e; border: 1px solid #4fc3f7; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; color: #4fc3f7; font-size: 0.85rem;">
-            Note: Combat data is aggregated across all ascension levels and cannot be filtered.
+        <div class="filter-note">
+            Note: Combat data is aggregated across all ascension levels. Character filter applies where available.
         </div>
     }
 
-    <h3 style="color: #b0b0c8;">Damage by Encounter</h3>
+    <div class="combat-tabs">
+        <button class="@(_tab == Tab.Pools ? "active" : "")" @onclick="() => SetTab(Tab.Pools)">Encounter Pools</button>
+        <button class="@(_tab == Tab.Encounters ? "active" : "")" @onclick="() => SetTab(Tab.Encounters)">Enemy Ratings</button>
+        <button class="@(_tab == Tab.Cards ? "active" : "")" @onclick="() => SetTab(Tab.Cards)">Card Combat Elo</button>
+        <button class="@(_tab == Tab.Damage ? "active" : "")" @onclick="() => SetTab(Tab.Damage)">Damage Taken</button>
+    </div>
 
-    <RadzenDataGrid Data="@_encounters" TItem="EncounterRow" AllowSorting="true" AllowPaging="true" PageSize="25"
-                    Style="margin-bottom: 2rem;">
-        <Columns>
-            <RadzenDataGridColumn TItem="EncounterRow" Property="Name" Title="Encounter" Width="250px" />
-            <RadzenDataGridColumn TItem="EncounterRow" Property="AvgDamage" Title="Avg Damage" FormatString="{0:F1}" Width="120px"
-                                  SortOrder="SortOrder.Descending" />
-            <RadzenDataGridColumn TItem="EncounterRow" Property="Fights" Title="Fights" Width="80px" />
-        </Columns>
-    </RadzenDataGrid>
+    @if (_tab == Tab.Pools)
+    {
+        <p class="dim-text" style="margin-bottom: 0.75rem; font-size: 0.8rem;">
+            How tough is each encounter pool? Higher rating = harder fights for your decks.
+        </p>
+
+        <div class="panel" style="padding: 0; overflow: hidden;">
+            <table class="oracle-table elo-table">
+                <thead>
+                    <tr>
+                        <th style="width: 3rem; text-align: center;">#</th>
+                        <th>Pool</th>
+                        <th style="width: 6rem; text-align: right;">Rating</th>
+                        <th style="width: 3.5rem; text-align: right;">±</th>
+                        <th style="width: 4rem; text-align: right;">Games</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var (row, i) in _poolRows.Select((r, i) => (r, i)))
+                    {
+                        <tr class="@(row.LowConfidence ? "low-confidence" : "")">
+                            <td style="text-align: center;" class="dim-text mono">@(i + 1)</td>
+                            <td style="font-weight: 500;">@row.Name</td>
+                            <td style="text-align: right;">
+                                <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
+                            </td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Rd.ToString("F0")</td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (_tab == Tab.Encounters)
+    {
+        <p class="dim-text" style="margin-bottom: 0.75rem; font-size: 0.8rem;">
+            Per-encounter Glicko-2 ratings. Higher = harder to beat with an average deck.
+        </p>
+
+        <div class="act-filter">
+            <input type="text" class="search-input" placeholder="Search encounters..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyEncounterFilter" />
+        </div>
+
+        <div class="panel" style="padding: 0; overflow: hidden;">
+            <table class="oracle-table elo-table">
+                <thead>
+                    <tr>
+                        <th style="width: 3rem; text-align: center;">#</th>
+                        <th>Encounter</th>
+                        <th style="width: 6rem; text-align: right;">Rating</th>
+                        <th style="width: 3.5rem; text-align: right;">±</th>
+                        <th style="width: 4rem; text-align: right;">Games</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in _filteredEncounterRows.Take(_showCount))
+                    {
+                        <tr class="@(row.LowConfidence ? "low-confidence" : "")">
+                            <td style="text-align: center;" class="dim-text mono">@row.Rank</td>
+                            <td style="font-weight: 500;">@row.Name</td>
+                            <td style="text-align: right;">
+                                <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
+                            </td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Rd.ToString("F0")</td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (_filteredEncounterRows.Count > _showCount)
+            {
+                <div class="show-more" @onclick="ShowMore">
+                    Show more (@(_filteredEncounterRows.Count - _showCount) remaining)
+                </div>
+            }
+        </div>
+    }
+
+    @if (_tab == Tab.Cards)
+    {
+        <p class="dim-text" style="margin-bottom: 0.75rem; font-size: 0.8rem;">
+            How well does each card perform in combat? Rated by deck-vs-pool Glicko-2 matchups.
+        </p>
+
+        <div class="act-filter">
+            <input type="text" class="search-input" placeholder="Search cards..." @bind="_cardSearchText" @bind:event="oninput" @bind:after="ApplyCardFilter" />
+        </div>
+
+        <div class="panel" style="padding: 0; overflow: hidden;">
+            <table class="oracle-table elo-table">
+                <thead>
+                    <tr>
+                        <th style="width: 3rem; text-align: center;">#</th>
+                        <th>Card</th>
+                        <th style="width: 6rem; text-align: right;">Combat Elo</th>
+                        <th style="width: 3.5rem; text-align: right;">±</th>
+                        <th style="width: 4rem; text-align: right;">Games</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in _filteredCardRows.Take(_cardShowCount))
+                    {
+                        <tr class="@(row.LowConfidence ? "low-confidence" : "")">
+                            <td style="text-align: center;" class="dim-text mono">@row.Rank</td>
+                            <td style="font-weight: 500;">@row.Name</td>
+                            <td style="text-align: right;">
+                                <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
+                            </td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Rd.ToString("F0")</td>
+                            <td style="text-align: right;" class="dim-text mono">@row.Games</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (_filteredCardRows.Count > _cardShowCount)
+            {
+                <div class="show-more" @onclick="ShowMoreCards">
+                    Show more (@(_filteredCardRows.Count - _cardShowCount) remaining)
+                </div>
+            }
+        </div>
+    }
+
+    @if (_tab == Tab.Damage)
+    {
+        <h3 style="color: var(--text-secondary);">Damage by Encounter</h3>
+
+        <RadzenDataGrid Data="@_damageRows" TItem="DamageRow" AllowSorting="true" AllowPaging="true" PageSize="25"
+                        Style="margin-bottom: 2rem;">
+            <Columns>
+                <RadzenDataGridColumn TItem="DamageRow" Property="Name" Title="Encounter" Width="250px" />
+                <RadzenDataGridColumn TItem="DamageRow" Property="AvgDamage" Title="Avg Damage" FormatString="{0:F1}" Width="120px"
+                                      SortOrder="SortOrder.Descending" />
+                <RadzenDataGridColumn TItem="DamageRow" Property="Fights" Title="Fights" Width="80px" />
+            </Columns>
+        </RadzenDataGrid>
+    }
 }
 
 @code {
     private bool _loading = true;
-    private List<EncounterRow> _encounters = [];
+    private Tab _tab = Tab.Pools;
+    private string _searchText = "";
+    private string _cardSearchText = "";
+    private int _showCount = 40;
+    private int _cardShowCount = 40;
 
-    public record EncounterRow(string Name, double AvgDamage, int Fights);
+    enum Tab { Pools, Encounters, Cards, Damage }
+
+    // Pool ratings
+    private List<CombatRow> _poolRows = [];
+
+    // Encounter ratings
+    private List<CombatRow> _allEncounterRows = [];
+    private List<CombatRow> _filteredEncounterRows = [];
+
+    // Card combat ratings
+    private List<CombatRow> _allCardRows = [];
+    private List<CombatRow> _filteredCardRows = [];
+
+    // Damage rows
+    private List<DamageRow> _damageRows = [];
+
+    record CombatRow(int Rank, string Id, string Name, double Rating, double Rd, long Games, bool LowConfidence);
+    record DamageRow(string Name, double AvgDamage, int Fights);
 
     protected override async Task OnInitializedAsync()
     {
         var data = await Data.GetDataAsync();
 
-        _encounters = data.DamageByEncounter
+        var charFilter = Filter.Character;
+
+        // Pool ratings
+        _poolRows = data.PoolRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context != "overall")
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatPoolName(r.Context), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+
+        // Encounter ratings
+        _allEncounterRows = data.EncounterRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context == "overall")
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+        _filteredEncounterRows = _allEncounterRows;
+
+        // Card combat ratings
+        _allCardRows = data.CombatRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context == "overall" && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+        _filteredCardRows = _allCardRows;
+
+        // Damage
+        _damageRows = data.DamageByEncounter
             .OrderByDescending(d => d.AvgDamage)
-            .Select(d => new EncounterRow(
-                FormatName(d.EncounterId),
-                d.AvgDamage,
-                d.SampleSize
-            )).ToList();
+            .Select(d => new DamageRow(FormatName(d.EncounterId), d.AvgDamage, d.SampleSize))
+            .ToList();
 
         Filter.OnChange += OnFilterChanged;
         _loading = false;
     }
 
+    private void SetTab(Tab tab) { _tab = tab; _showCount = 40; _cardShowCount = 40; }
+
     private void OnFilterChanged()
     {
-        InvokeAsync(StateHasChanged);
+        // Re-initialize with new filter
+        _ = ReloadData();
     }
+
+    private async Task ReloadData()
+    {
+        var data = await Data.GetDataAsync();
+        var charFilter = Filter.Character;
+
+        _poolRows = data.PoolRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context != "overall")
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatPoolName(r.Context), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+
+        _allEncounterRows = data.EncounterRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context == "overall")
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+        ApplyEncounterFilter();
+
+        _allCardRows = data.CombatRatings
+            .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+            .Where(r => r.Context == "overall" && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
+            .OrderByDescending(r => r.Rating)
+            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .ToList();
+        ApplyCardFilter();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ApplyEncounterFilter()
+    {
+        _filteredEncounterRows = string.IsNullOrEmpty(_searchText)
+            ? _allEncounterRows
+            : _allEncounterRows.Where(r => r.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        for (var i = 0; i < _filteredEncounterRows.Count; i++)
+            _filteredEncounterRows[i] = _filteredEncounterRows[i] with { Rank = i + 1 };
+        _showCount = 40;
+    }
+
+    private void ApplyCardFilter()
+    {
+        _filteredCardRows = string.IsNullOrEmpty(_cardSearchText)
+            ? _allCardRows
+            : _allCardRows.Where(r => r.Name.Contains(_cardSearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        for (var i = 0; i < _filteredCardRows.Count; i++)
+            _filteredCardRows[i] = _filteredCardRows[i] with { Rank = i + 1 };
+        _cardShowCount = 40;
+    }
+
+    private void ShowMore() => _showCount += 40;
+    private void ShowMoreCards() => _cardShowCount += 40;
 
     public void Dispose()
     {
         Filter.OnChange -= OnFilterChanged;
     }
 
+    private static string FormatPoolName(string context)
+    {
+        // "act1_boss" -> "Act 1 Boss"
+        var parts = context.Split('_');
+        if (parts.Length == 2)
+        {
+            var act = parts[0].Replace("act", "Act ");
+            var pool = char.ToUpper(parts[1][0]) + parts[1][1..];
+            return $"{act} {pool}";
+        }
+        return context;
+    }
+
     private static string FormatName(string id)
     {
+        // Strip prefixes like "ENC." or "ENCOUNTER."
         var dot = id.IndexOf('.');
         var name = dot >= 0 ? id[(dot + 1)..] : id;
-        return name.Replace('_', ' ').ToLowerInvariant()
-            .Split(' ')
-            .Select(w => w.Length > 0 ? char.ToUpper(w[0]) + w[1..] : w)
-            .Aggregate((a, b) => a + " " + b);
+
+        // Handle upgrade suffix
+        var plusIdx = name.IndexOf('+');
+        var suffix = "";
+        if (plusIdx >= 0)
+        {
+            suffix = " " + name[plusIdx..];
+            name = name[..plusIdx];
+        }
+
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)) + suffix;
     }
+
+    static string GetRatingBadgeClass(double rating) => rating switch
+    {
+        >= 1650 => "high",
+        >= 1500 => "mid",
+        _ => "low"
+    };
 }
+
+<style>
+    .combat-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: var(--gap-lg);
+    }
+
+    .combat-tabs button {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .combat-tabs button.active {
+        background: rgba(212, 85, 42, 0.15);
+        border-color: var(--ember);
+        color: var(--ember-bright);
+    }
+
+    .combat-tabs button:hover:not(.active) {
+        border-color: var(--text-dim);
+        color: var(--text-primary);
+    }
+
+    .filter-note {
+        font-size: 0.75rem;
+        color: var(--frost);
+        background: rgba(91, 184, 212, 0.06);
+        border: 1px solid rgba(91, 184, 212, 0.12);
+        border-radius: 4px;
+        padding: 0.4rem 0.75rem;
+        margin-bottom: var(--gap-md);
+    }
+
+    .act-filter {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: var(--gap-md);
+        align-items: center;
+    }
+
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 220px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--ember); }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .elo-table tbody td { font-size: 0.85rem; }
+    .low-confidence td { opacity: 0.5; }
+
+    .show-more {
+        text-align: center;
+        padding: 0.6rem;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        border-top: 1px solid var(--surface-border);
+        transition: color 0.15s;
+    }
+    .show-more:hover { color: var(--ember-bright); }
+</style>

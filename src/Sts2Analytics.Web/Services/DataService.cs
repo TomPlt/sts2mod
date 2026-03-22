@@ -38,6 +38,9 @@ public class ExportData
     public List<RestSiteHpBucketExport> RestSiteHpBuckets { get; set; } = [];
     public List<RestSiteUpgradeExport> RestSiteUpgrades { get; set; } = [];
     public List<RestSiteActExport> RestSiteActBreakdown { get; set; } = [];
+    public List<Glicko2RatingResult> CombatRatings { get; set; } = [];
+    public List<Glicko2RatingResult> EncounterRatings { get; set; } = [];
+    public List<Glicko2RatingResult> PoolRatings { get; set; } = [];
 }
 
 public class CardChoiceExport

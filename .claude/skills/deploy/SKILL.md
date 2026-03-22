@@ -20,7 +20,8 @@ dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOr
 
 echo "=== Deploying to game ==="
 cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/
-cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
+cp data/reference/sts2_reference.json mods/SpireOracle/
+cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
 
 echo "=== Done ==="
 ls "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
