@@ -128,6 +128,19 @@ public static class ExportCommand
                 "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM AncientGlicko2Ratings")
                 .ToList();
 
+            // Combat Glicko-2 ratings
+            var combatRatingCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM CombatGlicko2Ratings") ?? 0;
+            if (combatRatingCount == 0)
+            {
+                Console.WriteLine("Processing combat ratings...");
+                var combatRatingEngine = new CombatRatingEngine(conn);
+                combatRatingEngine.ProcessAllRuns();
+            }
+            var combatGlicko2 = new CombatGlicko2Analytics(conn);
+            var combatRatings = combatGlicko2.GetRatings();
+            var encounterRatings = combatGlicko2.GetEncounterRatings();
+            var poolRatings = combatGlicko2.GetPoolRatings();
+
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
@@ -168,7 +181,10 @@ public static class ExportCommand
                 restSiteDecisions,
                 restSiteHpBuckets,
                 restSiteUpgrades,
-                restSiteActBreakdown
+                restSiteActBreakdown,
+                combatRatings,
+                encounterRatings,
+                poolRatings
             };
 
             var options = new JsonSerializerOptions
@@ -224,7 +240,8 @@ public static class ExportCommand
             .Where(r => r.Context == "overall" && r.Character == "ALL" && !r.CardId.StartsWith("POOL."))
             .ToDictionary(r => r.CardId);
         var combatByPool = allCombatRatings
-            .Where(r => r.Context != "overall" && r.Character == "ALL" && !r.CardId.StartsWith("POOL."))
+            .Where(r => r.Context != "overall" && r.Character == "ALL"
+                && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
             .ToLookup(r => r.CardId);
 
         // Pool entity ratings for export
@@ -232,6 +249,13 @@ public static class ExportCommand
             .Where(r => r.Character == "ALL")
             .GroupBy(r => r.Context)
             .ToDictionary(g => g.Key, g => new PoolRating(g.First().Rating, g.First().RatingDeviation));
+
+        // Per-encounter ratings for export (ENC.ENCOUNTER.X -> ENCOUNTER.X as key)
+        var encounterRatings = combatAnalytics.GetEncounterRatings()
+            .Where(r => r.Character == "ALL" && r.Context == "overall")
+            .ToDictionary(
+                r => r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId,
+                r => new PoolRating(r.Rating, r.RatingDeviation));
 
         // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
@@ -476,7 +500,8 @@ public static class ExportCommand
             Cards: cards,
             AncientChoices: ancientStats,
             MapIntel: mapIntel,
-            EncounterPools: poolRatings);
+            EncounterPools: poolRatings,
+            EncounterRatings: encounterRatings);
 
         var options = new JsonSerializerOptions
         {

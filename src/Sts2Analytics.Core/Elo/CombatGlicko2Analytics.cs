@@ -35,6 +35,16 @@ public class CombatGlicko2Analytics
             """).ToList();
     }
 
+    public List<Glicko2RatingResult> GetEncounterRatings()
+    {
+        return _connection.Query<Glicko2RatingResult>("""
+            SELECT CardId, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed
+            FROM CombatGlicko2Ratings
+            WHERE CardId LIKE 'ENC.%'
+            ORDER BY Rating DESC
+            """).ToList();
+    }
+
     /// Compute deck Elo as 1/RD-weighted mean of card combat ratings.
     public static (double Mu, double Rd) ComputeDeckElo(
         IEnumerable<(double Rating, double Rd)> cardRatings)

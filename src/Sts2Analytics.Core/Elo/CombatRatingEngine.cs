@@ -69,8 +69,11 @@ public class CombatRatingEngine
                 if (deck.Count == 0) continue;
 
                 var score = ComputePercentileScore((int)floor.DamageTaken, poolContext, damageDistributions);
+                // Also compute per-encounter score if we have enough data
+                var encounterScore = ComputePercentileScore((int)floor.DamageTaken, floor.EncounterId, damageDistributions);
                 var contexts = GetContexts(run.Character, poolContext);
                 var poolEntityId = $"POOL.{poolContext}";
+                var encounterEntityId = $"ENC.{floor.EncounterId}";
 
                 foreach (var (character, context) in contexts)
                 {
@@ -109,19 +112,23 @@ public class CombatRatingEngine
                         var avgRating = deckRatings.Sum(r => r.Rating.Rating * r.Weight) / totalWeight;
                         var avgRd = deckRatings.Sum(r => r.Rating.RatingDeviation * r.Weight) / totalWeight;
                         var avgVol = deckRatings.Sum(r => r.Rating.Volatility * r.Weight) / totalWeight;
+                        var deckAvgOpponent = new Glicko2Calculator.Glicko2Rating(avgRating, avgRd, avgVol);
 
+                        // Update pool entity
                         var poolRating = GetOrCreateRating(poolEntityId, character, context, transaction);
                         var currentPoolRating = new Glicko2Calculator.Glicko2Rating(
                             poolRating.Rating, poolRating.RatingDeviation, poolRating.Volatility);
-
-                        var deckAvgOpponent = new Glicko2Calculator.Glicko2Rating(avgRating, avgRd, avgVol);
-                        var poolOpponents = new (Glicko2Calculator.Glicko2Rating Rating, double Score)[]
-                        {
-                            (deckAvgOpponent, 1.0 - score)
-                        };
-
-                        var newPoolRating = Glicko2Calculator.UpdateRating(currentPoolRating, poolOpponents);
+                        var newPoolRating = Glicko2Calculator.UpdateRating(currentPoolRating,
+                            [(deckAvgOpponent, 1.0 - score)]);
                         UpdateRating(poolRating, newPoolRating, runId, floor.Id, run.StartTime, transaction);
+
+                        // Update per-encounter entity
+                        var encRating = GetOrCreateRating(encounterEntityId, character, context, transaction);
+                        var currentEncRating = new Glicko2Calculator.Glicko2Rating(
+                            encRating.Rating, encRating.RatingDeviation, encRating.Volatility);
+                        var newEncRating = Glicko2Calculator.UpdateRating(currentEncRating,
+                            [(deckAvgOpponent, 1.0 - encounterScore)]);
+                        UpdateRating(encRating, newEncRating, runId, floor.Id, run.StartTime, transaction);
                     }
                 }
             }
@@ -187,8 +194,12 @@ public class CombatRatingEngine
 
             if (!distributions.ContainsKey(poolContext))
                 distributions[poolContext] = [];
-
             distributions[poolContext].Add((int)row.DamageTaken);
+
+            // Per-encounter distribution
+            if (!distributions.ContainsKey(row.EncounterId))
+                distributions[row.EncounterId] = [];
+            distributions[row.EncounterId].Add((int)row.DamageTaken);
         }
 
         // Sort each distribution for binary search

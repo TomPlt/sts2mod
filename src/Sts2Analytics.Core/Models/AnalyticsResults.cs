@@ -70,7 +70,8 @@ public record ModOverlayData(
     List<ModCardStats> Cards,
     List<ModAncientStats>? AncientChoices = null,
     List<MapIntelCharacter>? MapIntel = null,
-    Dictionary<string, PoolRating>? EncounterPools = null);
+    Dictionary<string, PoolRating>? EncounterPools = null,
+    Dictionary<string, PoolRating>? EncounterRatings = null);
 
 public record EncounterDamage(string EncounterId, double AvgDamage, double StdDev, int SampleSize, int MaxDamage);
 
