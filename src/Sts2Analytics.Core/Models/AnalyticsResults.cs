@@ -47,12 +47,16 @@ public record TurnsByEncounter(string EncounterId, double AvgTurns, int SampleSi
 public record DeathFloor(int ActIndex, int FloorIndex, string? EncounterId, int DeathCount);
 public record HpThreshold(int FloorIndex, int HpBucket, int TotalRuns, int Wins, double WinRate);
 
+public record PoolRating(double Elo, double Rd);
+
 public record ModCardStats(
     string CardId, double Elo, double Rd, double PickRate,
     double WinRatePicked, double WinRateSkipped, double Delta,
     double EloAct1, double RdAct1, double EloAct2, double RdAct2, double EloAct3, double RdAct3,
     string? BlindSpot = null, double BlindSpotScore = 0,
-    double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0);
+    double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0,
+    double CombatElo = 0, double CombatRd = 350,
+    Dictionary<string, PoolRating>? CombatByPool = null);
 
 public record ModAncientStats(
     string ChoiceKey, double Rating, double Rd,
@@ -65,11 +69,12 @@ public record ModOverlayData(
     Dictionary<string, double> SkipEloByAct,
     List<ModCardStats> Cards,
     List<ModAncientStats>? AncientChoices = null,
-    List<MapIntelCharacter>? MapIntel = null);
+    List<MapIntelCharacter>? MapIntel = null,
+    Dictionary<string, PoolRating>? EncounterPools = null);
 
-public record EncounterDamage(string EncounterId, double AvgDamage, int SampleSize, int MaxDamage);
+public record EncounterDamage(string EncounterId, double AvgDamage, double StdDev, int SampleSize, int MaxDamage);
 
-public record MapIntelPool(string Pool, double AvgDamage, int SampleSize, List<string> Encounters,
+public record MapIntelPool(string Pool, double AvgDamage, double StdDev, int SampleSize, List<string> Encounters,
     List<EncounterDamage>? EncounterDetails = null);
 
 public record MapIntelAct(int ActIndex, List<MapIntelPool> Pools,

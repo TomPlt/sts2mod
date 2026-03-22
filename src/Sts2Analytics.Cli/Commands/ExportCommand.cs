@@ -215,6 +215,24 @@ public static class ExportCommand
         var ancientEngine = new AncientRatingEngine(conn);
         ancientEngine.ProcessAllRuns();
 
+        // Process combat ratings
+        var combatEngine = new CombatRatingEngine(conn);
+        combatEngine.ProcessAllRuns();
+        var combatAnalytics = new CombatGlicko2Analytics(conn);
+        var allCombatRatings = combatAnalytics.GetRatings();
+        var combatOverall = allCombatRatings
+            .Where(r => r.Context == "overall" && r.Character == "ALL" && !r.CardId.StartsWith("POOL."))
+            .ToDictionary(r => r.CardId);
+        var combatByPool = allCombatRatings
+            .Where(r => r.Context != "overall" && r.Character == "ALL" && !r.CardId.StartsWith("POOL."))
+            .ToLookup(r => r.CardId);
+
+        // Pool entity ratings for export
+        var poolRatings = combatAnalytics.GetPoolRatings()
+            .Where(r => r.Character == "ALL")
+            .GroupBy(r => r.Context)
+            .ToDictionary(g => g.Key, g => new PoolRating(g.First().Rating, g.First().RatingDeviation));
+
         // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
             "SELECT Rating FROM Glicko2Ratings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
@@ -290,8 +308,15 @@ public static class ExportCommand
                 bsWinDelta = (double)bs.WinRateDelta;
             }
 
+            var combatElo = combatOverall.TryGetValue(id, out var ce) ? ce.Rating : 0.0;
+            var combatRdVal = ce?.RatingDeviation ?? 350.0;
+            var cardCombatPools = combatByPool[id]
+                .ToDictionary(r => r.Context, r => new PoolRating(r.Rating, r.RatingDeviation));
+
             return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3,
-                blindSpotType, bsScore, bsPickRate, bsWinDelta);
+                blindSpotType, bsScore, bsPickRate, bsWinDelta,
+                CombatElo: combatElo, CombatRd: combatRdVal,
+                CombatByPool: cardCombatPools.Count > 0 ? cardCombatPools : null);
         }).ToList();
 
         // Build ancient stats for mod export
@@ -414,19 +439,27 @@ public static class ExportCommand
                                 actIdx,
                                 actGroup
                                     .GroupBy(r => (string)r.Pool)
-                                    .Select(poolGroup => new MapIntelPool(
-                                        poolGroup.Key,
-                                        poolGroup.Average(r => (double)(long)r.DamageTaken),
-                                        poolGroup.Count(),
-                                        poolGroup.Select(r => (string)r.EncounterId).Distinct().OrderBy(e2 => e2).ToList(),
-                                        poolGroup.GroupBy(r => (string)r.EncounterId)
-                                            .Select(eg => new EncounterDamage(
-                                                eg.Key,
-                                                eg.Average(r => (double)(long)r.DamageTaken),
-                                                eg.Count(),
-                                                (int)eg.Max(r => (long)r.DamageTaken)))
-                                            .OrderByDescending(ed => ed.AvgDamage)
-                                            .ToList()))
+                                    .Select(poolGroup => {
+                                        var dmgValues = poolGroup.Select(r => (double)(long)r.DamageTaken).ToList();
+                                        return new MapIntelPool(
+                                            poolGroup.Key,
+                                            dmgValues.Average(),
+                                            StdDev(dmgValues),
+                                            dmgValues.Count,
+                                            poolGroup.Select(r => (string)r.EncounterId).Distinct().OrderBy(e2 => e2).ToList(),
+                                            poolGroup.GroupBy(r => (string)r.EncounterId)
+                                                .Select(eg => {
+                                                    var eDmg = eg.Select(r => (double)(long)r.DamageTaken).ToList();
+                                                    return new EncounterDamage(
+                                                        eg.Key,
+                                                        eDmg.Average(),
+                                                        StdDev(eDmg),
+                                                        eDmg.Count,
+                                                        (int)eDmg.Max());
+                                                })
+                                                .OrderByDescending(ed => ed.AvgDamage)
+                                                .ToList());
+                                    })
                                     .OrderBy(p => p.Pool switch { "weak" => 0, "normal" => 1, "elite" => 2, "boss" => 3, _ => 4 })
                                     .ToList(),
                                 actRunCount, actWinCount, actWinRate, eliteCorr);
@@ -442,7 +475,8 @@ public static class ExportCommand
             SkipEloByAct: skipEloByAct,
             Cards: cards,
             AncientChoices: ancientStats,
-            MapIntel: mapIntel);
+            MapIntel: mapIntel,
+            EncounterPools: poolRatings);
 
         var options = new JsonSerializerOptions
         {
@@ -455,5 +489,14 @@ public static class ExportCommand
 
         Console.WriteLine($"Mod overlay data exported to: {Path.GetFullPath(output)}");
         Console.WriteLine($"  {cards.Count} cards, skipElo: {skipElo:F1}");
+    }
+
+    private static double StdDev(IEnumerable<double> values)
+    {
+        var list = values.ToList();
+        if (list.Count < 2) return 0;
+        var avg = list.Average();
+        var sumSq = list.Sum(v => (v - avg) * (v - avg));
+        return Math.Sqrt(sumSq / list.Count);
     }
 }
