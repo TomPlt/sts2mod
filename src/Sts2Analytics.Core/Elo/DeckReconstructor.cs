@@ -18,9 +18,31 @@ public class DeckReconstructor
     /// </summary>
     public List<string> GetDeckAtFloor(long runId, long floorId)
     {
-        // Build events from all 4 sources, then sort and replay
+        // Build events from all 5 sources, then sort and replay
 
         var events = new List<(long FloorDbId, string Action, string EntityId)>();
+
+        // 0. Starter cards from FinalDecks — cards not present in CardsGained
+        //    FinalDecks.FloorAdded is the Floors.Id where the card entered the deck.
+        //    Starter cards have FloorAdded = first floor's Id.
+        var firstFloorId = _connection.QueryFirstOrDefault<long?>(
+            "SELECT MIN(Id) FROM Floors WHERE RunId = @RunId", new { RunId = runId });
+        if (firstFloorId.HasValue)
+        {
+            var starterCards = _connection.Query<CardsGainedRow>("""
+                SELECT fd.FloorAdded AS FloorDbId, fd.CardId, fd.UpgradeLevel
+                FROM FinalDecks fd
+                WHERE fd.RunId = @RunId AND fd.FloorAdded <= @FloorId
+                  AND NOT EXISTS (
+                    SELECT 1 FROM CardsGained cg
+                    JOIN Floors f ON cg.FloorId = f.Id
+                    WHERE f.RunId = @RunId AND cg.CardId = fd.CardId
+                      AND f.Id = fd.FloorAdded AND cg.UpgradeLevel = fd.UpgradeLevel
+                  )
+                """, new { RunId = runId, FloorId = floorId }).ToList();
+            foreach (var sc in starterCards)
+                events.Add((sc.FloorDbId, "add", MakeEntityId(sc.CardId, (int)sc.UpgradeLevel)));
+        }
 
         // 1. CardsGained → add
         var cardsGained = _connection.Query<CardsGainedRow>("""
