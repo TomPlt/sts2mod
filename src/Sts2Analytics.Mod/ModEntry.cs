@@ -95,39 +95,53 @@ public class ModEntry
         GD.Print("[SpireOracle] Ready! Press F3 to toggle overlay.");
     }
 
-    private static FileSystemWatcher? _runWatcher;
+    private static readonly System.Collections.Generic.List<FileSystemWatcher> _runWatchers = new();
 
     private static void WatchRunFiles()
     {
         try
         {
-            // Find the modded history directory
             var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
             var sts2Dir = Path.Combine(appData, "SlayTheSpire2", "steam");
             if (!Directory.Exists(sts2Dir)) return;
 
-            // Find first steam ID directory
+            // Watch all profiles across all steam IDs
             foreach (var steamDir in Directory.GetDirectories(sts2Dir))
             {
-                var historyPath = Path.Combine(steamDir, "modded", "profile1", "saves", "history");
-                if (!Directory.Exists(historyPath)) continue;
+                foreach (var profileDir in new[] { "modded", "." })
+                {
+                    var baseDir = Path.Combine(steamDir, profileDir);
+                    if (!Directory.Exists(baseDir)) continue;
 
-                _runWatcher = new FileSystemWatcher(historyPath, "*.run")
-                {
-                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
-                };
-                _runWatcher.Created += (_, e) =>
-                {
-                    // Delay slightly to let the game finish writing
-                    var timer = new System.Threading.Timer(_ =>
+                    foreach (var profile in Directory.GetDirectories(baseDir, "profile*"))
                     {
-                        GD.Print($"[SpireOracle] New run detected: {e.Name}");
-                        _ = CloudSync.UploadRunFile(e.FullPath);
-                    }, null, 3000, System.Threading.Timeout.Infinite);
-                };
-                _runWatcher.EnableRaisingEvents = true;
-                GD.Print($"[SpireOracle] Watching for new runs in: {historyPath}");
-                break;
+                        var historyPath = Path.Combine(profile, "saves", "history");
+                        if (!Directory.Exists(historyPath)) continue;
+
+                        var watcher = new FileSystemWatcher(historyPath, "*.run")
+                        {
+                            NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
+                                | NotifyFilters.LastWrite | NotifyFilters.Size
+                        };
+                        // Track uploaded files to avoid duplicates
+                        var uploaded = new System.Collections.Generic.HashSet<string>();
+                        void OnRunFile(string filePath, string fileName)
+                        {
+                            if (!uploaded.Add(fileName)) return; // already uploaded
+                            var timer = new System.Threading.Timer(_ =>
+                            {
+                                GD.Print($"[SpireOracle] New run detected: {fileName}");
+                                _ = CloudSync.UploadRunFile(filePath);
+                            }, null, 5000, System.Threading.Timeout.Infinite);
+                        }
+                        watcher.Created += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
+                        watcher.Changed += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
+                        watcher.Renamed += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
+                        watcher.EnableRaisingEvents = true;
+                        _runWatchers.Add(watcher);
+                        GD.Print($"[SpireOracle] Watching for runs: {historyPath}");
+                    }
+                }
             }
         }
         catch (Exception ex)

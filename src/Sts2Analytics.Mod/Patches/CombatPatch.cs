@@ -93,48 +93,6 @@ public static class CombatPatch
 
             CombatOverlay.Show(lines, oppElo, deckElo);
 
-            // --- TEMP SPIKE: discover card zone API ---
-            try
-            {
-                var cState = cm.DebugOnlyGetState();
-                if (cState != null)
-                {
-                    // Log combat state type and all properties
-                    var cType = cState.GetType();
-                    GD.Print($"[SpireOracle][SPIKE] CombatState type: {cType.FullName}");
-                    foreach (var prop in cType.GetProperties())
-                        GD.Print($"[SpireOracle][SPIKE]   prop: {prop.Name} ({prop.PropertyType.Name})");
-                    foreach (var field in cType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                        GD.Print($"[SpireOracle][SPIKE]   field: {field.Name} ({field.FieldType.Name})");
-
-                    // Check each player for card zone properties
-                    var rs = cState.RunState as MegaCrit.Sts2.Core.Runs.RunState;
-                    if (rs?.Players != null)
-                    {
-                        foreach (var p in rs.Players)
-                        {
-                            var pType = p.GetType();
-                            GD.Print($"[SpireOracle][SPIKE] Player type: {pType.FullName}, NetId={p.NetId}");
-                            foreach (var prop in pType.GetProperties())
-                                GD.Print($"[SpireOracle][SPIKE]   prop: {prop.Name} ({prop.PropertyType.Name})");
-
-                            // Check Deck sub-properties
-                            if (p.Deck != null)
-                            {
-                                var dType = p.Deck.GetType();
-                                GD.Print($"[SpireOracle][SPIKE] Deck type: {dType.FullName}");
-                                foreach (var prop in dType.GetProperties())
-                                    GD.Print($"[SpireOracle][SPIKE]   deck prop: {prop.Name} ({prop.PropertyType.Name})");
-                                foreach (var field in dType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                                    GD.Print($"[SpireOracle][SPIKE]   deck field: {field.Name} ({field.FieldType.Name})");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception spikeEx) { GD.PrintErr($"[SpireOracle][SPIKE] {spikeEx}"); }
-            // --- END SPIKE ---
-
             var expLog = dmgResult?.Expected;
             GD.Print($"[SpireOracle] Combat: {encounterId} score={score:F2} exp={expLog:F0} (enc={encRating?.Elo:F0}, pool={poolRating?.Elo:F0}, deck={deckElo:F0})");
         }
