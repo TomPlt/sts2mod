@@ -105,7 +105,10 @@ public static class ExportCommand
                 runId = (long)r.RunId
             }).ToList();
 
-            // Player ratings
+            // Process player ratings
+            var playerEngine = new PlayerRatingEngine(conn);
+            playerEngine.ProcessAllRuns();
+
             var playerRatingData = conn.Query(
                 "SELECT Context, Rating, RatingDeviation, GamesPlayed FROM PlayerRatings")
                 .ToList();
@@ -119,12 +122,18 @@ public static class ExportCommand
                 ORDER BY ph.RunId DESC
                 """).ToList();
 
-            // Blind spots
+            // Compute blind spots
+            var blindSpotAnalyzer = new BlindSpotAnalyzer(conn);
+            blindSpotAnalyzer.AnalyzeAllContexts();
+
             var blindSpotExportData = conn.Query(
                 "SELECT CardId, Context, BlindSpotType, Score, PickRate, ExpectedPickRate, WinRateDelta, GamesAnalyzed FROM BlindSpots")
                 .ToList();
 
-            // Ancient choice ratings
+            // Process ancient choice ratings
+            var ancientEngine = new AncientRatingEngine(conn);
+            ancientEngine.ProcessAllRuns();
+
             var ancientRatingExport = conn.Query(
                 "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM AncientGlicko2Ratings")
                 .ToList();
