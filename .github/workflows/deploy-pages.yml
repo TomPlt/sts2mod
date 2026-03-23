@@ -1,0 +1,77 @@
+name: Deploy Dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/Sts2Analytics.Web/**'
+      - 'src/Sts2Analytics.Cli/**'
+      - 'src/Sts2Analytics.Core/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *' # daily at 6am UTC — picks up new runs
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sts2mod
+        uses: actions/checkout@v4
+
+      - name: Clone data repo
+        run: |
+          git clone https://x-access-token:${{ secrets.DATA_REPO_TOKEN }}@github.com/TomPlt/spire-oracle-data.git /tmp/spire-oracle-data
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Import runs per player
+        run: |
+          for player_dir in /tmp/spire-oracle-data/runs/*/; do
+            dotnet run --project src/Sts2Analytics.Cli -- import "$player_dir"
+          done
+
+      - name: Export dashboard data
+        run: |
+          dotnet run --project src/Sts2Analytics.Cli -- export --output src/Sts2Analytics.Web/wwwroot/data.json
+
+      - name: Set base path for GitHub Pages
+        run: |
+          sed -i 's|<base href="/" />|<base href="/sts2mod/" />|' src/Sts2Analytics.Web/wwwroot/index.html
+
+      - name: Publish Blazor WASM
+        run: |
+          dotnet publish src/Sts2Analytics.Web -c Release -o dist
+
+      - name: Add .nojekyll and 404 fallback
+        run: |
+          touch dist/wwwroot/.nojekyll
+          cp dist/wwwroot/index.html dist/wwwroot/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
