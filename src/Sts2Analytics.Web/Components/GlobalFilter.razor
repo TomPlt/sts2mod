@@ -27,10 +27,25 @@
             }
         </select>
     </div>
+
+    @if (_players.Count > 1)
+    {
+        <div class="filter-group">
+            <label class="filter-label">Player</label>
+            <select class="filter-select" value="@(Filter.Player ?? "")" @onchange="OnPlayerChanged">
+                <option value="">All</option>
+                @foreach (var p in _players)
+                {
+                    <option value="@p">@FormatPlayerName(p)</option>
+                }
+            </select>
+        </div>
+    }
 </div>
 
 @code {
     private List<string> _characters = [];
+    private List<string> _players = [];
     private string _ascensionPreset = "";
 
     protected override async Task OnInitializedAsync()
@@ -40,6 +55,12 @@
             .Select(r => r.Character)
             .Distinct()
             .OrderBy(c => c)
+            .ToList();
+        _players = data.Runs
+            .Select(r => r.Source)
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Distinct()
+            .OrderBy(s => s)
             .ToList();
     }
 
@@ -73,6 +94,20 @@
         var val = e.Value?.ToString();
         Filter.Character = string.IsNullOrEmpty(val) ? null : val;
         Filter.NotifyChanged();
+    }
+
+    private void OnPlayerChanged(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString();
+        Filter.Player = string.IsNullOrEmpty(val) ? null : val;
+        Filter.NotifyChanged();
+    }
+
+    static string FormatPlayerName(string source)
+    {
+        // Source is typically a directory name like "tom" or "player2"
+        // Capitalize first letter for display
+        return source.Length > 0 ? char.ToUpper(source[0]) + source[1..] : source;
     }
 
     static string FormatName(string id)

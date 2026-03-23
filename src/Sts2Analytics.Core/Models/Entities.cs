@@ -20,6 +20,7 @@ public record RunEntity
     public string PlatformType { get; init; } = "";
     public string? Modifiers { get; init; }
     public int MaxPotionSlots { get; init; }
+    public string Source { get; init; } = "";
 }
 
 public record FloorEntity

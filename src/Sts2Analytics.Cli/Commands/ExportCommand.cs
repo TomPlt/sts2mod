@@ -5,6 +5,7 @@ using Microsoft.Data.Sqlite;
 using Sts2Analytics.Core.Analytics;
 using Sts2Analytics.Core.Elo;
 using Sts2Analytics.Core.Models;
+using Sts2Analytics.Core.Database;
 using Sts2Analytics.Core.Parsing;
 
 namespace Sts2Analytics.Cli.Commands;
@@ -142,7 +143,7 @@ public static class ExportCommand
             var poolRatings = combatGlicko2.GetPoolRatings();
 
             // Runs list
-            var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode FROM Runs ORDER BY Id").ToList();
+            var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode, Source FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
             {
                 id = (long)r.Id,
@@ -150,7 +151,8 @@ public static class ExportCommand
                 win = (long)r.Win != 0,
                 ascension = (long)r.Ascension,
                 seed = (string)r.Seed,
-                gameMode = (string)r.GameMode
+                gameMode = (string)r.GameMode,
+                source = (string)r.Source
             }).ToList();
 
             var exportData = new
@@ -207,6 +209,7 @@ public static class ExportCommand
     {
         using var conn = new SqliteConnection($"Data Source={dbPath}");
         conn.Open();
+        Schema.Migrate(conn);
 
         Console.WriteLine("Exporting mod overlay data...");
 
@@ -379,10 +382,42 @@ public static class ExportCommand
 
         // Build ancient stats for mod export
         var ancientRatings = conn.Query(
-            "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation FROM AncientGlicko2Ratings WHERE Character = 'ALL'")
+            "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, GamesPlayed FROM AncientGlicko2Ratings")
             .ToList();
 
-        var ancientByKey = ancientRatings.GroupBy(r => (string)r.ChoiceKey).ToList();
+        var ancientPickRates = conn.Query("""
+            SELECT ac.TextKey,
+                   COUNT(*) as TimesOffered,
+                   SUM(ac.WasChosen) as TimesPicked
+            FROM AncientChoices ac
+            GROUP BY ac.TextKey
+            """).ToDictionary(r => (string)r.TextKey, r => new {
+                TimesOffered = (long)r.TimesOffered,
+                TimesPicked = (long)r.TimesPicked
+            });
+
+        // Per-character ratings keyed by choiceKey
+        // Use "neow" context for Neow choices, fall back to any available context
+        var charRatings = ancientRatings
+            .Where(r => (string)r.Character != "ALL")
+            .GroupBy(r => ((string)r.ChoiceKey, ((string)r.Character).Replace("CHARACTER.", "").ToLower()))
+            .Select(g => {
+                // Prefer neow context, then post_act1, then any
+                var best = g.FirstOrDefault(r => (string)r.Context == "neow")
+                    ?? g.FirstOrDefault(r => (string)r.Context == "post_act1")
+                    ?? g.First();
+                return new { ChoiceKey = g.Key.Item1, CharKey = g.Key.Item2,
+                    Rating = (double)best.Rating, Rd = (double)best.RatingDeviation,
+                    Games = (int)(long)best.GamesPlayed };
+            })
+            .GroupBy(r => r.ChoiceKey)
+            .ToDictionary(g => g.Key, g => g.ToDictionary(
+                r => r.CharKey,
+                r => new AncientCharRating(r.Rating, r.Rd, r.Games)));
+
+        var ancientByKey = ancientRatings
+            .Where(r => (string)r.Character == "ALL")
+            .GroupBy(r => (string)r.ChoiceKey).ToList();
 
         var ancientStats = ancientByKey.Select(g =>
         {
@@ -401,7 +436,17 @@ public static class ExportCommand
                 else if (ctx == "post_act2") { rPost2 = (double)r.Rating; rdPost2 = (double)r.RatingDeviation; }
             }
 
-            return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2);
+            double pickRate = 0;
+            int games = 0;
+            if (ancientPickRates.TryGetValue(key, out var pr))
+            {
+                pickRate = pr.TimesOffered > 0 ? (double)pr.TimesPicked / pr.TimesOffered : 0;
+                games = (int)pr.TimesOffered;
+            }
+
+            var byChar = charRatings.TryGetValue(key, out var cr) && cr.Count > 0 ? cr : null;
+
+            return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2, pickRate, games, byChar);
         }).ToList();
 
         // Build map intel data per character per act
@@ -526,8 +571,20 @@ public static class ExportCommand
             })
             .ToList();
 
+        // Player run counts by source
+        var playerRunCounts = conn.Query("""
+            SELECT Source, COUNT(*) as Runs, SUM(CASE WHEN Win = 1 THEN 1 ELSE 0 END) as Wins
+            FROM Runs WHERE Source != '' GROUP BY Source ORDER BY Runs DESC
+            """)
+            .Select(r => new PlayerRunCount(
+                (string)r.Source,
+                (int)(long)r.Runs,
+                (int)(long)r.Wins,
+                (long)r.Runs > 0 ? (double)(long)r.Wins / (long)r.Runs : 0))
+            .ToList();
+
         var overlayData = new ModOverlayData(
-            Version: 4,
+            Version: 5,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
             SkipEloByAct: skipEloByAct,
@@ -536,7 +593,8 @@ public static class ExportCommand
             MapIntel: mapIntel,
             EncounterPools: poolRatings,
             EncounterRatings: encounterRatings,
-            DamageDistributions: damageDistributions);
+            DamageDistributions: damageDistributions,
+            PlayerRunCounts: playerRunCounts.Count > 0 ? playerRunCounts : null);
 
         var options = new JsonSerializerOptions
         {

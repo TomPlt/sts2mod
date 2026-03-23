@@ -185,18 +185,26 @@ public static class OverlayFactory
         parent.AddChild(row);
     }
 
-    public static void AddAncientOverlay(Control choiceHolder, AncientStats stats)
+    public static void AddAncientOverlay(Control choiceHolder, AncientStats stats, string? character = null)
     {
         RemoveOverlay(choiceHolder);
+
+        // Use character-specific rating for badge if available
+        var charKey = character?.Replace("CHARACTER.", "").ToLower();
+        AncientCharRating? charRating = null;
+        if (charKey != null && stats.ByCharacter != null)
+            stats.ByCharacter.TryGetValue(charKey, out charRating);
+
+        var badgeRating = charRating?.Rating ?? stats.Rating;
 
         var badge = new PanelContainer();
         badge.Name = "SpireOracleAncientBadge";
         badge.AddToGroup(OverlayGroup);
 
         var badgeStyle = new StyleBoxFlat();
-        badgeStyle.BgColor = stats.Rating >= 1600
+        badgeStyle.BgColor = badgeRating >= 1600
             ? new Color(0.83f, 0.33f, 0.16f) // ember - strong
-            : stats.Rating >= 1450
+            : badgeRating >= 1450
                 ? new Color(0.14f, 0.19f, 0.27f) // grey - average
                 : new Color(0.16f, 0.10f, 0.10f); // dark red - weak
         badgeStyle.CornerRadiusBottomLeft = 6;
@@ -210,13 +218,13 @@ public static class OverlayFactory
         badge.AddThemeStyleboxOverride("panel", badgeStyle);
 
         var label = new Label();
-        label.Text = $"{stats.Rating:F0}";
+        label.Text = $"{badgeRating:F0}";
         label.AddThemeFontSizeOverride("font_size", 28);
         label.AddThemeColorOverride("font_color", Colors.White);
         badge.AddChild(label);
 
         badge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-        badge.Position = new Vector2(-10, -10);
+        badge.Position = new Vector2(-10, 20);
         badge.MouseFilter = Control.MouseFilterEnum.Ignore;
         badge.ZIndex = 5;
         choiceHolder.AddChild(badge);
@@ -249,16 +257,24 @@ public static class OverlayFactory
         vbox.AddThemeConstantOverride("separation", 2);
 
         AddStatRow(vbox, "Overall", $"{stats.Rating:F0} ±{stats.Rd:F0}");
-        AddStatRow(vbox, "Neow", stats.RatingNeow > 0 ? $"{stats.RatingNeow:F0} ±{stats.RdNeow:F0}" : "—");
-        AddStatRow(vbox, "Post Act 1", stats.RatingPostAct1 > 0 ? $"{stats.RatingPostAct1:F0} ±{stats.RdPostAct1:F0}" : "—");
-        AddStatRow(vbox, "Post Act 2", stats.RatingPostAct2 > 0 ? $"{stats.RatingPostAct2:F0} ±{stats.RdPostAct2:F0}" : "—");
+
+        if (charRating != null && charKey != null)
+        {
+            var charLabel = char.ToUpper(charKey[0]) + charKey[1..];
+            AddColoredStatRow(vbox, charLabel, $"{charRating.Rating:F0} ±{charRating.Rd:F0}",
+                new Color(0.36f, 0.72f, 0.83f));
+        }
+
+        AddStatRow(vbox, "Pick Rate", $"{stats.PickRate * 100:F1}%");
+        AddStatRow(vbox, "Games", $"{stats.Games}");
 
         detail.AddChild(vbox);
 
         detail.CustomMinimumSize = new Vector2(260, 0);
-        detail.SetAnchorsPreset(Control.LayoutPreset.CenterBottom);
+        detail.SetAnchorsPreset(Control.LayoutPreset.CenterTop);
         detail.GrowHorizontal = Control.GrowDirection.Both;
-        detail.Position = new Vector2(-130, 5);
+        detail.GrowVertical = Control.GrowDirection.End;
+        detail.Position = new Vector2(-130, -110);
         detail.ZAsRelative = false;
         detail.ZIndex = 200;
         choiceHolder.AddChild(detail);

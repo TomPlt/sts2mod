@@ -65,6 +65,7 @@ public class RunExport
     public bool Win { get; set; }
     public string Seed { get; set; } = "";
     public string GameMode { get; set; } = "";
+    public string Source { get; set; } = "";
 }
 
 public class PlayerRatingExport

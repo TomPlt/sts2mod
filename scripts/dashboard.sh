@@ -9,14 +9,25 @@ echo "=== Killing existing dashboard ==="
 pkill -f "Sts2Analytics.Web" 2>/dev/null || true
 sleep 1
 
+echo "=== Syncing shared run data ==="
+DATA_REPO="$HOME/projects/spire-oracle-data"
+if [ -d "$DATA_REPO/.git" ]; then
+    git -C "$DATA_REPO" pull --ff-only -q
+else
+    git clone git@github.com:TomPlt/spire-oracle-data.git "$DATA_REPO"
+fi
+
 echo "=== Importing run data ==="
-dotnet run --project src/Sts2Analytics.Cli -- import
+# Import from shared data repo (per-player directories)
+for player_dir in "$DATA_REPO"/runs/*/; do
+    [ -d "$player_dir" ] && dotnet run --project src/Sts2Analytics.Cli -- import "$player_dir"
+done
 
 echo "=== Exporting dashboard data ==="
 dotnet run --project src/Sts2Analytics.Cli -- export --output src/Sts2Analytics.Web/wwwroot/data.json
 
 echo "=== Exporting mod overlay data ==="
-dotnet run --project src/Sts2Analytics.Cli -- export --mod --output "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/overlay_data.json"
+dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOracle/overlay_data.json
 
 echo "=== Starting dashboard on port 5202 ==="
 nohup dotnet run --project src/Sts2Analytics.Web --urls "http://localhost:5202" > /tmp/dashboard.log 2>&1 &

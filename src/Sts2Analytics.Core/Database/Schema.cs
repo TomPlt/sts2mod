@@ -29,7 +29,8 @@ public static class Schema
             SchemaVersion INTEGER NOT NULL DEFAULT 0,
             PlatformType TEXT NOT NULL DEFAULT '',
             Modifiers TEXT,
-            MaxPotionSlots INTEGER NOT NULL DEFAULT 0
+            MaxPotionSlots INTEGER NOT NULL DEFAULT 0,
+            Source TEXT NOT NULL DEFAULT ''
         );
 
         CREATE TABLE IF NOT EXISTS Floors (
@@ -313,4 +314,22 @@ public static class Schema
         CREATE INDEX IF NOT EXISTS IX_Glicko2Ratings_CardId ON Glicko2Ratings(CardId);
         CREATE INDEX IF NOT EXISTS IX_Glicko2History_Glicko2RatingId ON Glicko2History(Glicko2RatingId);
         """;
+
+    private const string MigrationsSql = """
+        -- Add Source column to Runs (tracks which player/directory the run came from)
+        ALTER TABLE Runs ADD COLUMN Source TEXT NOT NULL DEFAULT '';
+        """;
+
+    public static void Migrate(IDbConnection connection)
+    {
+        // Check if Source column exists on Runs
+        try
+        {
+            connection.ExecuteScalar<string>("SELECT Source FROM Runs LIMIT 1");
+        }
+        catch
+        {
+            connection.Execute("ALTER TABLE Runs ADD COLUMN Source TEXT NOT NULL DEFAULT ''");
+        }
+    }
 }

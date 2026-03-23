@@ -14,14 +14,26 @@ cd /home/tom/projects/sts2mod
 echo "=== Building mod ==="
 dotnet build src/Sts2Analytics.Mod -c Release
 
+echo "=== Syncing shared run data ==="
+DATA_REPO="$HOME/projects/spire-oracle-data"
+if [ -d "$DATA_REPO/.git" ]; then
+    git -C "$DATA_REPO" pull --ff-only -q
+else
+    git clone git@github.com:TomPlt/spire-oracle-data.git "$DATA_REPO"
+fi
+
+echo "=== Importing run data ==="
+for player_dir in "$DATA_REPO"/runs/*/; do
+    [ -d "$player_dir" ] && dotnet run --project src/Sts2Analytics.Cli -- import "$player_dir"
+done
+
 echo "=== Exporting mod overlay data ==="
-dotnet run --project src/Sts2Analytics.Cli -- import
 dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOracle/overlay_data.json
 
 echo "=== Deploying to game ==="
 cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/
 cp data/reference/sts2_reference.json mods/SpireOracle/
-cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
+cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json mods/SpireOracle/config.json "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
 
 echo "=== Done ==="
 ls "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"

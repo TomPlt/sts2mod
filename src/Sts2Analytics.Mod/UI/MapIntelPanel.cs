@@ -85,6 +85,19 @@ public partial class MapIntelPanel : PanelContainer
         header.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
         _content.AddChild(header);
 
+        // Player run counts
+        var players = DataLoader.GetPlayerRunCounts();
+        if (players.Count > 0)
+        {
+            AddSectionHeader("Runs by Player");
+            foreach (var p in players)
+            {
+                AddStatRow($"  {p.Name}", $"{p.Runs} runs, {p.WinRate:P0} win",
+                    p.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f), 16);
+            }
+            AddSeparator();
+        }
+
         // Win rates from analytics
         if (intel != null)
         {

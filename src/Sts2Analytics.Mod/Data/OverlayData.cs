@@ -39,7 +39,15 @@ public record AncientStats(
     [property: JsonPropertyName("ratingPostAct1")] double RatingPostAct1 = 0,
     [property: JsonPropertyName("rdPostAct1")] double RdPostAct1 = 350,
     [property: JsonPropertyName("ratingPostAct2")] double RatingPostAct2 = 0,
-    [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350);
+    [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350,
+    [property: JsonPropertyName("pickRate")] double PickRate = 0,
+    [property: JsonPropertyName("games")] int Games = 0,
+    [property: JsonPropertyName("byCharacter")] Dictionary<string, AncientCharRating>? ByCharacter = null);
+
+public record AncientCharRating(
+    [property: JsonPropertyName("rating")] double Rating,
+    [property: JsonPropertyName("rd")] double Rd,
+    [property: JsonPropertyName("games")] int Games);
 
 public record EncounterDamage(
     [property: JsonPropertyName("encounterId")] string EncounterId,
@@ -77,6 +85,12 @@ public record MapIntelCharacter(
     [property: JsonPropertyName("winRate")] double WinRate = 0,
     [property: JsonPropertyName("acts")] List<MapIntelAct>? Acts = null);
 
+public record PlayerRunCount(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("runs")] int Runs,
+    [property: JsonPropertyName("wins")] int Wins,
+    [property: JsonPropertyName("winRate")] double WinRate);
+
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,
     [property: JsonPropertyName("exportedAt")] string ExportedAt,
@@ -87,4 +101,5 @@ public record OverlayData(
     [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null,
     [property: JsonPropertyName("encounterPools")] Dictionary<string, PoolRating>? EncounterPools = null,
     [property: JsonPropertyName("encounterRatings")] Dictionary<string, PoolRating>? EncounterRatings = null,
-    [property: JsonPropertyName("damageDistributions")] Dictionary<string, List<int>>? DamageDistributions = null);
+    [property: JsonPropertyName("damageDistributions")] Dictionary<string, List<int>>? DamageDistributions = null,
+    [property: JsonPropertyName("playerRunCounts")] List<PlayerRunCount>? PlayerRunCounts = null);

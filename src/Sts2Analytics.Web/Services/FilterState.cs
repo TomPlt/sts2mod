@@ -7,6 +7,7 @@ public class FilterState
     public int? AscensionMin { get; set; }
     public int? AscensionMax { get; set; }
     public string? Character { get; set; }
+    public string? Player { get; set; }
 
     public event Action? OnChange;
 
@@ -15,11 +16,12 @@ public class FilterState
     public bool MatchesRun(RunExport run)
     {
         if (Character != null && run.Character != Character) return false;
+        if (Player != null && run.Source != Player) return false;
         if (AscensionMin.HasValue && run.Ascension < AscensionMin.Value) return false;
         if (AscensionMax.HasValue && run.Ascension > AscensionMax.Value) return false;
         return true;
     }
 
     public bool HasAscensionFilter => AscensionMin.HasValue || AscensionMax.HasValue;
-    public bool HasAnyFilter => HasAscensionFilter || Character != null;
+    public bool HasAnyFilter => HasAscensionFilter || Character != null || Player != null;
 }

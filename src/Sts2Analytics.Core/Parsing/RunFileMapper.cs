@@ -22,7 +22,7 @@ public record FloorData(
 public static class RunFileMapper
 {
     public static (RunEntity Run, List<FloorEntity> Floors, List<FloorData> FloorData) Map(
-        RunFile runFile, string fileName)
+        RunFile runFile, string fileName, string source = "")
     {
         var player = runFile.Players.Count > 0 ? runFile.Players[0] : new PlayerData();
 
@@ -46,7 +46,8 @@ public static class RunFileMapper
             Modifiers = runFile.Modifiers.Count > 0
                 ? JsonSerializer.Serialize(runFile.Modifiers)
                 : null,
-            MaxPotionSlots = player.MaxPotionSlotCount
+            MaxPotionSlots = player.MaxPotionSlotCount,
+            Source = source
         };
 
         var floors = new List<FloorEntity>();

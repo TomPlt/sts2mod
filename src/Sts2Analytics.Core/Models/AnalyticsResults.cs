@@ -63,7 +63,13 @@ public record ModAncientStats(
     string ChoiceKey, double Rating, double Rd,
     double RatingNeow, double RdNeow,
     double RatingPostAct1, double RdPostAct1,
-    double RatingPostAct2, double RdPostAct2);
+    double RatingPostAct2, double RdPostAct2,
+    double PickRate = 0, int Games = 0,
+    Dictionary<string, AncientCharRating>? ByCharacter = null);
+
+public record AncientCharRating(double Rating, double Rd, int Games);
+
+public record PlayerRunCount(string Name, int Runs, int Wins, double WinRate);
 
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
@@ -73,7 +79,8 @@ public record ModOverlayData(
     List<MapIntelCharacter>? MapIntel = null,
     Dictionary<string, PoolRating>? EncounterPools = null,
     Dictionary<string, PoolRating>? EncounterRatings = null,
-    Dictionary<string, List<int>>? DamageDistributions = null);
+    Dictionary<string, List<int>>? DamageDistributions = null,
+    List<PlayerRunCount>? PlayerRunCounts = null);
 
 public record EncounterDamage(string EncounterId, double AvgDamage, double StdDev, int SampleSize, int MaxDamage);
 

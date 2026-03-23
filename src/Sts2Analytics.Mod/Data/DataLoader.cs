@@ -19,6 +19,7 @@ public static class DataLoader
     private static Dictionary<string, PoolRating>? _encounterPools;
     private static Dictionary<string, PoolRating>? _encounterRatings;
     private static Dictionary<string, List<int>>? _damageDistributions;
+    private static List<PlayerRunCount>? _playerRunCounts;
 
     public static bool IsLoaded => _cards != null;
     public static double SkipElo => _skipElo;
@@ -110,7 +111,8 @@ public static class DataLoader
             _encounterPools = data.EncounterPools ?? new Dictionary<string, PoolRating>();
             _encounterRatings = data.EncounterRatings ?? new Dictionary<string, PoolRating>();
             _damageDistributions = data.DamageDistributions ?? new Dictionary<string, List<int>>();
-            GD.Print($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings, {_damageDistributions.Count} damage distributions");
+            _playerRunCounts = data.PlayerRunCounts ?? new List<PlayerRunCount>();
+            GD.Print($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings, {_damageDistributions.Count} damage distributions, {_playerRunCounts.Count} players");
 
             // Load reference data (events, encounters per act)
             _refActs = new Dictionary<string, RefAct>(StringComparer.OrdinalIgnoreCase);
@@ -177,6 +179,9 @@ public static class DataLoader
         _encounterRatings?.TryGetValue(encounterId, out var rating) == true ? rating : null;
 
     public static Dictionary<string, PoolRating>? EncounterPools => _encounterPools;
+
+    public static List<PlayerRunCount> GetPlayerRunCounts() =>
+        _playerRunCounts ?? new List<PlayerRunCount>();
 
     /// <summary>
     /// Compute expected net damage from the damage distribution scaled by Elo matchup score.

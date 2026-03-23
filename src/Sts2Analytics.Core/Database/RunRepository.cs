@@ -30,10 +30,10 @@ public class RunRepository
             _connection.Execute("""
                 INSERT INTO Runs (FileName, Seed, Character, Ascension, GameMode, BuildVersion,
                     Win, WasAbandoned, KilledByEncounter, KilledByEvent, StartTime, RunTime,
-                    Acts, SchemaVersion, PlatformType, Modifiers, MaxPotionSlots)
+                    Acts, SchemaVersion, PlatformType, Modifiers, MaxPotionSlots, Source)
                 VALUES (@FileName, @Seed, @Character, @Ascension, @GameMode, @BuildVersion,
                     @Win, @WasAbandoned, @KilledByEncounter, @KilledByEvent, @StartTime, @RunTime,
-                    @Acts, @SchemaVersion, @PlatformType, @Modifiers, @MaxPotionSlots)
+                    @Acts, @SchemaVersion, @PlatformType, @Modifiers, @MaxPotionSlots, @Source)
                 """, run, transaction);
 
             var runId = _connection.ExecuteScalar<long>("SELECT last_insert_rowid()", transaction: transaction);
