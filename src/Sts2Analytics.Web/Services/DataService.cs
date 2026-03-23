@@ -43,21 +43,38 @@ public class ExportData
     public List<Glicko2RatingResult> PoolRatings { get; set; } = [];
     public Dictionary<string, List<Glicko2RatingResult>>? Glicko2RatingsByPlayer { get; set; }
     public Dictionary<string, List<AncientRatingExport>>? AncientRatingsByPlayer { get; set; }
+    public Dictionary<string, List<Glicko2RatingResult>>? CombatRatingsByPlayer { get; set; }
+    public Dictionary<string, List<Glicko2RatingResult>>? EncounterRatingsByPlayer { get; set; }
+    public Dictionary<string, List<BlindSpotExport>>? BlindSpotsByPlayer { get; set; }
 
-    /// <summary>Get Glicko-2 ratings for the given player, or global if null.</summary>
     public List<Glicko2RatingResult> GetGlicko2Ratings(string? player)
     {
-        if (player != null && Glicko2RatingsByPlayer?.TryGetValue(player, out var perPlayer) == true)
-            return perPlayer;
+        if (player != null && Glicko2RatingsByPlayer?.TryGetValue(player, out var p) == true) return p;
         return Glicko2Ratings;
     }
 
-    /// <summary>Get ancient ratings for the given player, or global if null.</summary>
     public List<AncientRatingExport> GetAncientRatings(string? player)
     {
-        if (player != null && AncientRatingsByPlayer?.TryGetValue(player, out var perPlayer) == true)
-            return perPlayer;
+        if (player != null && AncientRatingsByPlayer?.TryGetValue(player, out var p) == true) return p;
         return AncientRatings;
+    }
+
+    public List<Glicko2RatingResult> GetCombatRatings(string? player)
+    {
+        if (player != null && CombatRatingsByPlayer?.TryGetValue(player, out var p) == true) return p;
+        return CombatRatings;
+    }
+
+    public List<Glicko2RatingResult> GetEncounterRatings(string? player)
+    {
+        if (player != null && EncounterRatingsByPlayer?.TryGetValue(player, out var p) == true) return p;
+        return EncounterRatings;
+    }
+
+    public List<BlindSpotExport> GetBlindSpots(string? player)
+    {
+        if (player != null && BlindSpotsByPlayer?.TryGetValue(player, out var p) == true) return p;
+        return BlindSpots;
     }
 }
 

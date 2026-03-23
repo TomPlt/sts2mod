@@ -170,15 +170,21 @@ public static class ExportCommand
 
             var glicko2ByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
             var ancientByPlayer = new Dictionary<string, List<dynamic>>();
+            var combatByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
+            var encounterByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
+            var blindSpotsByPlayer = new Dictionary<string, List<dynamic>>();
 
             if (playerSources.Count > 1)
             {
                 Console.WriteLine($"Computing per-player ratings for {playerSources.Count} players...");
                 foreach (var source in playerSources)
                 {
-                    var (g2, anc) = ComputePlayerRatings(dbPath, source);
-                    glicko2ByPlayer[source] = g2;
-                    ancientByPlayer[source] = anc;
+                    var result = ComputePlayerRatings(dbPath, source);
+                    glicko2ByPlayer[source] = result.Glicko2;
+                    ancientByPlayer[source] = result.Ancient;
+                    combatByPlayer[source] = result.Combat;
+                    encounterByPlayer[source] = result.Encounter;
+                    blindSpotsByPlayer[source] = result.BlindSpots;
                 }
             }
 
@@ -209,6 +215,9 @@ public static class ExportCommand
                 blindSpots = blindSpotExportData,
                 ancientRatings = ancientRatingExport,
                 ancientRatingsByPlayer = ancientByPlayer.Count > 0 ? ancientByPlayer : null,
+                combatRatingsByPlayer = combatByPlayer.Count > 0 ? combatByPlayer : null,
+                encounterRatingsByPlayer = encounterByPlayer.Count > 0 ? encounterByPlayer : null,
+                blindSpotsByPlayer = blindSpotsByPlayer.Count > 0 ? blindSpotsByPlayer : null,
                 restSiteDecisions,
                 restSiteHpBuckets,
                 restSiteUpgrades,
@@ -656,12 +665,17 @@ public static class ExportCommand
         Console.WriteLine($"  {cards.Count} cards, skipElo: {skipElo:F1}");
     }
 
+    private record PlayerRatingsResult(
+        List<Glicko2RatingResult> Glicko2,
+        List<dynamic> Ancient,
+        List<Glicko2RatingResult> Combat,
+        List<Glicko2RatingResult> Encounter,
+        List<dynamic> BlindSpots);
+
     /// <summary>
-    /// Compute Glicko-2 and ancient ratings for a single player by creating a temp DB
-    /// with only that player's runs, running the engines, and extracting results.
+    /// Compute all per-player ratings by creating a temp DB with only that player's runs.
     /// </summary>
-    private static (List<Glicko2RatingResult> Glicko2, List<dynamic> Ancient) ComputePlayerRatings(
-        string dbPath, string source)
+    private static PlayerRatingsResult ComputePlayerRatings(string dbPath, string source)
     {
         var tempPath = Path.GetTempFileName();
         try
@@ -682,28 +696,47 @@ public static class ExportCommand
                 INSERT INTO AncientChoices SELECT ac.* FROM main_db.AncientChoices ac
                     JOIN main_db.Floors f ON ac.FloorId = f.Id
                     JOIN main_db.Runs r ON f.RunId = r.Id WHERE r.Source = @Source;
+                INSERT INTO FinalDecks SELECT fd.* FROM main_db.FinalDecks fd
+                    JOIN main_db.Runs r ON fd.RunId = r.Id WHERE r.Source = @Source;
+                INSERT INTO Monsters SELECT m.* FROM main_db.Monsters m
+                    JOIN main_db.Floors f ON m.FloorId = f.Id
+                    JOIN main_db.Runs r ON f.RunId = r.Id WHERE r.Source = @Source;
             ", new { Source = source });
             tempConn.Execute("DETACH main_db");
 
             var runCount = tempConn.QueryFirst<long>("SELECT COUNT(*) FROM Runs");
             if (runCount == 0)
-                return (new(), new());
+                return new(new(), new(), new(), new(), new());
 
-            // Run Glicko-2 engine
+            // Glicko-2 card ratings
             var g2Engine = new Glicko2Engine(tempConn);
             g2Engine.ProcessAllRuns();
             var g2Analytics = new Glicko2Analytics(tempConn);
             var glicko2 = g2Analytics.GetRatings();
 
-            // Run ancient rating engine
+            // Ancient ratings
             var ancientEngine = new AncientRatingEngine(tempConn);
             ancientEngine.ProcessAllRuns();
             var ancient = tempConn.Query(
                 "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM AncientGlicko2Ratings")
                 .ToList();
 
-            Console.WriteLine($"  {source}: {runCount} runs, {glicko2.Count} card ratings, {ancient.Count} ancient ratings");
-            return (glicko2, ancient);
+            // Combat ratings
+            var combatEngine = new CombatRatingEngine(tempConn);
+            combatEngine.ProcessAllRuns();
+            var combatAnalytics = new CombatGlicko2Analytics(tempConn);
+            var combat = combatAnalytics.GetRatings();
+            var encounter = combatAnalytics.GetEncounterRatings();
+
+            // Blind spots (uses Glicko2Ratings already in temp DB)
+            var blindSpotAnalyzer = new BlindSpotAnalyzer(tempConn);
+            blindSpotAnalyzer.AnalyzeAllContexts();
+            var blindSpots = tempConn.Query(
+                "SELECT CardId, Context, BlindSpotType, Score, PickRate, ExpectedPickRate, WinRateDelta, GamesAnalyzed FROM BlindSpots")
+                .ToList();
+
+            Console.WriteLine($"  {source}: {runCount} runs, {glicko2.Count} card ratings, {ancient.Count} ancient, {combat.Count} combat, {blindSpots.Count} blind spots");
+            return new(glicko2, ancient, combat, encounter, blindSpots);
         }
         finally
         {

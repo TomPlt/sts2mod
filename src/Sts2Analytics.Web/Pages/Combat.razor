@@ -310,7 +310,7 @@ else
             .ToList();
 
         // Encounter ratings — use per-context (not overall) by default
-        _allEncounterRows = data.EncounterRatings
+        _allEncounterRows = data.GetEncounterRatings(Filter.Player)
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
             .Where(r => r.Context != "overall")
             .OrderByDescending(r => r.Rating)
@@ -322,7 +322,7 @@ else
         ApplyEncounterFilter();
 
         // Card combat ratings
-        _allCardRows = data.CombatRatings
+        _allCardRows = data.GetCombatRatings(Filter.Player)
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
             .Where(r => r.Context == "overall" && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
             .OrderByDescending(r => r.Rating)
@@ -363,7 +363,7 @@ else
             .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatPoolName(r.Context), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
             .ToList();
 
-        _allEncounterRows = data.EncounterRatings
+        _allEncounterRows = data.GetEncounterRatings(Filter.Player)
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
             .Where(r => r.Context != "overall")
             .OrderByDescending(r => r.Rating)
@@ -374,7 +374,7 @@ else
             .ToList();
         ApplyEncounterFilter();
 
-        _allCardRows = data.CombatRatings
+        _allCardRows = data.GetCombatRatings(Filter.Player)
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
             .Where(r => r.Context == "overall" && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
             .OrderByDescending(r => r.Rating)
@@ -440,7 +440,7 @@ else
             .ToDictionary(r => r.CardId, r => r);
 
         // Get combat Elo (overall context)
-        var combatElos = data.CombatRatings
+        var combatElos = data.GetCombatRatings(Filter.Player)
             .Where(r => (charFilter != null ? r.Character == charFilter : r.Character == "ALL")
                 && r.Context == "overall"
                 && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))

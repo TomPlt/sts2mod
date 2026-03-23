@@ -128,7 +128,7 @@ else
     {
         _data = await Data.GetDataAsync();
         Filter.OnChange += OnFilterChanged;
-        _contexts = _data.BlindSpots
+        _contexts = _data.GetBlindSpots(Filter.Player)
             .Select(b => b.Context)
             .Where(c => c != "overall")
             .Distinct()
@@ -140,6 +140,12 @@ else
 
     private void OnFilterChanged()
     {
+        _contexts = _data!.GetBlindSpots(Filter.Player)
+            .Select(b => b.Context)
+            .Where(c => c != "overall")
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
         ApplyFilter();
         InvokeAsync(StateHasChanged);
     }
@@ -152,7 +158,7 @@ else
 
     private void ApplyFilter()
     {
-        var filtered = _data!.BlindSpots.AsEnumerable();
+        var filtered = _data!.GetBlindSpots(Filter.Player).AsEnumerable();
         if (Filter.Character != null)
             filtered = filtered.Where(b => b.Context == Filter.Character || b.Context == "overall");
         if (_contextFilter != null)

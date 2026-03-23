@@ -305,7 +305,7 @@ else
     }
 
     private Glicko2RatingResult? GetRating(string cardId, string context) =>
-        _data?.Glicko2Ratings.FirstOrDefault(e => e.CardId == cardId && e.Context == context);
+        _data?.GetGlicko2Ratings(Filter.Player).FirstOrDefault(e => e.CardId == cardId && e.Context == context);
 
     private void OnFilterChanged()
     {
