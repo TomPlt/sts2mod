@@ -36,7 +36,7 @@ A combat-only F5 overlay that shows another player's hand, draw pile, and discar
 
 Same pattern as `CombatOverlay`. Static class, no instance.
 
-- `Show(Player player)` — builds panel, adds to SceneTree, starts 0.5s `Timer` node (added as child of panel, auto-cleaned on `QueueFree`)
+- `Show(Player player, int playerIndex, int nonLocalCount)` — builds panel, adds to SceneTree, starts 0.5s `Timer` node (added as child of panel, auto-cleaned on `QueueFree`). Extra params enable the "Ironclad (1/2)" header.
 - `Hide()` — removes panel from SceneTree (idempotent, safe to call when already hidden)
 - `Refresh()` — called by timer, reads player's hand/draw/discard via reflection, updates existing `Label.Text` values (full node rebuild only on `Show`)
 - `IsVisible` — property to check current state
