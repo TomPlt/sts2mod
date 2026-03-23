@@ -246,7 +246,7 @@ else
         {
             // No per-character filter but act selected: aggregate across all character act contexts
             var actSuffix = $"_ACT{_actFilter}";
-            ratings = _data.Glicko2Ratings
+            ratings = _data.GetGlicko2Ratings(Filter.Player)
                 .Where(e => e.Context.EndsWith(actSuffix))
                 .GroupBy(e => e.CardId)
                 .Select(g =>
@@ -266,7 +266,7 @@ else
         }
         else
         {
-            ratings = _data.Glicko2Ratings
+            ratings = _data.GetGlicko2Ratings(Filter.Player)
                 .Where(e => e.Context == context)
                 .OrderByDescending(e => e.Rating)
                 .ToList();
@@ -300,7 +300,7 @@ else
         // Determine act context prefix based on character filter
         var charPrefix = Filter.Character ?? "";
 
-        _actRatingLookup = _data.Glicko2Ratings
+        _actRatingLookup = _data.GetGlicko2Ratings(Filter.Player)
             .Where(e => e.Context.Contains("_ACT"))
             .Where(e => string.IsNullOrEmpty(charPrefix) || e.Context.StartsWith(charPrefix))
             .GroupBy(e => e.CardId)

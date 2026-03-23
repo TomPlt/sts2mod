@@ -237,7 +237,7 @@ else
             .ToList();
 
         var eloContext = Filter.Character ?? "overall";
-        _topElo = _data.Glicko2Ratings
+        _topElo = _data.GetGlicko2Ratings(Filter.Player)
             .Where(e => e.Context == eloContext)
             .OrderByDescending(e => e.Rating)
             .Take(12)

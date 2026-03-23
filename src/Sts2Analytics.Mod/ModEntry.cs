@@ -5,6 +5,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using SpireOracle.Data;
+using SpireOracle.UI;
 
 namespace SpireOracle;
 
@@ -19,11 +20,11 @@ public class ModEntry
 
     public static void Initialize()
     {
-        GD.Print("[SpireOracle] Initializing...");
+        DebugLogOverlay.Log("[SpireOracle] Initializing...");
 
         // Find our mod path from the DLL location
         var assemblyPath = typeof(ModEntry).Assembly.Location;
-        GD.Print($"[SpireOracle] Assembly location: {assemblyPath}");
+        DebugLogOverlay.Log($"[SpireOracle] Assembly location: {assemblyPath}");
 
         if (!string.IsNullOrEmpty(assemblyPath))
         {
@@ -38,7 +39,7 @@ public class ModEntry
                 if (mod.manifest?.id == "SpireOracle")
                 {
                     _modPath = mod.path;
-                    GD.Print($"[SpireOracle] Found mod path via ModManager: {_modPath}");
+                    DebugLogOverlay.Log($"[SpireOracle] Found mod path via ModManager: {_modPath}");
                     break;
                 }
             }
@@ -46,11 +47,11 @@ public class ModEntry
 
         if (_modPath == null)
         {
-            GD.PrintErr("[SpireOracle] Could not find mod path!");
+            DebugLogOverlay.LogErr("[SpireOracle] Could not find mod path!");
             return;
         }
 
-        GD.Print($"[SpireOracle] Mod path: {_modPath}");
+        DebugLogOverlay.Log($"[SpireOracle] Mod path: {_modPath}");
 
         // Cloud sync: load config and download latest data
         CloudSync.LoadConfig(_modPath);
@@ -62,21 +63,21 @@ public class ModEntry
                 _ = CloudSync.DownloadLatestData(_modPath).ContinueWith(t =>
                 {
                     if (t.IsFaulted)
-                        GD.PrintErr($"[SpireOracle] Download failed: {t.Exception?.InnerException?.Message}");
+                        DebugLogOverlay.LogErr($"[SpireOracle] Download failed: {t.Exception?.InnerException?.Message}");
                     else
                     {
                         // Reload data after download
                         DataLoader.Load(_modPath);
-                        GD.Print("[SpireOracle] Reloaded data after cloud sync");
+                        DebugLogOverlay.Log("[SpireOracle] Reloaded data after cloud sync");
                     }
                 });
             }
-            catch (Exception ex) { GD.PrintErr($"[SpireOracle] Cloud sync error: {ex.Message}"); }
+            catch (Exception ex) { DebugLogOverlay.LogErr($"[SpireOracle] Cloud sync error: {ex.Message}"); }
         }
 
         if (!DataLoader.Load(_modPath))
         {
-            GD.PrintErr("[SpireOracle] Data loading failed, overlay disabled.");
+            DebugLogOverlay.LogErr("[SpireOracle] Data loading failed, overlay disabled.");
             return;
         }
 
@@ -86,13 +87,13 @@ public class ModEntry
         // Apply Harmony patches
         _harmony = new Harmony("com.sts2mod.spireoracle");
         _harmony.PatchAll(typeof(ModEntry).Assembly);
-        GD.Print("[SpireOracle] Harmony patches applied.");
+        DebugLogOverlay.Log("[SpireOracle] Harmony patches applied.");
 
         // Watch for new .run files to auto-upload
         if (CloudSync.IsConfigured)
             WatchRunFiles();
 
-        GD.Print("[SpireOracle] Ready! Press F3 to toggle overlay.");
+        DebugLogOverlay.Log("[SpireOracle] Ready! Press F3 to toggle overlay.");
     }
 
     private static readonly System.Collections.Generic.List<FileSystemWatcher> _runWatchers = new();
@@ -130,8 +131,13 @@ public class ModEntry
                             if (!uploaded.Add(fileName)) return; // already uploaded
                             var timer = new System.Threading.Timer(_ =>
                             {
-                                GD.Print($"[SpireOracle] New run detected: {fileName}");
-                                _ = CloudSync.UploadRunFile(filePath);
+                                DebugLogOverlay.Log($"[SpireOracle] New run detected: {fileName}");
+                                _ = CloudSync.UploadRunFile(filePath).ContinueWith(t =>
+                                {
+                                    if (t.IsFaulted) return;
+                                    // Wait for CI to rebuild overlay_data.json, then re-download
+                                    ScheduleDataRefresh();
+                                });
                             }, null, 5000, System.Threading.Timeout.Infinite);
                         }
                         watcher.Created += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
@@ -139,15 +145,40 @@ public class ModEntry
                         watcher.Renamed += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
                         watcher.EnableRaisingEvents = true;
                         _runWatchers.Add(watcher);
-                        GD.Print($"[SpireOracle] Watching for runs: {historyPath}");
+                        DebugLogOverlay.Log($"[SpireOracle] Watching for runs: {historyPath}");
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Could not watch run files: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Could not watch run files: {ex.Message}");
         }
+    }
+
+    private static System.Threading.Timer? _refreshTimer;
+
+    private static void ScheduleDataRefresh()
+    {
+        // CI takes ~3-4 minutes to rebuild. Try at 4min, then retry at 6min if unchanged.
+        _refreshTimer?.Dispose();
+        DebugLogOverlay.Log("[SpireOracle] Will refresh overlay data in ~4 minutes (waiting for CI)");
+        _refreshTimer = new System.Threading.Timer(async _ =>
+        {
+            try
+            {
+                if (_modPath != null)
+                {
+                    DebugLogOverlay.Log("[SpireOracle] Downloading updated overlay data...");
+                    await CloudSync.DownloadLatestData(_modPath);
+                    // WatchDataFile will auto-reload via file change event
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogOverlay.LogErr($"[SpireOracle] Refresh failed: {ex.Message}");
+            }
+        }, null, 4 * 60 * 1000, System.Threading.Timeout.Infinite);
     }
 
     private static void WatchDataFile(string modPath)
@@ -160,11 +191,11 @@ public class ModEntry
             };
             _watcher.Changed += OnDataFileChanged;
             _watcher.EnableRaisingEvents = true;
-            GD.Print("[SpireOracle] Watching overlay_data.json for changes");
+            DebugLogOverlay.Log("[SpireOracle] Watching overlay_data.json for changes");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Could not watch data file: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Could not watch data file: {ex.Message}");
         }
     }
 
@@ -177,13 +208,13 @@ public class ModEntry
             try
             {
                 if (_modPath != null && DataLoader.Load(_modPath))
-                    GD.Print("[SpireOracle] Data reloaded after file change");
+                    DebugLogOverlay.Log("[SpireOracle] Data reloaded after file change");
                 else
-                    GD.PrintErr("[SpireOracle] Failed to reload data after file change");
+                    DebugLogOverlay.LogErr("[SpireOracle] Failed to reload data after file change");
             }
             catch (Exception ex)
             {
-                GD.PrintErr($"[SpireOracle] Error reloading data: {ex.Message}");
+                DebugLogOverlay.LogErr($"[SpireOracle] Error reloading data: {ex.Message}");
             }
         }, null, 500, Timeout.Infinite);
     }

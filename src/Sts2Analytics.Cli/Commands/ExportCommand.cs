@@ -164,6 +164,24 @@ public static class ExportCommand
                 source = (string)r.Source
             }).ToList();
 
+            // Per-player Glicko-2 and ancient ratings
+            var playerSources = conn.Query<string>(
+                "SELECT DISTINCT Source FROM Runs WHERE Source != '' ORDER BY Source").ToList();
+
+            var glicko2ByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
+            var ancientByPlayer = new Dictionary<string, List<dynamic>>();
+
+            if (playerSources.Count > 1)
+            {
+                Console.WriteLine($"Computing per-player ratings for {playerSources.Count} players...");
+                foreach (var source in playerSources)
+                {
+                    var (g2, anc) = ComputePlayerRatings(dbPath, source);
+                    glicko2ByPlayer[source] = g2;
+                    ancientByPlayer[source] = anc;
+                }
+            }
+
             var exportData = new
             {
                 summary = new
@@ -179,6 +197,7 @@ public static class ExportCommand
                 relicWinRates,
                 relicPickRates,
                 glicko2Ratings,
+                glicko2RatingsByPlayer = glicko2ByPlayer.Count > 0 ? glicko2ByPlayer : null,
                 cardChoices,
                 relicChoices,
                 runs = runsList,
@@ -189,6 +208,7 @@ public static class ExportCommand
                 playerRatingHistory = playerHistoryData,
                 blindSpots = blindSpotExportData,
                 ancientRatings = ancientRatingExport,
+                ancientRatingsByPlayer = ancientByPlayer.Count > 0 ? ancientByPlayer : null,
                 restSiteDecisions,
                 restSiteHpBuckets,
                 restSiteUpgrades,
@@ -580,16 +600,34 @@ public static class ExportCommand
             })
             .ToList();
 
-        // Player run counts by source
+        // Player run counts by source, with per-character breakdown
+        var playerCharRows = conn.Query("""
+            SELECT Source, Character, COUNT(*) as Runs, SUM(CASE WHEN Win = 1 THEN 1 ELSE 0 END) as Wins
+            FROM Runs WHERE Source != '' GROUP BY Source, Character ORDER BY Source, Runs DESC
+            """).ToList();
+
         var playerRunCounts = conn.Query("""
             SELECT Source, COUNT(*) as Runs, SUM(CASE WHEN Win = 1 THEN 1 ELSE 0 END) as Wins
             FROM Runs WHERE Source != '' GROUP BY Source ORDER BY Runs DESC
             """)
-            .Select(r => new PlayerRunCount(
-                (string)r.Source,
-                (int)(long)r.Runs,
-                (int)(long)r.Wins,
-                (long)r.Runs > 0 ? (double)(long)r.Wins / (long)r.Runs : 0))
+            .Select(r =>
+            {
+                var name = (string)r.Source;
+                var runs = (int)(long)r.Runs;
+                var wins = (int)(long)r.Wins;
+                var byChar = playerCharRows
+                    .Where(cr => (string)cr.Source == name)
+                    .Select(cr => new PlayerCharWinRate(
+                        (string)cr.Character,
+                        (int)(long)cr.Runs,
+                        (int)(long)cr.Wins,
+                        (long)cr.Runs > 0 ? (double)(long)cr.Wins / (long)cr.Runs : 0))
+                    .OrderByDescending(cr => cr.Runs)
+                    .ToList();
+                return new PlayerRunCount(name, runs, wins,
+                    runs > 0 ? (double)wins / runs : 0,
+                    byChar.Count > 0 ? byChar : null);
+            })
             .ToList();
 
         var overlayData = new ModOverlayData(
@@ -616,6 +654,61 @@ public static class ExportCommand
 
         Console.WriteLine($"Mod overlay data exported to: {Path.GetFullPath(output)}");
         Console.WriteLine($"  {cards.Count} cards, skipElo: {skipElo:F1}");
+    }
+
+    /// <summary>
+    /// Compute Glicko-2 and ancient ratings for a single player by creating a temp DB
+    /// with only that player's runs, running the engines, and extracting results.
+    /// </summary>
+    private static (List<Glicko2RatingResult> Glicko2, List<dynamic> Ancient) ComputePlayerRatings(
+        string dbPath, string source)
+    {
+        var tempPath = Path.GetTempFileName();
+        try
+        {
+            using var tempConn = new SqliteConnection($"Data Source={tempPath}");
+            tempConn.Open();
+            Schema.Initialize(tempConn);
+
+            // Attach main DB and copy this player's data
+            tempConn.Execute("ATTACH DATABASE @DbPath AS main_db", new { DbPath = dbPath });
+            tempConn.Execute(@"
+                INSERT INTO Runs SELECT * FROM main_db.Runs WHERE Source = @Source;
+                INSERT INTO Floors SELECT f.* FROM main_db.Floors f
+                    JOIN main_db.Runs r ON f.RunId = r.Id WHERE r.Source = @Source;
+                INSERT INTO CardChoices SELECT cc.* FROM main_db.CardChoices cc
+                    JOIN main_db.Floors f ON cc.FloorId = f.Id
+                    JOIN main_db.Runs r ON f.RunId = r.Id WHERE r.Source = @Source;
+                INSERT INTO AncientChoices SELECT ac.* FROM main_db.AncientChoices ac
+                    JOIN main_db.Floors f ON ac.FloorId = f.Id
+                    JOIN main_db.Runs r ON f.RunId = r.Id WHERE r.Source = @Source;
+            ", new { Source = source });
+            tempConn.Execute("DETACH main_db");
+
+            var runCount = tempConn.QueryFirst<long>("SELECT COUNT(*) FROM Runs");
+            if (runCount == 0)
+                return (new(), new());
+
+            // Run Glicko-2 engine
+            var g2Engine = new Glicko2Engine(tempConn);
+            g2Engine.ProcessAllRuns();
+            var g2Analytics = new Glicko2Analytics(tempConn);
+            var glicko2 = g2Analytics.GetRatings();
+
+            // Run ancient rating engine
+            var ancientEngine = new AncientRatingEngine(tempConn);
+            ancientEngine.ProcessAllRuns();
+            var ancient = tempConn.Query(
+                "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, Volatility, GamesPlayed FROM AncientGlicko2Ratings")
+                .ToList();
+
+            Console.WriteLine($"  {source}: {runCount} runs, {glicko2.Count} card ratings, {ancient.Count} ancient ratings");
+            return (glicko2, ancient);
+        }
+        finally
+        {
+            try { File.Delete(tempPath); } catch { }
+        }
     }
 
     private static double StdDev(IEnumerable<double> values)

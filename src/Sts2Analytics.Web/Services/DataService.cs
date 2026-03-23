@@ -41,6 +41,24 @@ public class ExportData
     public List<Glicko2RatingResult> CombatRatings { get; set; } = [];
     public List<Glicko2RatingResult> EncounterRatings { get; set; } = [];
     public List<Glicko2RatingResult> PoolRatings { get; set; } = [];
+    public Dictionary<string, List<Glicko2RatingResult>>? Glicko2RatingsByPlayer { get; set; }
+    public Dictionary<string, List<AncientRatingExport>>? AncientRatingsByPlayer { get; set; }
+
+    /// <summary>Get Glicko-2 ratings for the given player, or global if null.</summary>
+    public List<Glicko2RatingResult> GetGlicko2Ratings(string? player)
+    {
+        if (player != null && Glicko2RatingsByPlayer?.TryGetValue(player, out var perPlayer) == true)
+            return perPlayer;
+        return Glicko2Ratings;
+    }
+
+    /// <summary>Get ancient ratings for the given player, or global if null.</summary>
+    public List<AncientRatingExport> GetAncientRatings(string? player)
+    {
+        if (player != null && AncientRatingsByPlayer?.TryGetValue(player, out var perPlayer) == true)
+            return perPlayer;
+        return AncientRatings;
+    }
 }
 
 public class CardChoiceExport

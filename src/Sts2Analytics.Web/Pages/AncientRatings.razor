@@ -83,13 +83,14 @@ else
     {
         _data = await Data.GetDataAsync();
         Filter.OnChange += OnFilterChanged;
-        _allRatings = _data.AncientRatings;
+        _allRatings = _data.GetAncientRatings(Filter.Player);
         ApplyFilter();
         _loading = false;
     }
 
     private void OnFilterChanged()
     {
+        _allRatings = _data!.GetAncientRatings(Filter.Player);
         ApplyFilter();
         InvokeAsync(StateHasChanged);
     }

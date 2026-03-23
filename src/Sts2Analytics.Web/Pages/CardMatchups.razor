@@ -234,7 +234,7 @@ else
     {
         if (_data is null) return;
 
-        _cardOptions = _data.Glicko2Ratings
+        _cardOptions = _data.GetGlicko2Ratings(Filter.Player)
             .Where(e => e.Context == "overall" && e.GamesPlayed >= 3)
             .OrderBy(e => e.CardId == "SKIP" ? "___SKIP" : FormatName(e.CardId))
             .Select(e => new CardOption(e.CardId, e.CardId == "SKIP" ? "SKIP (baseline)" : FormatName(e.CardId)))
