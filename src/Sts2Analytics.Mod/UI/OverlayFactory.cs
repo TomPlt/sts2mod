@@ -65,45 +65,7 @@ public static class OverlayFactory
 
         cardHolder.AddChild(strip);
 
-        // --- Blind Spot Badge (top-right corner) ---
-        if (!string.IsNullOrEmpty(stats.BlindSpot))
-        {
-            var bsBadge = new PanelContainer();
-            bsBadge.Name = "SpireOracleBlindSpot";
-            bsBadge.AddToGroup(OverlayGroup);
-
-            var bsStyle = new StyleBoxFlat();
-            bsStyle.CornerRadiusBottomLeft = 4;
-            bsStyle.CornerRadiusBottomRight = 4;
-            bsStyle.CornerRadiusTopLeft = 4;
-            bsStyle.CornerRadiusTopRight = 4;
-            bsStyle.ContentMarginLeft = 6;
-            bsStyle.ContentMarginRight = 6;
-            bsStyle.ContentMarginTop = 2;
-            bsStyle.ContentMarginBottom = 2;
-
-            var isOverPick = stats.BlindSpot == "over_pick";
-            bsStyle.BgColor = isOverPick
-                ? new Color(0.94f, 0.27f, 0.27f) // red
-                : new Color(0.96f, 0.62f, 0.04f); // amber
-
-            bsBadge.AddThemeStyleboxOverride("panel", bsStyle);
-
-            var bsLabel = new Label();
-            bsLabel.Text = isOverPick ? "⚠ OVER-PICK" : "⚠ UNDER-PICK";
-            bsLabel.AddThemeFontSizeOverride("font_size", 18);
-            bsLabel.AddThemeColorOverride("font_color", isOverPick
-                ? Colors.White
-                : new Color(0.1f, 0.1f, 0.1f));
-            bsBadge.AddChild(bsLabel);
-
-            // Position top-right
-            bsBadge.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-            bsBadge.Position = new Vector2(-10, -10);
-            bsBadge.ZIndex = 5;
-            bsBadge.MouseFilter = Control.MouseFilterEnum.Ignore;
-            cardHolder.AddChild(bsBadge);
-        }
+        // Blind spot info is shown in the hover detail panel only (no on-card badge)
 
         // --- Detail Panel (below card, hidden by default) ---
         var detail = new PanelContainer();
@@ -176,7 +138,8 @@ public static class OverlayFactory
         detail.CustomMinimumSize = new Vector2(280, 0);
         detail.SetAnchorsPreset(Control.LayoutPreset.CenterBottom);
         detail.GrowHorizontal = Control.GrowDirection.Both;
-        detail.Position = new Vector2(-140, 15);
+        detail.GrowVertical = Control.GrowDirection.Begin;
+        detail.Position = new Vector2(-390, -10);
         detail.ZAsRelative = false;
         detail.ZIndex = 200;
         cardHolder.AddChild(detail);
@@ -303,9 +266,10 @@ public static class OverlayFactory
 
     /// <summary>
     /// Append a combat forecast section to an existing detail panel on a card holder.
+    /// Shows per-pool expected damage deltas (normal, elite, boss).
     /// Call after AddOverlay.
     /// </summary>
-    public static void AddForecast(Control cardHolder, DamageForcast forecast)
+    public static void AddForecast(Control cardHolder, MultiPoolForecast forecast)
     {
         var detail = cardHolder.GetNodeOrNull<PanelContainer>("SpireOracleDetail");
         if (detail == null) return;
@@ -329,19 +293,25 @@ public static class OverlayFactory
             ? $"+{forecast.EloDelta:F0}"
             : $"{forecast.EloDelta:F0}";
         var eloColor = forecast.EloDelta >= 0
-            ? new Color(0.3f, 0.85f, 0.3f) // green
-            : new Color(0.95f, 0.3f, 0.3f); // red
+            ? new Color(0.3f, 0.85f, 0.3f)
+            : new Color(0.95f, 0.3f, 0.3f);
         AddColoredStatRow(vbox, "Elo Change", eloDeltaStr, eloColor);
 
-        var dmgDeltaStr = forecast.DmgDelta <= 0
-            ? $"{forecast.DmgDelta:F1} HP"
-            : $"+{forecast.DmgDelta:F1} HP";
-        var dmgColor = forecast.DmgDelta <= 0
-            ? new Color(0.3f, 0.85f, 0.3f) // green — less damage is good
-            : new Color(0.95f, 0.3f, 0.3f); // red — more damage is bad
-        AddColoredStatRow(vbox, "Next Fight", dmgDeltaStr, dmgColor);
-
-        AddStatRow(vbox, "Exp. Damage", $"{forecast.NewExpectedDmg:F1} HP");
+        // Per-pool damage forecasts
+        var poolLabels = new[] { ("normal", "Hallway"), ("elite", "Elite"), ("boss", "Boss") };
+        foreach (var (poolKey, label) in poolLabels)
+        {
+            if (forecast.ByPool.TryGetValue(poolKey, out var pf))
+            {
+                var dmgStr = pf.DmgDelta <= 0
+                    ? $"{pf.DmgDelta:F1} HP"
+                    : $"+{pf.DmgDelta:F1} HP";
+                var dmgColor = pf.DmgDelta <= 0
+                    ? new Color(0.3f, 0.85f, 0.3f)
+                    : new Color(0.95f, 0.3f, 0.3f);
+                AddColoredStatRow(vbox, label, dmgStr, dmgColor);
+            }
+        }
     }
 
     public static void ShowDetail(Control cardHolder)
@@ -380,7 +350,7 @@ public static class OverlayFactory
         var toRemove = new System.Collections.Generic.List<Node>();
         foreach (var child in cardHolder.GetChildren())
         {
-            if (child.IsInGroup(OverlayGroup))
+            if (child.IsInGroup(OverlayGroup) || child.Name == "SpireOracleDeckBadge")
             {
                 toRemove.Add(child);
             }

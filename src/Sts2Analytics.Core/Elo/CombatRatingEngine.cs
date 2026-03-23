@@ -46,7 +46,7 @@ public class CombatRatingEngine
 
         // Get all combat floors for this run
         var combatFloors = _connection.Query<CombatFloorInfo>("""
-            SELECT Id, ActIndex, EncounterId, DamageTaken
+            SELECT Id, ActIndex, EncounterId, DamageTaken, HpHealed
             FROM Floors
             WHERE RunId = @RunId AND EncounterId IS NOT NULL
             ORDER BY Id ASC
@@ -68,12 +68,18 @@ public class CombatRatingEngine
                 var deck = deckReconstructor.GetDeckAtFloor(runId, floor.Id);
                 if (deck.Count == 0) continue;
 
-                var score = ComputePercentileScore((int)floor.DamageTaken, poolContext, damageDistributions);
-                // Also compute per-encounter score if we have enough data
-                var encounterScore = ComputePercentileScore((int)floor.DamageTaken, floor.EncounterId, damageDistributions);
+                // Use net damage (after healing) so relic healing isn't penalized
+                var netDamage = Math.Max(0, (int)floor.DamageTaken - (int)floor.HpHealed);
+                var score = ComputePercentileScore(netDamage, poolContext, damageDistributions);
+                var encounterScore = ComputePercentileScore(netDamage, floor.EncounterId, damageDistributions);
                 var contexts = GetContexts(run.Character, poolContext);
                 var poolEntityId = $"POOL.{poolContext}";
                 var encounterEntityId = $"ENC.{floor.EncounterId}";
+
+                // Deck size factor: inflate pool opponent RD by sqrt(deckSize) so that
+                // cards in large decks get smaller rating updates (diluted signal).
+                // A 10-card deck: factor ~3.2, a 25-card deck: factor ~5.0
+                var deckSizeFactor = Math.Sqrt(deck.Count);
 
                 foreach (var (character, context) in contexts)
                 {
@@ -91,10 +97,11 @@ public class CombatRatingEngine
                         // Weight by 1/RD for the deck average (before update)
                         deckRatings.Add((currentRating, 1.0 / currentRating.RatingDeviation));
 
-                        // Get pool entity as opponent for this card
+                        // Get pool entity as opponent for this card, with RD inflated by deck size
                         var poolRating = GetOrCreateRating(poolEntityId, character, context, transaction);
+                        var adjustedPoolRd = Math.Min(poolRating.RatingDeviation * deckSizeFactor, 350.0);
                         var poolGlicko = new Glicko2Calculator.Glicko2Rating(
-                            poolRating.Rating, poolRating.RatingDeviation, poolRating.Volatility);
+                            poolRating.Rating, adjustedPoolRd, poolRating.Volatility);
 
                         var opponents = new (Glicko2Calculator.Glicko2Rating Rating, double Score)[]
                         {
@@ -105,7 +112,7 @@ public class CombatRatingEngine
                         UpdateRating(rating, newRating, runId, floor.Id, run.StartTime, transaction);
                     }
 
-                    // Update pool entity using 1/RD-weighted deck average as opponent
+                    // Update pool and encounter entities using deck average as single opponent
                     if (deckRatings.Count > 0)
                     {
                         var totalWeight = deckRatings.Sum(r => r.Weight);
@@ -177,10 +184,10 @@ public class CombatRatingEngine
         }
     }
 
-    internal Dictionary<string, List<int>> PrecomputeDamageDistributions()
+    public Dictionary<string, List<int>> PrecomputeDamageDistributions()
     {
         var rows = _connection.Query<DamageRow>("""
-            SELECT EncounterId, ActIndex, DamageTaken
+            SELECT EncounterId, ActIndex, DamageTaken, HpHealed
             FROM Floors
             WHERE EncounterId IS NOT NULL
             """).ToList();
@@ -192,14 +199,17 @@ public class CombatRatingEngine
             var poolContext = DerivePoolContext(row.EncounterId, (int)row.ActIndex);
             if (poolContext is null) continue;
 
+            // Use net damage (after healing) for fair cross-character comparison
+            var netDmg = Math.Max(0, (int)row.DamageTaken - (int)row.HpHealed);
+
             if (!distributions.ContainsKey(poolContext))
                 distributions[poolContext] = [];
-            distributions[poolContext].Add((int)row.DamageTaken);
+            distributions[poolContext].Add(netDmg);
 
             // Per-encounter distribution
             if (!distributions.ContainsKey(row.EncounterId))
                 distributions[row.EncounterId] = [];
-            distributions[row.EncounterId].Add((int)row.DamageTaken);
+            distributions[row.EncounterId].Add(netDmg);
         }
 
         // Sort each distribution for binary search
@@ -324,8 +334,8 @@ public class CombatRatingEngine
     }
 
     private record RunInfo(long Id, string Character, long Win, string StartTime);
-    private record CombatFloorInfo(long Id, long ActIndex, string EncounterId, long DamageTaken);
-    private record DamageRow(string EncounterId, long ActIndex, long DamageTaken);
+    private record CombatFloorInfo(long Id, long ActIndex, string EncounterId, long DamageTaken, long HpHealed);
+    private record DamageRow(string EncounterId, long ActIndex, long DamageTaken, long HpHealed);
 
     private record RatingInfo
     {

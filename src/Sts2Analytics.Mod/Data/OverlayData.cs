@@ -23,7 +23,8 @@ public record CardStats(
     [property: JsonPropertyName("blindSpotWinRateDelta")] double BlindSpotWinRateDelta = 0,
     [property: JsonPropertyName("combatElo")] double CombatElo = 0,
     [property: JsonPropertyName("combatRd")] double CombatRd = 350,
-    [property: JsonPropertyName("combatByPool")] Dictionary<string, PoolRating>? CombatByPool = null);
+    [property: JsonPropertyName("combatByPool")] Dictionary<string, PoolRating>? CombatByPool = null,
+    [property: JsonPropertyName("combatByChar")] Dictionary<string, PoolRating>? CombatByChar = null);
 
 public record PoolRating(
     [property: JsonPropertyName("elo")] double Elo,
@@ -85,4 +86,5 @@ public record OverlayData(
     [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null,
     [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null,
     [property: JsonPropertyName("encounterPools")] Dictionary<string, PoolRating>? EncounterPools = null,
-    [property: JsonPropertyName("encounterRatings")] Dictionary<string, PoolRating>? EncounterRatings = null);
+    [property: JsonPropertyName("encounterRatings")] Dictionary<string, PoolRating>? EncounterRatings = null,
+    [property: JsonPropertyName("damageDistributions")] Dictionary<string, List<int>>? DamageDistributions = null);

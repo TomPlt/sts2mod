@@ -24,6 +24,7 @@ else
         <button class="@(_tab == Tab.Pools ? "active" : "")" @onclick="() => SetTab(Tab.Pools)">Encounter Pools</button>
         <button class="@(_tab == Tab.Encounters ? "active" : "")" @onclick="() => SetTab(Tab.Encounters)">Enemy Ratings</button>
         <button class="@(_tab == Tab.Cards ? "active" : "")" @onclick="() => SetTab(Tab.Cards)">Card Combat Elo</button>
+        <button class="@(_tab == Tab.Compare ? "active" : "")" @onclick="() => SetTab(Tab.Compare)">Pick vs Combat</button>
         <button class="@(_tab == Tab.Damage ? "active" : "")" @onclick="() => SetTab(Tab.Damage)">Damage Taken</button>
     </div>
 
@@ -65,11 +66,22 @@ else
     @if (_tab == Tab.Encounters)
     {
         <p class="dim-text" style="margin-bottom: 0.75rem; font-size: 0.8rem;">
-            Per-encounter Glicko-2 ratings. Higher = harder to beat with an average deck.
+            Per-encounter Glicko-2 ratings within their pool context. Higher = harder relative to decks at that stage.
         </p>
 
         <div class="act-filter">
             <input type="text" class="search-input" placeholder="Search encounters..." @bind="_searchText" @bind:event="oninput" @bind:after="ApplyEncounterFilter" />
+            <span class="filter-divider"></span>
+            <button class="@(_encContextFilter == null ? "active" : "")" @onclick="() => SetEncContext(null)">All</button>
+            <button class="@(_encContextFilter == "act1" ? "active" : "")" @onclick='() => SetEncContext("act1")'>Act 1</button>
+            <button class="@(_encContextFilter == "act2" ? "active" : "")" @onclick='() => SetEncContext("act2")'>Act 2</button>
+            <button class="@(_encContextFilter == "act3" ? "active" : "")" @onclick='() => SetEncContext("act3")'>Act 3</button>
+            <span class="filter-divider"></span>
+            <button class="@(_encPoolFilter == null ? "active" : "")" @onclick="() => SetEncPoolFilter(null)">All</button>
+            <button class="@(_encPoolFilter == "weak" ? "active" : "")" @onclick='() => SetEncPoolFilter("weak")'>Weak</button>
+            <button class="@(_encPoolFilter == "normal" ? "active" : "")" @onclick='() => SetEncPoolFilter("normal")'>Normal</button>
+            <button class="@(_encPoolFilter == "elite" ? "active" : "")" @onclick='() => SetEncPoolFilter("elite")'>Elite</button>
+            <button class="@(_encPoolFilter == "boss" ? "active" : "")" @onclick='() => SetEncPoolFilter("boss")'>Boss</button>
         </div>
 
         <div class="panel" style="padding: 0; overflow: hidden;">
@@ -78,6 +90,7 @@ else
                     <tr>
                         <th style="width: 3rem; text-align: center;">#</th>
                         <th>Encounter</th>
+                        <th style="width: 7rem;">Context</th>
                         <th style="width: 6rem; text-align: right;">Rating</th>
                         <th style="width: 3.5rem; text-align: right;">±</th>
                         <th style="width: 4rem; text-align: right;">Games</th>
@@ -89,6 +102,7 @@ else
                         <tr class="@(row.LowConfidence ? "low-confidence" : "")">
                             <td style="text-align: center;" class="dim-text mono">@row.Rank</td>
                             <td style="font-weight: 500;">@row.Name</td>
+                            <td class="dim-text" style="font-size: 0.8rem;">@row.Context</td>
                             <td style="text-align: right;">
                                 <span class="elo-badge @GetRatingBadgeClass(row.Rating)">@row.Rating.ToString("F0")</span>
                             </td>
@@ -154,6 +168,83 @@ else
         </div>
     }
 
+    @if (_tab == Tab.Compare)
+    {
+        <p class="dim-text" style="margin-bottom: 0.75rem; font-size: 0.8rem;">
+            Cards where pick/skip rating and combat performance diverge most. "Combat Fighter" = low pick Elo but great in combat. "Paper Tiger" = high pick Elo but weak in combat.
+        </p>
+
+        <div class="grid-2">
+            <div class="panel">
+                <h3 style="color: #4caf50; margin: 0 0 0.75rem 0; font-size: 1rem;">Combat Fighters</h3>
+                <p class="dim-text" style="font-size: 0.75rem; margin-bottom: 0.5rem;">High combat Elo relative to pick Elo — undervalued in draft, strong in fights</p>
+                <table class="oracle-table elo-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 3rem; text-align: center;">#</th>
+                            <th>Card</th>
+                            <th style="width: 5rem; text-align: right;">Pick</th>
+                            <th style="width: 5rem; text-align: right;">Combat</th>
+                            <th style="width: 4.5rem; text-align: right;">Gap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (row, i) in _combatFighters.Take(20).Select((r, i) => (r, i)))
+                        {
+                            <tr class="@(row.LowConfidence ? "low-confidence" : "")">
+                                <td style="text-align: center;" class="dim-text mono">@(i + 1)</td>
+                                <td style="font-weight: 500;">@row.Name</td>
+                                <td style="text-align: right;">
+                                    <span class="elo-badge @GetRatingBadgeClass(row.PickElo)">@row.PickElo.ToString("F0")</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="elo-badge @GetRatingBadgeClass(row.CombatElo)">@row.CombatElo.ToString("F0")</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span style="color: #4caf50; font-family: 'JetBrains Mono', monospace;">+@row.Gap.ToString("F0")</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel">
+                <h3 style="color: #ef5350; margin: 0 0 0.75rem 0; font-size: 1rem;">Paper Tigers</h3>
+                <p class="dim-text" style="font-size: 0.75rem; margin-bottom: 0.5rem;">High pick Elo relative to combat Elo — valued in draft, but weak in fights</p>
+                <table class="oracle-table elo-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 3rem; text-align: center;">#</th>
+                            <th>Card</th>
+                            <th style="width: 5rem; text-align: right;">Pick</th>
+                            <th style="width: 5rem; text-align: right;">Combat</th>
+                            <th style="width: 4.5rem; text-align: right;">Gap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (row, i) in _paperTigers.Take(20).Select((r, i) => (r, i)))
+                        {
+                            <tr class="@(row.LowConfidence ? "low-confidence" : "")">
+                                <td style="text-align: center;" class="dim-text mono">@(i + 1)</td>
+                                <td style="font-weight: 500;">@row.Name</td>
+                                <td style="text-align: right;">
+                                    <span class="elo-badge @GetRatingBadgeClass(row.PickElo)">@row.PickElo.ToString("F0")</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="elo-badge @GetRatingBadgeClass(row.CombatElo)">@row.CombatElo.ToString("F0")</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <span style="color: #ef5350; font-family: 'JetBrains Mono', monospace;">@row.Gap.ToString("F0")</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
     @if (_tab == Tab.Damage)
     {
         <h3 style="color: var(--text-secondary);">Damage by Encounter</h3>
@@ -177,8 +268,10 @@ else
     private string _cardSearchText = "";
     private int _showCount = 40;
     private int _cardShowCount = 40;
+    private string? _encContextFilter;
+    private string? _encPoolFilter;
 
-    enum Tab { Pools, Encounters, Cards, Damage }
+    enum Tab { Pools, Encounters, Cards, Compare, Damage }
 
     // Pool ratings
     private List<CombatRow> _poolRows = [];
@@ -194,8 +287,13 @@ else
     // Damage rows
     private List<DamageRow> _damageRows = [];
 
-    record CombatRow(int Rank, string Id, string Name, double Rating, double Rd, long Games, bool LowConfidence);
+    // Comparison rows
+    private List<CompareRow> _combatFighters = [];
+    private List<CompareRow> _paperTigers = [];
+
+    record CombatRow(int Rank, string Id, string Name, double Rating, double Rd, long Games, bool LowConfidence, string Context = "");
     record DamageRow(string Name, double AvgDamage, int Fights);
+    record CompareRow(string CardId, string Name, double PickElo, double CombatElo, double Gap, bool LowConfidence);
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,14 +309,17 @@ else
             .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatPoolName(r.Context), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
             .ToList();
 
-        // Encounter ratings
+        // Encounter ratings — use per-context (not overall) by default
         _allEncounterRows = data.EncounterRatings
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
-            .Where(r => r.Context == "overall")
+            .Where(r => r.Context != "overall")
             .OrderByDescending(r => r.Rating)
-            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .Select((r, i) => new CombatRow(i + 1, r.CardId,
+                FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId),
+                r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200,
+                FormatPoolName(r.Context)))
             .ToList();
-        _filteredEncounterRows = _allEncounterRows;
+        ApplyEncounterFilter();
 
         // Card combat ratings
         _allCardRows = data.CombatRatings
@@ -234,6 +335,9 @@ else
             .OrderByDescending(d => d.AvgDamage)
             .Select(d => new DamageRow(FormatName(d.EncounterId), d.AvgDamage, d.SampleSize))
             .ToList();
+
+        // Build comparison
+        BuildComparison(data, charFilter);
 
         Filter.OnChange += OnFilterChanged;
         _loading = false;
@@ -261,9 +365,12 @@ else
 
         _allEncounterRows = data.EncounterRatings
             .Where(r => charFilter != null ? r.Character == charFilter : r.Character == "ALL")
-            .Where(r => r.Context == "overall")
+            .Where(r => r.Context != "overall")
             .OrderByDescending(r => r.Rating)
-            .Select((r, i) => new CombatRow(i + 1, r.CardId, FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId), r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200))
+            .Select((r, i) => new CombatRow(i + 1, r.CardId,
+                FormatName(r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId),
+                r.Rating, r.RatingDeviation, r.GamesPlayed, r.RatingDeviation > 200,
+                FormatPoolName(r.Context)))
             .ToList();
         ApplyEncounterFilter();
 
@@ -275,14 +382,37 @@ else
             .ToList();
         ApplyCardFilter();
 
+        BuildComparison(data, charFilter);
+
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void SetEncContext(string? ctx)
+    {
+        _encContextFilter = ctx;
+        ApplyEncounterFilter();
+    }
+
+    private void SetEncPoolFilter(string? pool)
+    {
+        _encPoolFilter = pool;
+        ApplyEncounterFilter();
     }
 
     private void ApplyEncounterFilter()
     {
-        _filteredEncounterRows = string.IsNullOrEmpty(_searchText)
-            ? _allEncounterRows
-            : _allEncounterRows.Where(r => r.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        var filtered = _allEncounterRows.AsEnumerable();
+
+        if (!string.IsNullOrEmpty(_searchText))
+            filtered = filtered.Where(r => r.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
+
+        if (_encContextFilter != null)
+            filtered = filtered.Where(r => r.Context.StartsWith(_encContextFilter.Replace("act", "Act "), StringComparison.OrdinalIgnoreCase));
+
+        if (_encPoolFilter != null)
+            filtered = filtered.Where(r => r.Context.EndsWith(_encPoolFilter, StringComparison.OrdinalIgnoreCase));
+
+        _filteredEncounterRows = filtered.ToList();
         for (var i = 0; i < _filteredEncounterRows.Count; i++)
             _filteredEncounterRows[i] = _filteredEncounterRows[i] with { Rank = i + 1 };
         _showCount = 40;
@@ -300,6 +430,39 @@ else
 
     private void ShowMore() => _showCount += 40;
     private void ShowMoreCards() => _cardShowCount += 40;
+
+    private void BuildComparison(ExportData data, string? charFilter)
+    {
+        // Get pick/skip Elo (overall context)
+        var pickContext = charFilter ?? "overall";
+        var pickElos = data.Glicko2Ratings
+            .Where(r => r.Context == pickContext && r.CardId != "SKIP")
+            .ToDictionary(r => r.CardId, r => r);
+
+        // Get combat Elo (overall context)
+        var combatElos = data.CombatRatings
+            .Where(r => (charFilter != null ? r.Character == charFilter : r.Character == "ALL")
+                && r.Context == "overall"
+                && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
+            .ToDictionary(r => r.CardId, r => r);
+
+        // Join on card ID, require both ratings with reasonable confidence
+        var compared = pickElos.Keys
+            .Intersect(combatElos.Keys)
+            .Select(id =>
+            {
+                var pick = pickElos[id];
+                var combat = combatElos[id];
+                var gap = combat.Rating - pick.Rating;
+                var lowConf = pick.RatingDeviation > 200 || combat.RatingDeviation > 200;
+                return new CompareRow(id, FormatName(id), pick.Rating, combat.Rating, gap, lowConf);
+            })
+            .Where(r => !r.LowConfidence) // Only show confident comparisons
+            .ToList();
+
+        _combatFighters = compared.OrderByDescending(r => r.Gap).ToList();
+        _paperTigers = compared.OrderBy(r => r.Gap).ToList();
+    }
 
     public void Dispose()
     {

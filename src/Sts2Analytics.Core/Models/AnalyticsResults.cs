@@ -56,7 +56,8 @@ public record ModCardStats(
     string? BlindSpot = null, double BlindSpotScore = 0,
     double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0,
     double CombatElo = 0, double CombatRd = 350,
-    Dictionary<string, PoolRating>? CombatByPool = null);
+    Dictionary<string, PoolRating>? CombatByPool = null,
+    Dictionary<string, PoolRating>? CombatByChar = null);
 
 public record ModAncientStats(
     string ChoiceKey, double Rating, double Rd,
@@ -71,7 +72,8 @@ public record ModOverlayData(
     List<ModAncientStats>? AncientChoices = null,
     List<MapIntelCharacter>? MapIntel = null,
     Dictionary<string, PoolRating>? EncounterPools = null,
-    Dictionary<string, PoolRating>? EncounterRatings = null);
+    Dictionary<string, PoolRating>? EncounterRatings = null,
+    Dictionary<string, List<int>>? DamageDistributions = null);
 
 public record EncounterDamage(string EncounterId, double AvgDamage, double StdDev, int SampleSize, int MaxDamage);
 

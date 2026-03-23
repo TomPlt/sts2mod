@@ -14,6 +14,7 @@ public static class MapScreenOpenPatch
     public static void Postfix()
     {
         if (!ModEntry.OverlayEnabled || !DataLoader.IsLoaded) return;
+        SpireOracle.UI.CombatOverlay.Hide();
         if (!MapIntelPanelManager.IsVisible) return;
 
         try

@@ -16,8 +16,16 @@ public static class InputPatch
     {
         if (inputEvent is not InputEventKey keyEvent) return;
         if (!keyEvent.Pressed || keyEvent.Echo) return;
-        if (keyEvent.Keycode != Key.F3) return;
         if (!DataLoader.IsLoaded) return;
+
+        if (keyEvent.Keycode == Key.F4)
+        {
+            // Toggle per-card Elo badges in deck viewer
+            DeckViewPatch.ToggleCardElos();
+            return;
+        }
+
+        if (keyEvent.Keycode != Key.F3) return;
 
         // Toggle map intel panel independently
         var isVisible = MapIntelPanelManager.IsVisible;
@@ -59,10 +67,10 @@ public static class InputPatch
                 }
                 catch { }
 
-                var players = state.Players;
-                if (players != null && players.Count > 0)
+                var player = GetLocalPlayer(runManager, state);
+                if (player != null)
                 {
-                    var characterId = players[0].Character?.ToString() ?? "";
+                    var characterId = player.Character?.ToString() ?? "";
                     // ToString returns "CHARACTER.IRONCLAD (4907296)" — strip the ID suffix
                     var spaceIdx = characterId.IndexOf(' ');
                     if (spaceIdx > 0) characterId = characterId.Substring(0, spaceIdx);
@@ -78,5 +86,39 @@ public static class InputPatch
 
         var characters = DataLoader.GetMapIntelCharacters();
         return (characters.Count > 0 ? characters[0] : "CHARACTER.IRONCLAD", 0, "");
+    }
+
+    /// <summary>
+    /// Find the local player in a multiplayer game. Falls back to Players[0] in singleplayer.
+    /// Uses RunManager.NetService.NetId to match against Player.NetId.
+    /// </summary>
+    internal static MegaCrit.Sts2.Core.Entities.Players.Player? GetLocalPlayer(
+        RunManager? runManager, RunState? state)
+    {
+        if (state?.Players == null || state.Players.Count == 0) return null;
+        if (state.Players.Count == 1) return state.Players[0];
+
+        // Multiplayer: match by NetId
+        try
+        {
+            var netService = runManager != null
+                ? Traverse.Create(runManager).Property("NetService").GetValue<object>()
+                : null;
+            if (netService != null)
+            {
+                var localNetId = Traverse.Create(netService).Property("NetId").GetValue<ulong>();
+                if (localNetId != 0)
+                {
+                    foreach (var p in state.Players)
+                    {
+                        if (p.NetId == localNetId) return p;
+                    }
+                }
+            }
+        }
+        catch { }
+
+        // Fallback: first player
+        return state.Players[0];
     }
 }

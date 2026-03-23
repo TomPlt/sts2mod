@@ -244,18 +244,45 @@ public static class ExportCommand
                 && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
             .ToLookup(r => r.CardId);
 
-        // Pool entity ratings for export
+        // Per-character overall combat Elo (CHARACTER.X → rating for that character's decks)
+        var combatByChar = allCombatRatings
+            .Where(r => r.Context == "overall" && r.Character != "ALL"
+                && !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC."))
+            .ToLookup(r => r.CardId);
+
+        // Per-context normalization: for each context, shift so the midpoint between
+        // average card rating and pool rating is 1500. This centers the scale per context.
+        var contextOffsets = new Dictionary<string, double>();
+        foreach (var contextGroup in allCombatRatings.GroupBy(r => r.Context))
+        {
+            var ctx = contextGroup.Key;
+            var ctxCards = contextGroup.Where(r => !r.CardId.StartsWith("POOL.") && !r.CardId.StartsWith("ENC.")).ToList();
+            var ctxPools = contextGroup.Where(r => r.CardId.StartsWith("POOL.") || r.CardId.StartsWith("ENC.")).ToList();
+            if (ctxCards.Count == 0 || ctxPools.Count == 0) continue;
+            var midpoint = (ctxCards.Average(r => r.Rating) + ctxPools.Average(r => r.Rating)) / 2.0;
+            contextOffsets[ctx] = 1500.0 - midpoint;
+        }
+        // Fallback: overall context offset
+        var combatEloOffset = contextOffsets.GetValueOrDefault("overall", 0);
+        Console.WriteLine($"  Combat Elo normalization: {contextOffsets.Count} contexts, overall offset={combatEloOffset:+0}");
+
+        // Pool entity ratings for export (per-context normalized)
         var poolRatings = combatAnalytics.GetPoolRatings()
             .Where(r => r.Character == "ALL")
             .GroupBy(r => r.Context)
-            .ToDictionary(g => g.Key, g => new PoolRating(g.First().Rating, g.First().RatingDeviation));
+            .ToDictionary(g => g.Key, g => new PoolRating(
+                g.First().Rating + contextOffsets.GetValueOrDefault(g.Key, combatEloOffset),
+                g.First().RatingDeviation));
+
+        // Net damage distributions per pool (sorted, for percentile lookup in mod)
+        var damageDistributions = combatEngine.PrecomputeDamageDistributions();
 
         // Per-encounter ratings for export (ENC.ENCOUNTER.X -> ENCOUNTER.X as key)
         var encounterRatings = combatAnalytics.GetEncounterRatings()
             .Where(r => r.Character == "ALL" && r.Context == "overall")
             .ToDictionary(
                 r => r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId,
-                r => new PoolRating(r.Rating, r.RatingDeviation));
+                r => new PoolRating(r.Rating + combatEloOffset, r.RatingDeviation));
 
         // Query Skip rating
         var skipElo = conn.QueryFirstOrDefault<double?>(
@@ -295,10 +322,11 @@ public static class ExportCommand
             "SELECT CardId, BlindSpotType, Score, PickRate, WinRateDelta FROM BlindSpots WHERE Context = 'overall'")
             .ToDictionary(b => (string)b.CardId);
 
-        // Collect all card IDs
+        // Collect all card IDs (including cards with combat Elo but no pick data, e.g. starter cards)
         var allCardIds = cardWinRates.Keys
             .Union(cardPickRates.Keys)
             .Union(eloRatings.Keys)
+            .Union(combatOverall.Keys)
             .Where(id => id != "SKIP")
             .OrderBy(id => id)
             .ToList();
@@ -332,15 +360,21 @@ public static class ExportCommand
                 bsWinDelta = (double)bs.WinRateDelta;
             }
 
-            var combatElo = combatOverall.TryGetValue(id, out var ce) ? ce.Rating : 0.0;
+            var combatElo = combatOverall.TryGetValue(id, out var ce) ? ce.Rating + combatEloOffset : 0.0;
             var combatRdVal = ce?.RatingDeviation ?? 350.0;
             var cardCombatPools = combatByPool[id]
-                .ToDictionary(r => r.Context, r => new PoolRating(r.Rating, r.RatingDeviation));
+                .ToDictionary(r => r.Context, r => new PoolRating(
+                    r.Rating + contextOffsets.GetValueOrDefault(r.Context, combatEloOffset),
+                    r.RatingDeviation));
+            var cardCombatChars = combatByChar[id]
+                .ToDictionary(r => r.Character.Replace("CHARACTER.", "").ToLower(),
+                    r => new PoolRating(r.Rating + combatEloOffset, r.RatingDeviation));
 
             return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3,
                 blindSpotType, bsScore, bsPickRate, bsWinDelta,
                 CombatElo: combatElo, CombatRd: combatRdVal,
-                CombatByPool: cardCombatPools.Count > 0 ? cardCombatPools : null);
+                CombatByPool: cardCombatPools.Count > 0 ? cardCombatPools : null,
+                CombatByChar: cardCombatChars.Count > 0 ? cardCombatChars : null);
         }).ToList();
 
         // Build ancient stats for mod export
@@ -501,7 +535,8 @@ public static class ExportCommand
             AncientChoices: ancientStats,
             MapIntel: mapIntel,
             EncounterPools: poolRatings,
-            EncounterRatings: encounterRatings);
+            EncounterRatings: encounterRatings,
+            DamageDistributions: damageDistributions);
 
         var options = new JsonSerializerOptions
         {

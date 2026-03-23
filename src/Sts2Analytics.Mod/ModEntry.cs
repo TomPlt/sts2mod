@@ -52,6 +52,28 @@ public class ModEntry
 
         GD.Print($"[SpireOracle] Mod path: {_modPath}");
 
+        // Cloud sync: load config and download latest data
+        CloudSync.LoadConfig(_modPath);
+        if (CloudSync.IsConfigured)
+        {
+            try
+            {
+                // Download latest overlay data (fire and forget — don't block startup)
+                _ = CloudSync.DownloadLatestData(_modPath).ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                        GD.PrintErr($"[SpireOracle] Download failed: {t.Exception?.InnerException?.Message}");
+                    else
+                    {
+                        // Reload data after download
+                        DataLoader.Load(_modPath);
+                        GD.Print("[SpireOracle] Reloaded data after cloud sync");
+                    }
+                });
+            }
+            catch (Exception ex) { GD.PrintErr($"[SpireOracle] Cloud sync error: {ex.Message}"); }
+        }
+
         if (!DataLoader.Load(_modPath))
         {
             GD.PrintErr("[SpireOracle] Data loading failed, overlay disabled.");
@@ -66,7 +88,52 @@ public class ModEntry
         _harmony.PatchAll(typeof(ModEntry).Assembly);
         GD.Print("[SpireOracle] Harmony patches applied.");
 
+        // Watch for new .run files to auto-upload
+        if (CloudSync.IsConfigured)
+            WatchRunFiles();
+
         GD.Print("[SpireOracle] Ready! Press F3 to toggle overlay.");
+    }
+
+    private static FileSystemWatcher? _runWatcher;
+
+    private static void WatchRunFiles()
+    {
+        try
+        {
+            // Find the modded history directory
+            var appData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+            var sts2Dir = Path.Combine(appData, "SlayTheSpire2", "steam");
+            if (!Directory.Exists(sts2Dir)) return;
+
+            // Find first steam ID directory
+            foreach (var steamDir in Directory.GetDirectories(sts2Dir))
+            {
+                var historyPath = Path.Combine(steamDir, "modded", "profile1", "saves", "history");
+                if (!Directory.Exists(historyPath)) continue;
+
+                _runWatcher = new FileSystemWatcher(historyPath, "*.run")
+                {
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
+                };
+                _runWatcher.Created += (_, e) =>
+                {
+                    // Delay slightly to let the game finish writing
+                    var timer = new System.Threading.Timer(_ =>
+                    {
+                        GD.Print($"[SpireOracle] New run detected: {e.Name}");
+                        _ = CloudSync.UploadRunFile(e.FullPath);
+                    }, null, 3000, System.Threading.Timeout.Infinite);
+                };
+                _runWatcher.EnableRaisingEvents = true;
+                GD.Print($"[SpireOracle] Watching for new runs in: {historyPath}");
+                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[SpireOracle] Could not watch run files: {ex.Message}");
+        }
     }
 
     private static void WatchDataFile(string modPath)

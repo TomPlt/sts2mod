@@ -47,16 +47,27 @@ public static class CombatOverlay
         var isFirst = true;
         foreach (var line in lines)
         {
+            if (line == "") { vbox.AddChild(new HSeparator()); continue; }
+
             var label = new Label();
             label.Text = line;
             label.HorizontalAlignment = HorizontalAlignment.Center;
 
             if (isFirst)
             {
-                // Title line (encounter name)
                 label.AddThemeFontSizeOverride("font_size", 22);
                 label.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
                 isFirst = false;
+            }
+            else if (line.Contains("Scale:"))
+            {
+                label.AddThemeFontSizeOverride("font_size", 15);
+                label.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
+            }
+            else if (line.Contains("|"))
+            {
+                label.AddThemeFontSizeOverride("font_size", 14);
+                label.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.6f));
             }
             else
             {

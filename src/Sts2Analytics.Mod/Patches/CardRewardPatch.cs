@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 using HarmonyLib;
@@ -5,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
+using MegaCrit.Sts2.Core.Runs;
 using SpireOracle.Data;
 using SpireOracle.UI;
 
@@ -19,11 +21,15 @@ public static class CardRewardPatch
         IReadOnlyList<CardRewardAlternative> extraOptions)
     {
         if (!ModEntry.OverlayEnabled || !DataLoader.IsLoaded) return;
+        SpireOracle.UI.CombatOverlay.Hide();
 
         try
         {
             var cardRow = __instance.GetNodeOrNull<Control>("UI/CardRow");
             if (cardRow == null) return;
+
+            // Read live deck for combat forecast
+            var (currentDeck, character, actIndex) = ReadLiveDeck();
 
             int overlaysAdded = 0;
             foreach (var child in cardRow.GetChildren())
@@ -33,11 +39,36 @@ public static class CardRewardPatch
                     var cardId = holder.CardModel?.Id.ToString();
                     if (cardId == null) continue;
 
-                    var stats = DataLoader.GetCard(cardId);
+                    // Strip Godot object ID suffix
+                    var spaceIdx = cardId.IndexOf(' ');
+                    if (spaceIdx > 0) cardId = cardId.Substring(0, spaceIdx);
+
+                    // Add upgrade level
+                    var upgradeLevel = holder.CardModel?.CurrentUpgradeLevel ?? 0;
+                    var fullCardId = upgradeLevel > 0 ? $"{cardId}+{upgradeLevel}" : cardId;
+
+                    var stats = DataLoader.GetCard(fullCardId) ?? DataLoader.GetCard(cardId);
                     if (stats == null) continue;
 
+                    GD.Print($"[SpireOracle] Card: {fullCardId} -> elo={stats.Elo:F0} combatElo={stats.CombatElo:F0}");
                     OverlayFactory.AddOverlay(holder, stats, DataLoader.SkipElo);
                     overlaysAdded++;
+
+                    // Add combat forecast if we have deck data
+                    if (currentDeck != null && character != null && actIndex >= 0)
+                    {
+                        try
+                        {
+                            var forecast = CombatSimulator.ForecastCardPick(
+                                currentDeck, fullCardId, character, actIndex);
+                            if (forecast != null)
+                                OverlayFactory.AddForecast(holder, forecast);
+                        }
+                        catch (Exception fex)
+                        {
+                            GD.PrintErr($"[SpireOracle] Forecast error for {fullCardId}: {fex.Message}");
+                        }
+                    }
 
                     // Connect hover signals for detail panel
                     // The hitbox child handles mouse hover, not the holder itself
@@ -134,6 +165,53 @@ public static class CardRewardPatch
         catch (System.Exception ex)
         {
             GD.PrintErr($"[SpireOracle] Error in CardRewardPatch: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Read the current deck from RunManager, returns (cardIds, character, actIndex).
+    /// </summary>
+    private static (List<string>? deck, string? character, int actIndex) ReadLiveDeck()
+    {
+        try
+        {
+            var runManager = RunManager.Instance;
+            if (runManager == null) return (null, null, -1);
+
+            var state = Traverse.Create(runManager).Property("State").GetValue<RunState>();
+            if (state == null) return (null, null, -1);
+
+            var actIndex = state.CurrentActIndex;
+
+            var players = state.Players;
+            if (players == null || players.Count == 0) return (null, null, actIndex);
+            var player = players[0];
+
+            var characterId = player.Character?.ToString() ?? "";
+            var charSpace = characterId.IndexOf(' ');
+            if (charSpace > 0) characterId = characterId.Substring(0, charSpace);
+
+            var deck = player.Deck;
+            if (deck == null) return (null, characterId, actIndex);
+
+            var cardIds = new List<string>();
+            foreach (var card in deck.Cards)
+            {
+                var cardId = card.Id.ToString() ?? "";
+                var cidSpace = cardId.IndexOf(' ');
+                if (cidSpace > 0) cardId = cardId.Substring(0, cidSpace);
+                if (card.CurrentUpgradeLevel > 0)
+                    cardId = $"{cardId}+{card.CurrentUpgradeLevel}";
+                cardIds.Add(cardId);
+            }
+
+            GD.Print($"[SpireOracle] Live deck: {cardIds.Count} cards, {characterId} Act {actIndex + 1}");
+            return (cardIds, characterId, actIndex);
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[SpireOracle] ReadLiveDeck error: {ex.Message}");
+            return (null, null, -1);
         }
     }
 }
