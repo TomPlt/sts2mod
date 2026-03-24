@@ -13,6 +13,16 @@ else
 {
     <h2>Card Ratings</h2>
 
+    <div class="rating-mode-toggle">
+        <button class="@(_ratingMode == RatingMode.Pick ? "active" : "")" @onclick="() => SetRatingMode(RatingMode.Pick)">Pick Elo</button>
+        <button class="@(_ratingMode == RatingMode.Outcome ? "active" : "")" @onclick="() => SetRatingMode(RatingMode.Outcome)">Outcome Elo</button>
+    </div>
+    <p class="dim-text" style="margin-top: -0.5rem; margin-bottom: 1rem; font-size: 0.75rem;">
+        @(_ratingMode == RatingMode.Pick
+            ? "Head-to-head pick preference — which card wins the draft slot."
+            : "Pick preference weighted by run outcome — picks validated by wins rise, bad picks sink.")
+    </p>
+
     @if (_skipRating != null)
     {
         <div class="skip-reference">
@@ -143,8 +153,10 @@ else
     private string? _rarityFilter;
     private string _searchText = "";
     private bool _usingWinRateFallback;
+    private RatingMode _ratingMode = RatingMode.Pick;
 
     enum UpgradeFilter { All, BaseOnly, UpgradedOnly }
+    enum RatingMode { Pick, Outcome }
 
     // Per-act rating lookup: cardId -> (act1, act2, act3)
     private Dictionary<string, ActRatings> _actRatingLookup = new();
@@ -165,6 +177,12 @@ else
     {
         ApplyFilter();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void SetRatingMode(RatingMode mode)
+    {
+        _ratingMode = mode;
+        ApplyFilter();
     }
 
     private void SetActFilter(int? act)
@@ -241,12 +259,16 @@ else
         else
             context = "overall";
 
+        var source = _ratingMode == RatingMode.Outcome
+            ? _data.GetOutcomeRatings(Filter.Player)
+            : _data.GetGlicko2Ratings(Filter.Player);
+
         List<Glicko2RatingResult> ratings;
         if (_actFilter is not null && Filter.Character is null)
         {
             // No per-character filter but act selected: aggregate across all character act contexts
             var actSuffix = $"_ACT{_actFilter}";
-            ratings = _data.GetGlicko2Ratings(Filter.Player)
+            ratings = source
                 .Where(e => e.Context.EndsWith(actSuffix))
                 .GroupBy(e => e.CardId)
                 .Select(g =>
@@ -266,7 +288,7 @@ else
         }
         else
         {
-            ratings = _data.GetGlicko2Ratings(Filter.Player)
+            ratings = source
                 .Where(e => e.Context == context)
                 .OrderByDescending(e => e.Rating)
                 .ToList();
@@ -300,7 +322,11 @@ else
         // Determine act context prefix based on character filter
         var charPrefix = Filter.Character ?? "";
 
-        _actRatingLookup = _data.GetGlicko2Ratings(Filter.Player)
+        var source = _ratingMode == RatingMode.Outcome
+            ? _data.GetOutcomeRatings(Filter.Player)
+            : _data.GetGlicko2Ratings(Filter.Player);
+
+        _actRatingLookup = source
             .Where(e => e.Context.Contains("_ACT"))
             .Where(e => string.IsNullOrEmpty(charPrefix) || e.Context.StartsWith(charPrefix))
             .GroupBy(e => e.CardId)
@@ -559,6 +585,35 @@ else
 
     .show-more:hover {
         color: var(--ember-bright);
+    }
+
+    .rating-mode-toggle {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: var(--gap-md);
+    }
+
+    .rating-mode-toggle button {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .rating-mode-toggle button.active {
+        background: rgba(212, 168, 85, 0.12);
+        border-color: var(--gold);
+        color: var(--gold);
+    }
+
+    .rating-mode-toggle button:hover:not(.active) {
+        border-color: var(--text-dim);
+        color: var(--text);
     }
 
     .filter-note {
