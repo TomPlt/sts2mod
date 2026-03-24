@@ -13,6 +13,8 @@ public static class DataLoader
     private static Dictionary<string, CardStats>? _cards;
     private static double _skipElo;
     private static Dictionary<string, double>? _skipEloByAct;
+    private static double _skipOutcomeElo;
+    private static Dictionary<string, double>? _skipOutcomeEloByAct;
     private static Dictionary<string, AncientStats>? _ancientChoices;
     private static Dictionary<string, MapIntelCharacter>? _mapIntel;
     private static Dictionary<string, RefAct>? _refActs;
@@ -52,6 +54,32 @@ public static class DataLoader
     }
 
     public static Dictionary<string, double>? SkipEloByAct => _skipEloByAct;
+    public static double SkipOutcomeElo => _skipOutcomeElo;
+
+    public static double GetSkipOutcomeElo(string? characterContext = null, int? actIndex = null)
+    {
+        if (_skipOutcomeEloByAct == null) return _skipOutcomeElo;
+
+        if (characterContext != null && actIndex != null)
+        {
+            var key = $"{characterContext.Replace("CHARACTER.", "").ToLower()}_act{actIndex + 1}";
+            if (_skipOutcomeEloByAct.TryGetValue(key, out var elo)) return elo;
+        }
+        if (characterContext != null)
+        {
+            var key = characterContext.Replace("CHARACTER.", "").ToLower();
+            if (_skipOutcomeEloByAct.TryGetValue(key, out var elo)) return elo;
+        }
+        if (actIndex != null)
+        {
+            var actKey = $"act{actIndex + 1}";
+            foreach (var kvp in _skipOutcomeEloByAct)
+            {
+                if (kvp.Key.EndsWith(actKey)) return kvp.Value;
+            }
+        }
+        return _skipOutcomeElo;
+    }
 
     public static bool Load(string modPath)
     {
@@ -75,6 +103,8 @@ public static class DataLoader
 
             _skipElo = data.SkipElo;
             _skipEloByAct = data.SkipEloByAct;
+            _skipOutcomeElo = data.SkipOutcomeElo;
+            _skipOutcomeEloByAct = data.SkipOutcomeEloByAct;
             _cards = new Dictionary<string, CardStats>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var card in data.Cards)

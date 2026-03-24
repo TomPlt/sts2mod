@@ -99,21 +99,24 @@ public static class OverlayFactory
 
         if (stats.OutcomeElo > 0)
         {
-            AddStatRow(vbox, "Rating", $"{stats.OutcomeElo:F0} ±{stats.OutcomeRd:F0}");
-            AddStatRow(vbox, "Pick Elo", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+            AddStatRow(vbox, "Power", $"{stats.OutcomeElo:F0} ±{stats.OutcomeRd:F0}");
+            AddStatRow(vbox, "Popularity", $"{stats.Elo:F0} ±{stats.Rd:F0}");
         }
         else
         {
-            AddStatRow(vbox, "Rating", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+            AddStatRow(vbox, "Power", $"{stats.Elo:F0} ±{stats.Rd:F0}");
         }
+
+        // Popularity by act — right under popularity
+        if (stats.EloAct1 > 0 || stats.EloAct2 > 0 || stats.EloAct3 > 0)
+        {
+            AddStatRow(vbox, "  Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
+            AddStatRow(vbox, "  Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
+            AddStatRow(vbox, "  Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
+        }
+
         if (stats.CombatElo > 0)
             AddStatRow(vbox, "Combat", $"{stats.CombatElo:F0} ±{stats.CombatRd:F0}");
-        AddStatRow(vbox, "Act 1", stats.OutcomeEloAct1 > 0 ? $"{stats.OutcomeEloAct1:F0} ±{stats.OutcomeRdAct1:F0}"
-            : stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
-        AddStatRow(vbox, "Act 2", stats.OutcomeEloAct2 > 0 ? $"{stats.OutcomeEloAct2:F0} ±{stats.OutcomeRdAct2:F0}"
-            : stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
-        AddStatRow(vbox, "Act 3", stats.OutcomeEloAct3 > 0 ? $"{stats.OutcomeEloAct3:F0} ±{stats.OutcomeRdAct3:F0}"
-            : stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
         AddStatRow(vbox, "Pick Rate", $"{stats.PickRate:P1}");
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
@@ -321,7 +324,7 @@ public static class OverlayFactory
         headerLabel.AddThemeColorOverride("font_color", new Color(0.36f, 0.72f, 0.83f));
         vbox.AddChild(headerLabel);
 
-        AddStatRow(vbox, "Deck Elo", $"{forecast.CurrentDeckElo:F0} → {forecast.NewDeckElo:F0}");
+        AddStatRow(vbox, "Deck Power", $"{forecast.CurrentDeckElo:F0} → {forecast.NewDeckElo:F0}");
 
         var eloDeltaStr = forecast.EloDelta >= 0
             ? $"+{forecast.EloDelta:F0}"
@@ -329,7 +332,7 @@ public static class OverlayFactory
         var eloColor = forecast.EloDelta >= 0
             ? new Color(0.3f, 0.85f, 0.3f)
             : new Color(0.95f, 0.3f, 0.3f);
-        AddColoredStatRow(vbox, "Elo Change", eloDeltaStr, eloColor);
+        AddColoredStatRow(vbox, "Power Δ", eloDeltaStr, eloColor);
 
         // Per-pool damage forecasts
         var poolLabels = new[] { ("normal", "Hallway"), ("elite", "Elite"), ("boss", "Boss") };

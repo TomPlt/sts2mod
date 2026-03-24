@@ -27,10 +27,10 @@ public static class DeckViewPatch
 
         try
         {
-            ShowDeckSummary();
-            // Delay badge application — cards aren't populated yet in _EnterTree
+            // Only show summary + badges if F4 toggled on
             if (_showCardElos)
             {
+                ShowDeckSummary();
                 var screen = __instance;
                 var tree = __instance.GetTree();
                 if (tree != null)
@@ -55,11 +55,17 @@ public static class DeckViewPatch
         if (_currentScreen != null && GodotObject.IsInstanceValid(_currentScreen))
         {
             if (_showCardElos)
+            {
+                ShowDeckSummary();
                 AddCardEloBadges(_currentScreen);
+            }
             else
+            {
+                CombatOverlay.Hide();
                 RemoveCardEloBadges(_currentScreen);
+            }
         }
-        DebugLogOverlay.Log($"[SpireOracle] Deck card Elos: {(_showCardElos ? "ON" : "OFF")}");
+        DebugLogOverlay.Log($"[SpireOracle] Deck analytics: {(_showCardElos ? "ON" : "OFF")}");
     }
 
     internal static void ShowDeckSummary()
@@ -91,24 +97,92 @@ public static class DeckViewPatch
             var actIndex = state.CurrentActIndex;
             var actNum = actIndex + 1;
 
-            // Compute deck Elo per pool type for current act
-            var poolTypes = new[] { ("weak", "Easy Hallway"), ("normal", "Hard Hallway"), ("elite", "Elite"), ("boss", "Boss") };
             var lines = new List<string>();
-            lines.Add($"Deck Strength \u2014 Act {actNum}  ({cardIds.Count} cards)");
-            lines.Add("F4 to toggle card ratings");
+            lines.Add($"Deck Analytics \u2014 Act {actNum}  ({cardIds.Count} cards)");
             lines.Add("");
+
+            // --- Rating explanations ---
+            lines.Add("Power (PWR) \u2014 Glicko-2 where picks only count as wins if the run wins.");
+            lines.Add("  Picked+Won \u2192 card beats skipped (1.0). Picked+Lost \u2192 skipped beats card (0.0).");
+            lines.Add("  High Power = picking this card correlates with winning runs.");
+            lines.Add("");
+            lines.Add("Popularity (POP) \u2014 Glicko-2 based on pick/skip preference alone.");
+            lines.Add("  Every pick = win vs skipped cards. Ignores run outcome.");
+            lines.Add("  High Popularity + Low Power = trap card (popular but loses).");
+            lines.Add("");
+            lines.Add("Combat (CMB) \u2014 Glicko-2 based on damage taken in fights.");
+            lines.Add("  Compares deck performance vs encounter pools by percentile.");
+            lines.Add("  High Combat = decks with this card take less damage.");
+            lines.Add("");
+            lines.Add("All ratings: 1500 = average. \u00b1RD = confidence (lower = more certain).");
+            lines.Add("");
+
+            // --- Deck averages ---
+            double sumPower = 0, sumPop = 0, sumCombat = 0;
+            int cntPower = 0, cntPop = 0, cntCombat = 0;
+            string? bestPower = null, worstPower = null;
+            string? bestPop = null, worstPop = null;
+            string? bestCombat = null, worstCombat = null;
+            double maxPower = double.MinValue, minPower = double.MaxValue;
+            double maxPop = double.MinValue, minPop = double.MaxValue;
+            double maxCombat = double.MinValue, minCombat = double.MaxValue;
+            var seen = new HashSet<string>();
+
+            foreach (var cid in cardIds)
+            {
+                if (!seen.Add(cid)) continue;
+                var cs = DataLoader.GetCard(cid);
+                if (cs == null) continue;
+
+                if (cs.OutcomeElo > 0 && cs.OutcomeRd < 250)
+                {
+                    sumPower += cs.OutcomeElo; cntPower++;
+                    if (cs.OutcomeElo > maxPower) { maxPower = cs.OutcomeElo; bestPower = cid; }
+                    if (cs.OutcomeElo < minPower) { minPower = cs.OutcomeElo; worstPower = cid; }
+                }
+                if (cs.Elo > 0 && cs.Rd < 250)
+                {
+                    sumPop += cs.Elo; cntPop++;
+                    if (cs.Elo > maxPop) { maxPop = cs.Elo; bestPop = cid; }
+                    if (cs.Elo < minPop) { minPop = cs.Elo; worstPop = cid; }
+                }
+                if (cs.CombatElo > 0 && cs.CombatRd < 250)
+                {
+                    sumCombat += cs.CombatElo; cntCombat++;
+                    if (cs.CombatElo > maxCombat) { maxCombat = cs.CombatElo; bestCombat = cid; }
+                    if (cs.CombatElo < minCombat) { minCombat = cs.CombatElo; worstCombat = cid; }
+                }
+            }
+
+            var avgPower = cntPower > 0 ? sumPower / cntPower : 0;
+            var avgPop = cntPop > 0 ? sumPop / cntPop : 0;
+            var avgCombat = cntCombat > 0 ? sumCombat / cntCombat : 0;
+
+            if (cntPower > 0) lines.Add($"Avg Power: {avgPower:F0}  |  Avg Popularity: {avgPop:F0}  |  Avg Combat: {avgCombat:F0}");
+            else if (cntPop > 0) lines.Add($"Avg Popularity: {avgPop:F0}  |  Avg Combat: {avgCombat:F0}");
+            lines.Add("");
+
+            // --- Best/worst per category ---
+            if (bestPower != null)
+                lines.Add($"Best Power: {FormatCardName(bestPower)} [{maxPower:F0}]    Worst: {FormatCardName(worstPower!)} [{minPower:F0}]");
+            if (bestPop != null)
+                lines.Add($"Best Popularity: {FormatCardName(bestPop)} [{maxPop:F0}]    Worst: {FormatCardName(worstPop!)} [{minPop:F0}]");
+            if (bestCombat != null)
+                lines.Add($"Best Combat: {FormatCardName(bestCombat)} [{maxCombat:F0}]    Worst: {FormatCardName(worstCombat!)} [{minCombat:F0}]");
+            lines.Add("");
+
+            // --- Combat forecast per pool ---
+            var poolTypes = new[] { ("weak", "Easy Hallway"), ("normal", "Hard Hallway"), ("elite", "Elite"), ("boss", "Boss") };
 
             foreach (var (poolKey, poolLabel) in poolTypes)
             {
                 var poolCtx = $"act{actNum}_{poolKey}";
                 var (poolDeckElo, poolDeckRd) = DeckEloHelper.Compute(cardIds, poolCtx);
 
-                // Get encounter pool Elo
                 var poolRating = DataLoader.GetPoolRating(poolCtx);
                 var oppElo = poolRating?.Elo ?? 1500;
                 var oppRd = poolRating?.Rd ?? 350;
 
-                // Compute expected score and damage
                 var score = DeckEloHelper.GlickoExpectedScore(poolDeckElo, oppElo, oppRd);
                 var dmgResult = DataLoader.GetExpectedDamage(poolCtx, score);
 
@@ -116,29 +190,8 @@ public static class DeckViewPatch
                     ? $"~{dmgResult.Value.Expected:F0} HP ({dmgResult.Value.Low:F0}-{dmgResult.Value.High:F0})"
                     : "?";
 
-                lines.Add($"{poolLabel}: Elo {poolDeckElo:F0} vs {oppElo:F0}  {dmgStr}");
+                lines.Add($"{poolLabel}: {poolDeckElo:F0} vs {oppElo:F0}  {dmgStr}");
             }
-
-            lines.Add("");
-
-            // Best/worst cards for current act overall
-            var overallCtx = $"act{actNum}_normal"; // use normal as representative
-            var seen = new HashSet<string>();
-            string? strongest = null, weakest = null;
-            double maxElo = double.MinValue, minElo = double.MaxValue;
-            foreach (var cid in cardIds)
-            {
-                if (!seen.Add(cid)) continue;
-                var cs = DataLoader.GetCard(cid);
-                if (cs == null || cs.CombatElo <= 0 || cs.CombatRd > 200) continue;
-                if (cs.CombatElo > maxElo) { maxElo = cs.CombatElo; strongest = cid; }
-                if (cs.CombatElo < minElo) { minElo = cs.CombatElo; weakest = cid; }
-            }
-
-            if (strongest != null)
-                lines.Add($"Best: {FormatCardName(strongest)} [{maxElo:F0}]");
-            if (weakest != null)
-                lines.Add($"Worst: {FormatCardName(weakest)} [{minElo:F0}]");
 
             CombatOverlay.Show(lines, 1500, DeckEloHelper.Compute(cardIds).Elo);
         }
@@ -211,7 +264,8 @@ public static class DeckViewPatch
         var existing = holder.GetNodeOrNull("SpireOracleDeckBadge");
         if (existing != null) { holder.RemoveChild(existing); existing.QueueFree(); }
 
-        if (stats.CombatElo <= 0) return;
+        // Need at least one rating to show
+        if (stats.OutcomeElo <= 0 && stats.Elo <= 0 && stats.CombatElo <= 0) return;
 
         var badge = new PanelContainer();
         badge.Name = "SpireOracleDeckBadge";
@@ -236,52 +290,37 @@ public static class DeckViewPatch
         var vbox = new VBoxContainer();
         vbox.AddThemeConstantOverride("separation", 0);
 
-        // Overall combat Elo with label
-        var overallLabel = new Label();
-        overallLabel.Text = $"CMB {stats.CombatElo:F0}";
-        overallLabel.AddThemeFontSizeOverride("font_size", 16);
-        overallLabel.AddThemeColorOverride("font_color", GetEloColor(stats.CombatElo));
-        overallLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        vbox.AddChild(overallLabel);
-
-        // Pick Elo if available
-        if (stats.Elo > 0)
+        // Power (outcome elo) — main rating
+        if (stats.OutcomeElo > 0)
         {
-            var pickLabel = new Label();
-            pickLabel.Text = $"PICK {stats.Elo:F0}";
-            pickLabel.AddThemeFontSizeOverride("font_size", 13);
-            pickLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
-            pickLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            vbox.AddChild(pickLabel);
+            var powerLabel = new Label();
+            powerLabel.Text = $"PWR {stats.OutcomeElo:F0}";
+            powerLabel.AddThemeFontSizeOverride("font_size", 16);
+            powerLabel.AddThemeColorOverride("font_color", GetEloColor(stats.OutcomeElo));
+            powerLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            vbox.AddChild(powerLabel);
         }
 
-        // Per-pool breakdown — only show current act
-        var bp = stats.CombatByPool;
-        if (bp != null)
+        // Popularity (pick elo)
+        if (stats.Elo > 0)
         {
-            var actIdx = DetectActIndex();
-            var act = actIdx + 1;
-            var poolTypes = new[] { ("weak", "W"), ("normal", "N"), ("elite", "E"), ("boss", "B") };
+            var popLabel = new Label();
+            popLabel.Text = $"POP {stats.Elo:F0}";
+            popLabel.AddThemeFontSizeOverride("font_size", 13);
+            popLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
+            popLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            vbox.AddChild(popLabel);
+        }
 
-            var line = "";
-            var hasData = false;
-            foreach (var (pool, abbr) in poolTypes)
-            {
-                var key = $"act{act}_{pool}";
-                if (bp.TryGetValue(key, out var pr) && pr.Elo > 0 && pr.Rd < 300)
-                {
-                    line += $"{abbr}{pr.Elo:F0} ";
-                    hasData = true;
-                }
-            }
-            if (hasData)
-            {
-                var actLabel = new Label();
-                actLabel.Text = line.TrimEnd();
-                actLabel.AddThemeFontSizeOverride("font_size", 12);
-                actLabel.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
-                vbox.AddChild(actLabel);
-            }
+        // Combat
+        if (stats.CombatElo > 0)
+        {
+            var combatLabel = new Label();
+            combatLabel.Text = $"CMB {stats.CombatElo:F0}";
+            combatLabel.AddThemeFontSizeOverride("font_size", 13);
+            combatLabel.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
+            combatLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            vbox.AddChild(combatLabel);
         }
 
         badge.AddChild(vbox);

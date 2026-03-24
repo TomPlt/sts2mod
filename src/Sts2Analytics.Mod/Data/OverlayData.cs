@@ -112,6 +112,8 @@ public record OverlayData(
     [property: JsonPropertyName("skipElo")] double SkipElo,
     [property: JsonPropertyName("skipEloByAct")] Dictionary<string, double>? SkipEloByAct,
     [property: JsonPropertyName("cards")] List<CardStats> Cards,
+    [property: JsonPropertyName("skipOutcomeElo")] double SkipOutcomeElo = 1500,
+    [property: JsonPropertyName("skipOutcomeEloByAct")] Dictionary<string, double>? SkipOutcomeEloByAct = null,
     [property: JsonPropertyName("ancientChoices")] List<AncientStats>? AncientChoices = null,
     [property: JsonPropertyName("mapIntel")] List<MapIntelCharacter>? MapIntel = null,
     [property: JsonPropertyName("encounterPools")] Dictionary<string, PoolRating>? EncounterPools = null,

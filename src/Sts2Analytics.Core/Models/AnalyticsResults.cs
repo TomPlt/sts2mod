@@ -82,6 +82,8 @@ public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,
     Dictionary<string, double> SkipEloByAct,
     List<ModCardStats> Cards,
+    double SkipOutcomeElo = 1500,
+    Dictionary<string, double>? SkipOutcomeEloByAct = null,
     List<ModAncientStats>? AncientChoices = null,
     List<MapIntelCharacter>? MapIntel = null,
     Dictionary<string, PoolRating>? EncounterPools = null,

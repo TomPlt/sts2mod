@@ -110,16 +110,20 @@ public static class CardRewardPatch
                 var skipElo = charContext != null
                     ? DataLoader.GetSkipElo(characterContext: charContext)
                     : DataLoader.SkipElo;
+                // Skip power (outcome) baseline
+                var skipOutcome = charContext != null
+                    ? DataLoader.GetSkipOutcomeElo(characterContext: charContext)
+                    : DataLoader.SkipOutcomeElo;
                 var skipOverall = new Label();
-                skipOverall.Text = $"Skip: {skipElo:F0}";
+                skipOverall.Text = $"Skip — Power: {skipOutcome:F0}  Pop: {skipElo:F0}";
                 skipOverall.AddThemeFontSizeOverride("font_size", 28);
                 skipOverall.AddThemeColorOverride("font_color", Colors.White);
                 container.AddChild(skipOverall);
 
-                // Per-act skip ratings (character-specific)
-                var act1Skip = DataLoader.GetSkipElo(characterContext: charContext, actIndex: 0);
-                var act2Skip = DataLoader.GetSkipElo(characterContext: charContext, actIndex: 1);
-                var act3Skip = DataLoader.GetSkipElo(characterContext: charContext, actIndex: 2);
+                // Per-act skip ratings (character-specific) — show outcome elo
+                var act1Skip = DataLoader.GetSkipOutcomeElo(characterContext: charContext, actIndex: 0);
+                var act2Skip = DataLoader.GetSkipOutcomeElo(characterContext: charContext, actIndex: 1);
+                var act3Skip = DataLoader.GetSkipOutcomeElo(characterContext: charContext, actIndex: 2);
 
                 var skipActs = new Label();
                 skipActs.Text = $"  A1: {act1Skip:F0}  A2: {act2Skip:F0}  A3: {act3Skip:F0}";

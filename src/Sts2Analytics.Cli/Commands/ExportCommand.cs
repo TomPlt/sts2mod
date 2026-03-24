@@ -352,9 +352,12 @@ public static class ExportCommand
                 r => r.CardId.StartsWith("ENC.") ? r.CardId[4..] : r.CardId,
                 r => new PoolRating(r.Rating + combatEloOffset, r.RatingDeviation));
 
-        // Query Skip rating
+        // Query Skip ratings (popularity and outcome)
         var skipElo = conn.QueryFirstOrDefault<double?>(
             "SELECT Rating FROM Glicko2Ratings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
+            ?? 1500.0;
+        var skipOutcomeElo = conn.QueryFirstOrDefault<double?>(
+            "SELECT Rating FROM OutcomeGlicko2Ratings WHERE CardId = 'SKIP' AND Character = 'ALL' AND Context = 'overall'")
             ?? 1500.0;
 
         // Get analytics data
@@ -375,15 +378,22 @@ public static class ExportCommand
             .Where(e => e.Context.Contains("_ACT"))
             .ToLookup(e => e.CardId);
 
-        // Skip Elo per act and per character
+        // Skip Elo per act and per character (popularity)
         var skipEloByAct = new Dictionary<string, double>();
         foreach (var r in allRatings.Where(e => e.CardId == "SKIP"))
         {
             if (r.Context == "overall") continue;
-            // Per-character: context = "CHARACTER.IRONCLAD", key = "ironclad"
-            // Per-character-act: context = "CHARACTER.IRONCLAD_ACT1", key = "ironclad_act1"
             var key = r.Context.Replace("CHARACTER.", "").ToLower();
             skipEloByAct[key] = r.Rating;
+        }
+
+        // Skip outcome Elo per act and per character
+        var skipOutcomeEloByAct = new Dictionary<string, double>();
+        foreach (var r in allOutcomeRatings.Where(e => e.CardId == "SKIP"))
+        {
+            if (r.Context == "overall") continue;
+            var key = r.Context.Replace("CHARACTER.", "").ToLower();
+            skipOutcomeEloByAct[key] = r.Rating;
         }
 
         var blindSpots = conn.Query(
@@ -682,10 +692,12 @@ public static class ExportCommand
             .ToList();
 
         var overlayData = new ModOverlayData(
-            Version: 5,
+            Version: 6,
             ExportedAt: DateTime.UtcNow.ToString("o"),
             SkipElo: skipElo,
             SkipEloByAct: skipEloByAct,
+            SkipOutcomeElo: skipOutcomeElo,
+            SkipOutcomeEloByAct: skipOutcomeEloByAct,
             Cards: cards,
             AncientChoices: ancientStats,
             MapIntel: mapIntel,
