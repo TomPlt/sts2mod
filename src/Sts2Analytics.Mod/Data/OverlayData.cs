@@ -24,7 +24,15 @@ public record CardStats(
     [property: JsonPropertyName("combatElo")] double CombatElo = 0,
     [property: JsonPropertyName("combatRd")] double CombatRd = 350,
     [property: JsonPropertyName("combatByPool")] Dictionary<string, PoolRating>? CombatByPool = null,
-    [property: JsonPropertyName("combatByChar")] Dictionary<string, PoolRating>? CombatByChar = null);
+    [property: JsonPropertyName("combatByChar")] Dictionary<string, PoolRating>? CombatByChar = null,
+    [property: JsonPropertyName("outcomeElo")] double OutcomeElo = 0,
+    [property: JsonPropertyName("outcomeRd")] double OutcomeRd = 350,
+    [property: JsonPropertyName("outcomeEloAct1")] double OutcomeEloAct1 = 0,
+    [property: JsonPropertyName("outcomeRdAct1")] double OutcomeRdAct1 = 350,
+    [property: JsonPropertyName("outcomeEloAct2")] double OutcomeEloAct2 = 0,
+    [property: JsonPropertyName("outcomeRdAct2")] double OutcomeRdAct2 = 350,
+    [property: JsonPropertyName("outcomeEloAct3")] double OutcomeEloAct3 = 0,
+    [property: JsonPropertyName("outcomeRdAct3")] double OutcomeRdAct3 = 350);
 
 public record PoolRating(
     [property: JsonPropertyName("elo")] double Elo,
@@ -85,11 +93,18 @@ public record MapIntelCharacter(
     [property: JsonPropertyName("winRate")] double WinRate = 0,
     [property: JsonPropertyName("acts")] List<MapIntelAct>? Acts = null);
 
+public record PlayerCharWinRate(
+    [property: JsonPropertyName("character")] string Character,
+    [property: JsonPropertyName("runs")] int Runs,
+    [property: JsonPropertyName("wins")] int Wins,
+    [property: JsonPropertyName("winRate")] double WinRate);
+
 public record PlayerRunCount(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("runs")] int Runs,
     [property: JsonPropertyName("wins")] int Wins,
-    [property: JsonPropertyName("winRate")] double WinRate);
+    [property: JsonPropertyName("winRate")] double WinRate,
+    [property: JsonPropertyName("byCharacter")] List<PlayerCharWinRate>? ByCharacter = null);
 
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,

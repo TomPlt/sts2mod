@@ -57,7 +57,11 @@ public record ModCardStats(
     double BlindSpotPickRate = 0, double BlindSpotWinRateDelta = 0,
     double CombatElo = 0, double CombatRd = 350,
     Dictionary<string, PoolRating>? CombatByPool = null,
-    Dictionary<string, PoolRating>? CombatByChar = null);
+    Dictionary<string, PoolRating>? CombatByChar = null,
+    double OutcomeElo = 0, double OutcomeRd = 350,
+    double OutcomeEloAct1 = 0, double OutcomeRdAct1 = 350,
+    double OutcomeEloAct2 = 0, double OutcomeRdAct2 = 350,
+    double OutcomeEloAct3 = 0, double OutcomeRdAct3 = 350);
 
 public record ModAncientStats(
     string ChoiceKey, double Rating, double Rd,

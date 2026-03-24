@@ -21,10 +21,13 @@ public static class OverlayFactory
         eloBadge.Name = "SpireOracleEloBadge";
         eloBadge.AddToGroup(OverlayGroup);
 
+        // Use outcome elo for badge if available, otherwise fall back to pick elo
+        var badgeElo = stats.OutcomeElo > 0 ? stats.OutcomeElo : stats.Elo;
+
         var eloBadgeStyle = new StyleBoxFlat();
-        eloBadgeStyle.BgColor = stats.Elo >= 1650
+        eloBadgeStyle.BgColor = badgeElo >= 1650
             ? new Color(0.83f, 0.33f, 0.16f) // ember #d4552a
-            : stats.Elo >= 1500
+            : badgeElo >= 1500
                 ? new Color(0.14f, 0.19f, 0.27f) // grey #243044
                 : new Color(0.16f, 0.10f, 0.10f); // dark red #2a1a1a
         eloBadgeStyle.CornerRadiusBottomLeft = 4;
@@ -38,7 +41,7 @@ public static class OverlayFactory
         eloBadge.AddThemeStyleboxOverride("panel", eloBadgeStyle);
 
         var eloLabel = new Label();
-        eloLabel.Text = $"{stats.Elo:F0}";
+        eloLabel.Text = $"{badgeElo:F0}";
         eloLabel.AddThemeFontSizeOverride("font_size", 28);
         eloLabel.AddThemeColorOverride("font_color", Colors.White);
         eloBadge.AddChild(eloLabel);
@@ -94,12 +97,23 @@ public static class OverlayFactory
         var vbox = new VBoxContainer();
         vbox.AddThemeConstantOverride("separation", 2);
 
-        AddStatRow(vbox, "Rating", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+        if (stats.OutcomeElo > 0)
+        {
+            AddStatRow(vbox, "Rating", $"{stats.OutcomeElo:F0} ±{stats.OutcomeRd:F0}");
+            AddStatRow(vbox, "Pick Elo", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+        }
+        else
+        {
+            AddStatRow(vbox, "Rating", $"{stats.Elo:F0} ±{stats.Rd:F0}");
+        }
         if (stats.CombatElo > 0)
             AddStatRow(vbox, "Combat", $"{stats.CombatElo:F0} ±{stats.CombatRd:F0}");
-        AddStatRow(vbox, "Act 1", stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
-        AddStatRow(vbox, "Act 2", stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
-        AddStatRow(vbox, "Act 3", stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
+        AddStatRow(vbox, "Act 1", stats.OutcomeEloAct1 > 0 ? $"{stats.OutcomeEloAct1:F0} ±{stats.OutcomeRdAct1:F0}"
+            : stats.EloAct1 > 0 ? $"{stats.EloAct1:F0} ±{stats.RdAct1:F0}" : "—");
+        AddStatRow(vbox, "Act 2", stats.OutcomeEloAct2 > 0 ? $"{stats.OutcomeEloAct2:F0} ±{stats.OutcomeRdAct2:F0}"
+            : stats.EloAct2 > 0 ? $"{stats.EloAct2:F0} ±{stats.RdAct2:F0}" : "—");
+        AddStatRow(vbox, "Act 3", stats.OutcomeEloAct3 > 0 ? $"{stats.OutcomeEloAct3:F0} ±{stats.OutcomeRdAct3:F0}"
+            : stats.EloAct3 > 0 ? $"{stats.EloAct3:F0} ±{stats.RdAct3:F0}" : "—");
         AddStatRow(vbox, "Pick Rate", $"{stats.PickRate:P1}");
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
@@ -257,24 +271,28 @@ public static class OverlayFactory
         vbox.AddThemeConstantOverride("separation", 2);
 
         AddStatRow(vbox, "Overall", $"{stats.Rating:F0} ±{stats.Rd:F0}");
+        AddStatRow(vbox, "Pick Rate", $"{stats.PickRate * 100:F1}%");
+        AddStatRow(vbox, "Games", $"{stats.Games}");
 
         if (charRating != null && charKey != null)
         {
+            var sep = new HSeparator();
+            sep.AddThemeConstantOverride("separation", 6);
+            vbox.AddChild(sep);
+
             var charLabel = char.ToUpper(charKey[0]) + charKey[1..];
             AddColoredStatRow(vbox, charLabel, $"{charRating.Rating:F0} ±{charRating.Rd:F0}",
                 new Color(0.36f, 0.72f, 0.83f));
+            AddStatRow(vbox, $"{charLabel} Games", $"{charRating.Games}");
         }
-
-        AddStatRow(vbox, "Pick Rate", $"{stats.PickRate * 100:F1}%");
-        AddStatRow(vbox, "Games", $"{stats.Games}");
 
         detail.AddChild(vbox);
 
         detail.CustomMinimumSize = new Vector2(260, 0);
-        detail.SetAnchorsPreset(Control.LayoutPreset.CenterTop);
-        detail.GrowHorizontal = Control.GrowDirection.Both;
+        detail.SetAnchorsPreset(Control.LayoutPreset.TopRight);
+        detail.GrowHorizontal = Control.GrowDirection.Begin;
         detail.GrowVertical = Control.GrowDirection.End;
-        detail.Position = new Vector2(-130, -110);
+        detail.Position = new Vector2(-200, -70);
         detail.ZAsRelative = false;
         detail.ZIndex = 200;
         choiceHolder.AddChild(detail);

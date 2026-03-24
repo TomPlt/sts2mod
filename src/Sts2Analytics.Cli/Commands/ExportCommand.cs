@@ -151,6 +151,17 @@ public static class ExportCommand
             var encounterRatings = combatGlicko2.GetEncounterRatings();
             var poolRatings = combatGlicko2.GetPoolRatings();
 
+            // Outcome Glicko-2 ratings (pick preference + run outcome)
+            var outcomeRatingCount = conn.QueryFirstOrDefault<long?>("SELECT COUNT(*) FROM OutcomeGlicko2Ratings") ?? 0;
+            if (outcomeRatingCount == 0)
+            {
+                Console.WriteLine("Processing outcome ratings...");
+                var outcomeEngine = new OutcomeRatingEngine(conn);
+                outcomeEngine.ProcessAllRuns();
+            }
+            var outcomeGlicko2 = new OutcomeGlicko2Analytics(conn);
+            var outcomeRatings = outcomeGlicko2.GetRatings();
+
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode, Source FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
@@ -173,6 +184,7 @@ public static class ExportCommand
             var combatByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
             var encounterByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
             var blindSpotsByPlayer = new Dictionary<string, List<dynamic>>();
+            var outcomeByPlayer = new Dictionary<string, List<Glicko2RatingResult>>();
 
             if (playerSources.Count > 1)
             {
@@ -185,6 +197,7 @@ public static class ExportCommand
                     combatByPlayer[source] = result.Combat;
                     encounterByPlayer[source] = result.Encounter;
                     blindSpotsByPlayer[source] = result.BlindSpots;
+                    outcomeByPlayer[source] = result.Outcome;
                 }
             }
 
@@ -224,7 +237,9 @@ public static class ExportCommand
                 restSiteActBreakdown,
                 combatRatings,
                 encounterRatings,
-                poolRatings
+                poolRatings,
+                outcomeRatings,
+                outcomeRatingsByPlayer = outcomeByPlayer.Count > 0 ? outcomeByPlayer : null
             };
 
             var options = new JsonSerializerOptions
@@ -271,6 +286,18 @@ public static class ExportCommand
         // Process ancient choice ratings
         var ancientEngine = new AncientRatingEngine(conn);
         ancientEngine.ProcessAllRuns();
+
+        // Process outcome ratings (pick preference + run outcome)
+        var outcomeEngine = new OutcomeRatingEngine(conn);
+        outcomeEngine.ProcessAllRuns();
+        var outcomeAnalytics = new OutcomeGlicko2Analytics(conn);
+        var allOutcomeRatings = outcomeAnalytics.GetRatings();
+        var outcomeOverall = allOutcomeRatings
+            .Where(r => r.Context == "overall" && r.Character == "ALL" && r.CardId != "SKIP")
+            .ToDictionary(r => r.CardId);
+        var outcomeActRatings = allOutcomeRatings
+            .Where(r => r.Context.Contains("_ACT"))
+            .ToLookup(r => r.CardId);
 
         // Process combat ratings
         var combatEngine = new CombatRatingEngine(conn);
@@ -411,11 +438,26 @@ public static class ExportCommand
                 .ToDictionary(r => r.Character.Replace("CHARACTER.", "").ToLower(),
                     r => new PoolRating(r.Rating + combatEloOffset, r.RatingDeviation));
 
+            // Outcome ratings
+            var outcomeElo = outcomeOverall.TryGetValue(id, out var oe) ? oe.Rating : 0.0;
+            var outcomeRdVal = oe?.RatingDeviation ?? 350.0;
+            double oAct1 = 0, oRdAct1 = 350, oAct2 = 0, oRdAct2 = 350, oAct3 = 0, oRdAct3 = 350;
+            foreach (var oar in outcomeActRatings[id])
+            {
+                if (oar.Context.EndsWith("_ACT1")) { if (oar.Rating > oAct1) { oAct1 = oar.Rating; oRdAct1 = oar.RatingDeviation; } }
+                else if (oar.Context.EndsWith("_ACT2")) { if (oar.Rating > oAct2) { oAct2 = oar.Rating; oRdAct2 = oar.RatingDeviation; } }
+                else if (oar.Context.EndsWith("_ACT3")) { if (oar.Rating > oAct3) { oAct3 = oar.Rating; oRdAct3 = oar.RatingDeviation; } }
+            }
+
             return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3,
                 blindSpotType, bsScore, bsPickRate, bsWinDelta,
                 CombatElo: combatElo, CombatRd: combatRdVal,
                 CombatByPool: cardCombatPools.Count > 0 ? cardCombatPools : null,
-                CombatByChar: cardCombatChars.Count > 0 ? cardCombatChars : null);
+                CombatByChar: cardCombatChars.Count > 0 ? cardCombatChars : null,
+                OutcomeElo: outcomeElo, OutcomeRd: outcomeRdVal,
+                OutcomeEloAct1: oAct1, OutcomeRdAct1: oRdAct1,
+                OutcomeEloAct2: oAct2, OutcomeRdAct2: oRdAct2,
+                OutcomeEloAct3: oAct3, OutcomeRdAct3: oRdAct3);
         }).ToList();
 
         // Build ancient stats for mod export
@@ -670,7 +712,8 @@ public static class ExportCommand
         List<dynamic> Ancient,
         List<Glicko2RatingResult> Combat,
         List<Glicko2RatingResult> Encounter,
-        List<dynamic> BlindSpots);
+        List<dynamic> BlindSpots,
+        List<Glicko2RatingResult> Outcome);
 
     /// <summary>
     /// Compute all per-player ratings by creating a temp DB with only that player's runs.
@@ -706,7 +749,7 @@ public static class ExportCommand
 
             var runCount = tempConn.QueryFirst<long>("SELECT COUNT(*) FROM Runs");
             if (runCount == 0)
-                return new(new(), new(), new(), new(), new());
+                return new(new(), new(), new(), new(), new(), new());
 
             // Glicko-2 card ratings
             var g2Engine = new Glicko2Engine(tempConn);
@@ -728,6 +771,12 @@ public static class ExportCommand
             var combat = combatAnalytics.GetRatings();
             var encounter = combatAnalytics.GetEncounterRatings();
 
+            // Outcome ratings
+            var outcomeEngine = new OutcomeRatingEngine(tempConn);
+            outcomeEngine.ProcessAllRuns();
+            var outcomeAnalytics = new OutcomeGlicko2Analytics(tempConn);
+            var outcome = outcomeAnalytics.GetRatings();
+
             // Blind spots (uses Glicko2Ratings already in temp DB)
             var blindSpotAnalyzer = new BlindSpotAnalyzer(tempConn);
             blindSpotAnalyzer.AnalyzeAllContexts();
@@ -735,8 +784,8 @@ public static class ExportCommand
                 "SELECT CardId, Context, BlindSpotType, Score, PickRate, ExpectedPickRate, WinRateDelta, GamesAnalyzed FROM BlindSpots")
                 .ToList();
 
-            Console.WriteLine($"  {source}: {runCount} runs, {glicko2.Count} card ratings, {ancient.Count} ancient, {combat.Count} combat, {blindSpots.Count} blind spots");
-            return new(glicko2, ancient, combat, encounter, blindSpots);
+            Console.WriteLine($"  {source}: {runCount} runs, {glicko2.Count} card ratings, {ancient.Count} ancient, {combat.Count} combat, {outcome.Count} outcome, {blindSpots.Count} blind spots");
+            return new(glicko2, ancient, combat, encounter, blindSpots, outcome);
         }
         finally
         {
