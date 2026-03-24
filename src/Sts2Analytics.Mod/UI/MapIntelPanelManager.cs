@@ -13,7 +13,7 @@ public static class MapIntelPanelManager
         _panel = new MapIntelPanel();
         var tree = Engine.GetMainLoop() as SceneTree;
         tree?.Root.AddChild(_panel);
-        GD.Print("[SpireOracle] MapIntelPanel created and added to scene root");
+        DebugLogOverlay.Log("[SpireOracle] MapIntelPanel created and added to scene root");
     }
 
     private static bool IsInstanceValid(GodotObject obj)

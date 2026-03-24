@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Godot;
+using SpireOracle.UI;
 using HttpClient = System.Net.Http.HttpClient;
 using HttpRequestMessage = System.Net.Http.HttpRequestMessage;
 using HttpMethod = System.Net.Http.HttpMethod;
@@ -34,7 +35,7 @@ public static class CloudSync
             var configPath = Path.Combine(modPath, "config.json");
             if (!File.Exists(configPath))
             {
-                GD.Print("[SpireOracle] No config.json found — cloud sync disabled");
+                DebugLogOverlay.Log("[SpireOracle] No config.json found — cloud sync disabled");
                 return;
             }
 
@@ -43,7 +44,7 @@ public static class CloudSync
 
             if (_config == null || string.IsNullOrEmpty(_config.GithubToken))
             {
-                GD.Print("[SpireOracle] config.json missing githubToken — cloud sync disabled");
+                DebugLogOverlay.Log("[SpireOracle] config.json missing githubToken — cloud sync disabled");
                 _config = null;
                 return;
             }
@@ -53,11 +54,11 @@ public static class CloudSync
                 new AuthenticationHeaderValue("Bearer", _config.GithubToken);
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("SpireOracle/1.0");
 
-            GD.Print($"[SpireOracle] Cloud sync configured for player: {_config.PlayerName}");
+            DebugLogOverlay.Log($"[SpireOracle] Cloud sync configured for player: {_config.PlayerName}");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Failed to load config.json: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Failed to load config.json: {ex.Message}");
         }
     }
 
@@ -70,7 +71,7 @@ public static class CloudSync
 
         try
         {
-            GD.Print("[SpireOracle] Downloading latest overlay data...");
+            DebugLogOverlay.Log("[SpireOracle] Downloading latest overlay data...");
 
             // Get the release asset URL via GitHub API
             var releaseUrl = $"https://api.github.com/repos/{DataRepo}/releases/tags/latest";
@@ -89,8 +90,22 @@ public static class CloudSync
 
             if (downloadUrl == null)
             {
-                GD.Print("[SpireOracle] No overlay_data.json found in latest release");
+                DebugLogOverlay.Log("[SpireOracle] No overlay_data.json found in latest release");
                 return;
+            }
+
+            // Check if the release is newer than what we have locally
+            var outputPath = Path.Combine(modPath, "overlay_data.json");
+            var releaseUpdatedAt = release.TryGetProperty("published_at", out var pub)
+                ? pub.GetString() : null;
+            if (releaseUpdatedAt != null && File.Exists(outputPath))
+            {
+                var localModified = File.GetLastWriteTimeUtc(outputPath);
+                if (DateTime.TryParse(releaseUpdatedAt, out var releaseDate) && releaseDate < localModified)
+                {
+                    DebugLogOverlay.Log("[SpireOracle] Local overlay data is newer than release, skipping download");
+                    return;
+                }
             }
 
             // Download the asset
@@ -100,14 +115,13 @@ public static class CloudSync
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadAsStringAsync();
-            var outputPath = Path.Combine(modPath, "overlay_data.json");
             File.WriteAllText(outputPath, data);
 
-            GD.Print($"[SpireOracle] Downloaded overlay data ({data.Length / 1024} KB)");
+            DebugLogOverlay.Log($"[SpireOracle] Downloaded overlay data ({data.Length / 1024} KB)");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Download failed: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Download failed: {ex.Message}");
         }
     }
 
@@ -151,13 +165,13 @@ public static class CloudSync
             var response = await _http.PutAsync(apiUrl, httpContent);
 
             if (response.IsSuccessStatusCode)
-                GD.Print($"[SpireOracle] Uploaded {fileName}");
+                DebugLogOverlay.Log($"[SpireOracle] Uploaded {fileName}");
             else
-                GD.PrintErr($"[SpireOracle] Upload failed: {response.StatusCode}");
+                DebugLogOverlay.LogErr($"[SpireOracle] Upload failed: {response.StatusCode}");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Upload error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Upload error: {ex.Message}");
         }
     }
 }

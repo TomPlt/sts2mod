@@ -16,6 +16,14 @@ public static class InputPatch
     {
         if (inputEvent is not InputEventKey keyEvent) return;
         if (!keyEvent.Pressed || keyEvent.Echo) return;
+
+        // Debug log works even when data isn't loaded
+        if (keyEvent.Keycode == Key.F5)
+        {
+            DebugLogOverlay.Toggle();
+            return;
+        }
+
         if (!DataLoader.IsLoaded) return;
 
         if (keyEvent.Keycode == Key.F4)
@@ -32,12 +40,12 @@ public static class InputPatch
         if (isVisible)
         {
             MapIntelPanelManager.Hide();
-            GD.Print("[SpireOracle] Map intel hidden");
+            DebugLogOverlay.Log("[SpireOracle] Map intel hidden");
         }
         else
         {
             var (character, actIndex, actName) = DetectContext();
-            GD.Print($"[SpireOracle] Showing map intel: {character} Act {actIndex + 1} ({actName})");
+            DebugLogOverlay.Log($"[SpireOracle] Showing map intel: {character} Act {actIndex + 1} ({actName})");
             MapIntelPanelManager.Show(character, actIndex, actName);
         }
     }
@@ -81,7 +89,7 @@ public static class InputPatch
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] DetectContext error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] DetectContext error: {ex.Message}");
         }
 
         var characters = DataLoader.GetMapIntelCharacters();

@@ -45,7 +45,7 @@ public static class DeckViewPatch
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] DeckViewPatch error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] DeckViewPatch error: {ex.Message}");
         }
     }
 
@@ -59,7 +59,7 @@ public static class DeckViewPatch
             else
                 RemoveCardEloBadges(_currentScreen);
         }
-        GD.Print($"[SpireOracle] Deck card Elos: {(_showCardElos ? "ON" : "OFF")}");
+        DebugLogOverlay.Log($"[SpireOracle] Deck card Elos: {(_showCardElos ? "ON" : "OFF")}");
     }
 
     internal static void ShowDeckSummary()
@@ -144,7 +144,7 @@ public static class DeckViewPatch
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] DeckView summary error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] DeckView summary error: {ex.Message}");
         }
     }
 

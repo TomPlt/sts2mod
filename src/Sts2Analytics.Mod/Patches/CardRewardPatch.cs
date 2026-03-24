@@ -50,7 +50,7 @@ public static class CardRewardPatch
                     var stats = DataLoader.GetCard(fullCardId) ?? DataLoader.GetCard(cardId);
                     if (stats == null) continue;
 
-                    GD.Print($"[SpireOracle] Card: {fullCardId} -> elo={stats.Elo:F0} combatElo={stats.CombatElo:F0}");
+                    DebugLogOverlay.Log($"[SpireOracle] Card: {fullCardId} -> elo={stats.Elo:F0} combatElo={stats.CombatElo:F0}");
                     OverlayFactory.AddOverlay(holder, stats, DataLoader.SkipElo);
                     overlaysAdded++;
 
@@ -66,7 +66,7 @@ public static class CardRewardPatch
                         }
                         catch (Exception fex)
                         {
-                            GD.PrintErr($"[SpireOracle] Forecast error for {fullCardId}: {fex.Message}");
+                            DebugLogOverlay.LogErr($"[SpireOracle] Forecast error for {fullCardId}: {fex.Message}");
                         }
                     }
 
@@ -159,7 +159,7 @@ public static class CardRewardPatch
                 dashBtn.AddThemeStyleboxOverride("hover", btnHover);
                 dashBtn.Pressed += () =>
                 {
-                    OS.ShellOpen("http://localhost:5202/elo");
+                    OS.ShellOpen("https://tomplt.github.io/sts2mod/");
                 };
                 container.AddChild(dashBtn);
 
@@ -168,7 +168,7 @@ public static class CardRewardPatch
         }
         catch (System.Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Error in CardRewardPatch: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Error in CardRewardPatch: {ex.Message}");
         }
     }
 
@@ -209,12 +209,12 @@ public static class CardRewardPatch
                 cardIds.Add(cardId);
             }
 
-            GD.Print($"[SpireOracle] Live deck: {cardIds.Count} cards, {characterId} Act {actIndex + 1}");
+            DebugLogOverlay.Log($"[SpireOracle] Live deck: {cardIds.Count} cards, {characterId} Act {actIndex + 1}");
             return (cardIds, characterId, actIndex);
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] ReadLiveDeck error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] ReadLiveDeck error: {ex.Message}");
             return (null, null, -1);
         }
     }

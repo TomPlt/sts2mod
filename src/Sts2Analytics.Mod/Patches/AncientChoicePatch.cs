@@ -44,7 +44,7 @@ public static class AncientChoicePatch
             // Detect current character for per-character ratings
             var character = DetectCharacter();
 
-            GD.Print($"[SpireOracle] Ancient overlay: {choiceKey} = {stats.Rating:F0} (char={character ?? "none"})");
+            DebugLogOverlay.Log($"[SpireOracle] Ancient overlay: {choiceKey} = {stats.Rating:F0} (char={character ?? "none"})");
             OverlayFactory.AddAncientOverlay(__instance, stats, character);
 
             // Wire up hover to show/hide detail panel
@@ -55,7 +55,7 @@ public static class AncientChoicePatch
         }
         catch (System.Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Error in AncientChoicePatch: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Error in AncientChoicePatch: {ex.Message}");
         }
     }
 

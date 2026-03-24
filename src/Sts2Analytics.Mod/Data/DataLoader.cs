@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Godot;
+using SpireOracle.UI;
 
 namespace SpireOracle.Data;
 
@@ -59,7 +60,7 @@ public static class DataLoader
             var filePath = Path.Combine(modPath, "overlay_data.json");
             if (!File.Exists(filePath))
             {
-                GD.PrintErr($"[SpireOracle] overlay_data.json not found at: {filePath}");
+                DebugLogOverlay.LogErr($"[SpireOracle] overlay_data.json not found at: {filePath}");
                 return false;
             }
 
@@ -68,7 +69,7 @@ public static class DataLoader
 
             if (data == null || data.Cards == null)
             {
-                GD.PrintErr("[SpireOracle] Failed to deserialize overlay_data.json");
+                DebugLogOverlay.LogErr("[SpireOracle] Failed to deserialize overlay_data.json");
                 return false;
             }
 
@@ -84,7 +85,7 @@ public static class DataLoader
                 }
             }
 
-            GD.Print($"[SpireOracle] Loaded {_cards.Count} cards, skip Elo = {_skipElo:F0}");
+            DebugLogOverlay.Log($"[SpireOracle] Loaded {_cards.Count} cards, skip Elo = {_skipElo:F0}");
 
             _ancientChoices = new Dictionary<string, AncientStats>(StringComparer.OrdinalIgnoreCase);
             if (data.AncientChoices != null)
@@ -95,7 +96,7 @@ public static class DataLoader
                         _ancientChoices[ac.ChoiceKey] = ac;
                 }
             }
-            GD.Print($"[SpireOracle] Loaded {_ancientChoices.Count} ancient choices");
+            DebugLogOverlay.Log($"[SpireOracle] Loaded {_ancientChoices.Count} ancient choices");
 
             _mapIntel = new Dictionary<string, MapIntelCharacter>(StringComparer.OrdinalIgnoreCase);
             if (data.MapIntel != null)
@@ -106,13 +107,13 @@ public static class DataLoader
                         _mapIntel[mic.Character] = mic;
                 }
             }
-            GD.Print($"[SpireOracle] Loaded map intel for {_mapIntel.Count} characters");
+            DebugLogOverlay.Log($"[SpireOracle] Loaded map intel for {_mapIntel.Count} characters");
 
             _encounterPools = data.EncounterPools ?? new Dictionary<string, PoolRating>();
             _encounterRatings = data.EncounterRatings ?? new Dictionary<string, PoolRating>();
             _damageDistributions = data.DamageDistributions ?? new Dictionary<string, List<int>>();
             _playerRunCounts = data.PlayerRunCounts ?? new List<PlayerRunCount>();
-            GD.Print($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings, {_damageDistributions.Count} damage distributions, {_playerRunCounts.Count} players");
+            DebugLogOverlay.Log($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings, {_damageDistributions.Count} damage distributions, {_playerRunCounts.Count} players");
 
             // Load reference data (events, encounters per act)
             _refActs = new Dictionary<string, RefAct>(StringComparer.OrdinalIgnoreCase);
@@ -130,23 +131,23 @@ public static class DataLoader
                             _refActs[act.Name] = act;
                     }
                     _sharedEvents = refData?.SharedEvents ?? new List<RefEvent>();
-                    GD.Print($"[SpireOracle] Loaded reference data: {_refActs.Count} acts, {_sharedEvents.Count} shared events");
+                    DebugLogOverlay.Log($"[SpireOracle] Loaded reference data: {_refActs.Count} acts, {_sharedEvents.Count} shared events");
                 }
                 catch (Exception refEx)
                 {
-                    GD.PrintErr($"[SpireOracle] Error loading reference data: {refEx.Message}");
+                    DebugLogOverlay.LogErr($"[SpireOracle] Error loading reference data: {refEx.Message}");
                 }
             }
             else
             {
-                GD.Print("[SpireOracle] sts2_reference.json not found, events will not be shown");
+                DebugLogOverlay.Log("[SpireOracle] sts2_reference.json not found, events will not be shown");
             }
 
             return true;
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] Error loading data: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] Error loading data: {ex.Message}");
             return false;
         }
     }

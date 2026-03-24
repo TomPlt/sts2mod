@@ -94,11 +94,11 @@ public static class CombatPatch
             CombatOverlay.Show(lines, oppElo, deckElo);
 
             var expLog = dmgResult?.Expected;
-            GD.Print($"[SpireOracle] Combat: {encounterId} score={score:F2} exp={expLog:F0} (enc={encRating?.Elo:F0}, pool={poolRating?.Elo:F0}, deck={deckElo:F0})");
+            DebugLogOverlay.Log($"[SpireOracle] Combat: {encounterId} score={score:F2} exp={expLog:F0} (enc={encRating?.Elo:F0}, pool={poolRating?.Elo:F0}, deck={deckElo:F0})");
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] CombatPatch error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] CombatPatch error: {ex.Message}");
         }
     }
 

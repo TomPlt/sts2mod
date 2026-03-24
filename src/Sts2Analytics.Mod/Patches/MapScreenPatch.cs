@@ -21,12 +21,12 @@ public static class MapScreenOpenPatch
         {
             // Refresh context when map opens (act may have changed), only if panel already visible
             var (character, actIndex, actName) = InputPatch.DetectContext();
-            GD.Print($"[SpireOracle] Map opened, refreshing intel: {character} Act {actIndex + 1} ({actName})");
+            DebugLogOverlay.Log($"[SpireOracle] Map opened, refreshing intel: {character} Act {actIndex + 1} ({actName})");
             MapIntelPanelManager.Show(character, actIndex, actName);
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"[SpireOracle] MapScreenOpenPatch error: {ex.Message}");
+            DebugLogOverlay.LogErr($"[SpireOracle] MapScreenOpenPatch error: {ex.Message}");
         }
     }
 }

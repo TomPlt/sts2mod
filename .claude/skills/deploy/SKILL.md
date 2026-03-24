@@ -11,6 +11,15 @@ set -e
 export PATH="$HOME/.dotnet:$PATH"
 cd /home/tom/projects/sts2mod
 
+GAME_DIR="/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle"
+
+# Fail fast if game is running (DLL locked)
+if ! cp --no-clobber /dev/null "$GAME_DIR/.deploy_test" 2>/dev/null; then
+    echo "ERROR: Cannot write to game directory. Is STS2 running?" >&2
+    exit 1
+fi
+rm -f "$GAME_DIR/.deploy_test"
+
 echo "=== Building mod ==="
 dotnet build src/Sts2Analytics.Mod -c Release
 
@@ -33,10 +42,11 @@ dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOr
 echo "=== Deploying to game ==="
 cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/
 cp data/reference/sts2_reference.json mods/SpireOracle/
-cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json mods/SpireOracle/config.json "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
+cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json mods/SpireOracle/config.json "$GAME_DIR/"
 
 echo "=== Done ==="
-ls "/mnt/c/Program Files (x86)/Steam/steamapps/common/Slay the Spire 2/mods/SpireOracle/"
+ls "$GAME_DIR/"
 ```
 
 If the copy fails with "Permission denied", tell the user to close STS2 first and try `/deploy` again.
+When the user asks to "redeploy" without changes, still run the FULL script above — never skip the export step.
