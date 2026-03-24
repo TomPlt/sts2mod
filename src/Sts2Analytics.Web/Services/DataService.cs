@@ -48,6 +48,7 @@ public class ExportData
     public Dictionary<string, List<BlindSpotExport>>? BlindSpotsByPlayer { get; set; }
     public List<Glicko2RatingResult> OutcomeRatings { get; set; } = [];
     public Dictionary<string, List<Glicko2RatingResult>>? OutcomeRatingsByPlayer { get; set; }
+    public List<CardRatingHistoryEntry> CardRatingHistory { get; set; } = [];
 
     public List<Glicko2RatingResult> GetGlicko2Ratings(string? player)
     {
@@ -185,6 +186,17 @@ public class AncientRatingExport
     public double Rating { get; set; }
     public double RatingDeviation { get; set; }
     public int GamesPlayed { get; set; }
+}
+
+public class CardRatingHistoryEntry
+{
+    public string CardId { get; set; } = "";
+    public string Metric { get; set; } = "";
+    public double Rating { get; set; }
+    public double Rd { get; set; }
+    public string Timestamp { get; set; } = "";
+    public long RunId { get; set; }
+    public string Source { get; set; } = "";
 }
 
 public class DataService

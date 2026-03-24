@@ -162,6 +162,56 @@ public static class ExportCommand
             var outcomeGlicko2 = new OutcomeGlicko2Analytics(conn);
             var outcomeRatings = outcomeGlicko2.GetRatings();
 
+            // Card rating history (pick, outcome, combat — overall context only, last 200 runs)
+            var recentRunIds = conn.Query<long>(
+                "SELECT Id FROM Runs ORDER BY Id DESC LIMIT 200").ToList();
+            var runIdSet = recentRunIds.Count > 0 ? string.Join(",", recentRunIds) : "0";
+
+            var cardRatingHistory = conn.Query($"""
+                SELECT gr.CardId, 'pick' AS Metric, gh.RatingAfter AS Rating, gh.RdAfter AS Rd,
+                       gh.Timestamp, gh.RunId, r.Source
+                FROM Glicko2History gh
+                JOIN Glicko2Ratings gr ON gh.Glicko2RatingId = gr.Id
+                JOIN Runs r ON gh.RunId = r.Id
+                WHERE gr.Context = 'overall' AND gr.Character = 'ALL'
+                  AND gh.RunId IN ({runIdSet})
+                UNION ALL
+                SELECT orr.CardId, 'outcome' AS Metric, oh.RatingAfter AS Rating, oh.RdAfter AS Rd,
+                       oh.Timestamp, oh.RunId, r.Source
+                FROM OutcomeGlicko2History oh
+                JOIN OutcomeGlicko2Ratings orr ON oh.OutcomeGlicko2RatingId = orr.Id
+                JOIN Runs r ON oh.RunId = r.Id
+                WHERE orr.Context = 'overall' AND orr.Character = 'ALL'
+                  AND oh.RunId IN ({runIdSet})
+                UNION ALL
+                SELECT cr.CardId, 'combat' AS Metric, ch.RatingAfter AS Rating, ch.RdAfter AS Rd,
+                       ch.Timestamp, ch.RunId, r.Source
+                FROM CombatGlicko2History ch
+                JOIN CombatGlicko2Ratings cr ON ch.CombatGlicko2RatingId = cr.Id
+                JOIN Runs r ON ch.RunId = r.Id
+                WHERE cr.Context = 'overall' AND cr.Character = 'ALL'
+                  AND ch.RunId IN ({runIdSet})
+                ORDER BY RunId ASC
+                """).Select(r => new
+            {
+                cardId = (string)r.CardId,
+                metric = (string)r.Metric,
+                rating = (double)r.Rating,
+                rd = (double)r.Rd,
+                timestamp = (string)r.Timestamp,
+                runId = (long)r.RunId,
+                source = (string)r.Source
+            }).ToList();
+
+            // Deduplicate: keep only last entry per card+metric+run (a card can update multiple times per run)
+            cardRatingHistory = cardRatingHistory
+                .GroupBy(h => (h.cardId, h.metric, h.runId))
+                .Select(g => g.Last())
+                .OrderBy(h => h.runId)
+                .ToList();
+
+            Console.WriteLine($"  {cardRatingHistory.Count} card history data points");
+
             // Runs list
             var runs = conn.Query("SELECT Id, Character, Win, Ascension, Seed, GameMode, Source FROM Runs ORDER BY Id").ToList();
             var runsList = runs.Select(r => new
@@ -239,7 +289,8 @@ public static class ExportCommand
                 encounterRatings,
                 poolRatings,
                 outcomeRatings,
-                outcomeRatingsByPlayer = outcomeByPlayer.Count > 0 ? outcomeByPlayer : null
+                outcomeRatingsByPlayer = outcomeByPlayer.Count > 0 ? outcomeByPlayer : null,
+                cardRatingHistory
             };
 
             var options = new JsonSerializerOptions

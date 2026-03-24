@@ -1,0 +1,349 @@
+@page "/card-history"
+@inject DataService Data
+@inject FilterState Filter
+@implements IDisposable
+
+<PageTitle>Spire Oracle — Card History</PageTitle>
+
+@if (_loading)
+{
+    <p class="dim-text">Consulting the oracle...</p>
+}
+else
+{
+    <h2>Card History</h2>
+    <p class="dim-text" style="margin-top: -1.5rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        How card ratings evolve over time. Select cards and metrics to compare.
+    </p>
+
+    <div class="controls-row">
+        <div class="card-selector">
+            <input type="text" class="search-input" placeholder="Search cards..."
+                   @bind="_searchText" @bind:event="oninput" />
+            @if (!string.IsNullOrEmpty(_searchText) && _searchResults.Count > 0)
+            {
+                <div class="search-dropdown">
+                    @foreach (var card in _searchResults.Take(8))
+                    {
+                        <div class="search-option @(_selectedCards.Contains(card) ? "selected" : "")"
+                             @onclick="() => ToggleCard(card)">
+                            @FormatName(card)
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <span class="filter-divider"></span>
+
+        <label class="metric-toggle">
+            <input type="checkbox" checked="@_showPick" @onchange="e => { _showPick = (bool)e.Value!; BuildChart(); }" />
+            <span class="metric-label pick">Pick Elo</span>
+        </label>
+        <label class="metric-toggle">
+            <input type="checkbox" checked="@_showOutcome" @onchange="e => { _showOutcome = (bool)e.Value!; BuildChart(); }" />
+            <span class="metric-label outcome">Outcome Elo</span>
+        </label>
+        <label class="metric-toggle">
+            <input type="checkbox" checked="@_showCombat" @onchange="e => { _showCombat = (bool)e.Value!; BuildChart(); }" />
+            <span class="metric-label combat">Combat Elo</span>
+        </label>
+    </div>
+
+    <div class="selected-cards">
+        @foreach (var card in _selectedCards)
+        {
+            <span class="card-chip" @onclick="() => RemoveCard(card)">
+                @FormatName(card) <span class="chip-x">&times;</span>
+            </span>
+        }
+    </div>
+
+    @if (_chartSeries.Count > 0)
+    {
+        <div class="panel" style="padding: 1rem;">
+            <RadzenChart Style="height: 400px;">
+                @foreach (var series in _chartSeries)
+                {
+                    <RadzenLineSeries Data="@series.Points" CategoryProperty="Label"
+                        ValueProperty="Rating" Title="@series.Title"
+                        Stroke="@series.Color" StrokeWidth="2"
+                        LineType="@series.LineType" />
+                }
+                <RadzenCategoryAxis>
+                    <RadzenGridLines Visible="false" />
+                </RadzenCategoryAxis>
+                <RadzenValueAxis FormatString="{0:F0}">
+                    <RadzenGridLines Visible="true" />
+                </RadzenValueAxis>
+                <RadzenLegend Position="LegendPosition.Bottom" />
+            </RadzenChart>
+        </div>
+    }
+    else if (_selectedCards.Count > 0)
+    {
+        <div class="panel" style="padding: 2rem; text-align: center;">
+            <p class="dim-text">No history data found for the selected cards and metrics.</p>
+        </div>
+    }
+    else
+    {
+        <div class="panel" style="padding: 2rem; text-align: center;">
+            <p class="dim-text">Search and select cards above to see their rating history.</p>
+        </div>
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private ExportData? _data;
+    private string _searchText = "";
+    private List<string> _searchResults = [];
+    private List<string> _selectedCards = [];
+    private HashSet<string> _availableCards = [];
+    private bool _showPick = true;
+    private bool _showOutcome = true;
+    private bool _showCombat = false;
+    private List<ChartSeries> _chartSeries = [];
+
+    // Card colors for up to 5 cards
+    private static readonly string[] CardColors = ["#d4a855", "#5bb8d4", "#f07040", "#8caa8c", "#c490e4"];
+
+    record ChartPoint(string Label, double Rating);
+    record ChartSeries(string Title, string Color, LineType LineType, List<ChartPoint> Points);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = await Data.GetDataAsync();
+        Filter.OnChange += OnFilterChanged;
+
+        _availableCards = _data.CardRatingHistory
+            .Select(h => h.CardId)
+            .Distinct()
+            .ToHashSet();
+
+        _loading = false;
+    }
+
+    private void OnFilterChanged()
+    {
+        BuildChart();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleCard(string cardId)
+    {
+        if (_selectedCards.Contains(cardId))
+            _selectedCards.Remove(cardId);
+        else if (_selectedCards.Count < 5)
+            _selectedCards.Add(cardId);
+
+        _searchText = "";
+        _searchResults = [];
+        BuildChart();
+    }
+
+    private void RemoveCard(string cardId)
+    {
+        _selectedCards.Remove(cardId);
+        BuildChart();
+    }
+
+    private List<string> _lastSearchText = [];
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(_searchText) && _searchText.Length >= 2)
+        {
+            var search = _searchText.ToLowerInvariant();
+            _searchResults = _availableCards
+                .Where(c => FormatName(c).Contains(search, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(c => FormatName(c))
+                .Take(20)
+                .ToList();
+        }
+        else
+        {
+            _searchResults = [];
+        }
+    }
+
+    private void BuildChart()
+    {
+        _chartSeries = [];
+        if (_data is null || _selectedCards.Count == 0) return;
+
+        var history = _data.CardRatingHistory.AsEnumerable();
+
+        // Apply player filter
+        if (Filter.Player != null)
+            history = history.Where(h => h.Source == Filter.Player);
+
+        var historyList = history.ToList();
+
+        for (int i = 0; i < _selectedCards.Count; i++)
+        {
+            var cardId = _selectedCards[i];
+            var color = CardColors[i % CardColors.Length];
+            var cardHistory = historyList.Where(h => h.CardId == cardId).ToList();
+
+            if (_showPick)
+                AddSeries(cardHistory, cardId, "pick", "Pick", color, LineType.Solid);
+            if (_showOutcome)
+                AddSeries(cardHistory, cardId, "outcome", "Outcome", color, LineType.Dashed);
+            if (_showCombat)
+                AddSeries(cardHistory, cardId, "combat", "Combat", color, LineType.Dotted);
+        }
+    }
+
+    private void AddSeries(List<CardRatingHistoryEntry> cardHistory, string cardId,
+        string metric, string metricLabel, string color, LineType lineType)
+    {
+        var points = cardHistory
+            .Where(h => h.Metric == metric)
+            .OrderBy(h => h.RunId)
+            .Select(h =>
+            {
+                var date = DateTime.TryParse(h.Timestamp, out var dt) ? dt.ToString("MMM dd") : h.RunId.ToString();
+                return new ChartPoint(date, h.Rating);
+            })
+            .ToList();
+
+        if (points.Count > 0)
+        {
+            var title = _selectedCards.Count > 1
+                ? $"{FormatName(cardId)} — {metricLabel}"
+                : metricLabel;
+            _chartSeries.Add(new ChartSeries(title, color, lineType, points));
+        }
+    }
+
+    public void Dispose()
+    {
+        Filter.OnChange -= OnFilterChanged;
+    }
+
+    static string FormatName(string id)
+    {
+        var plusIdx = id.IndexOf('+');
+        var suffix = "";
+        var baseId = id;
+        if (plusIdx >= 0)
+        {
+            suffix = " " + id[plusIdx..];
+            baseId = id[..plusIdx];
+        }
+        var dot = baseId.IndexOf('.');
+        var name = dot >= 0 ? baseId[(dot + 1)..] : baseId;
+        return string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w[1..].ToLower() : w)) + suffix;
+    }
+}
+
+<style>
+    .controls-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: var(--gap-md);
+        flex-wrap: wrap;
+    }
+
+    .card-selector {
+        position: relative;
+    }
+
+    .search-input {
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 4px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-primary);
+        font-family: 'Outfit', sans-serif;
+        width: 220px;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--ember); }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--void-2);
+        border: 1px solid var(--surface-border);
+        border-radius: 0 0 4px 4px;
+        max-height: 240px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .search-option {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        color: var(--text);
+        transition: background 0.1s;
+    }
+
+    .search-option:hover { background: rgba(212, 168, 85, 0.1); }
+    .search-option.selected { color: var(--gold); }
+
+    .filter-divider {
+        width: 1px;
+        height: 1.2rem;
+        background: var(--surface-border);
+        margin: 0 0.25rem;
+    }
+
+    .metric-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+
+    .metric-toggle input[type="checkbox"] {
+        accent-color: var(--ember);
+    }
+
+    .metric-label.pick { color: var(--text); }
+    .metric-label.outcome { color: #5bb8d4; }
+    .metric-label.combat { color: #f07040; }
+
+    .selected-cards {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: var(--gap-md);
+        flex-wrap: wrap;
+        min-height: 1.6rem;
+    }
+
+    .card-chip {
+        background: rgba(212, 168, 85, 0.12);
+        border: 1px solid rgba(212, 168, 85, 0.3);
+        border-radius: 12px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+        color: var(--gold);
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .card-chip:hover {
+        background: rgba(212, 168, 85, 0.2);
+        border-color: var(--gold);
+    }
+
+    .chip-x {
+        font-size: 0.9rem;
+        opacity: 0.6;
+    }
+</style>
