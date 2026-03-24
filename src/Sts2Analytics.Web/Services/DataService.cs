@@ -46,6 +46,8 @@ public class ExportData
     public Dictionary<string, List<Glicko2RatingResult>>? CombatRatingsByPlayer { get; set; }
     public Dictionary<string, List<Glicko2RatingResult>>? EncounterRatingsByPlayer { get; set; }
     public Dictionary<string, List<BlindSpotExport>>? BlindSpotsByPlayer { get; set; }
+    public List<Glicko2RatingResult> OutcomeRatings { get; set; } = [];
+    public Dictionary<string, List<Glicko2RatingResult>>? OutcomeRatingsByPlayer { get; set; }
 
     public List<Glicko2RatingResult> GetGlicko2Ratings(string? player)
     {
@@ -75,6 +77,12 @@ public class ExportData
     {
         if (player != null && BlindSpotsByPlayer?.TryGetValue(player, out var p) == true) return p;
         return BlindSpots;
+    }
+
+    public List<Glicko2RatingResult> GetOutcomeRatings(string? player)
+    {
+        if (player != null && OutcomeRatingsByPlayer?.TryGetValue(player, out var p) == true) return p;
+        return OutcomeRatings;
     }
 }
 
