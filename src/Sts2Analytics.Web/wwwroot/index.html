@@ -18,7 +18,23 @@
 </head>
 
 <body>
-    <div id="app">
+    <div id="auth-gate" style="display:none; position:fixed; inset:0; z-index:9999; background:#0a0a12; display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif;">
+        <div style="text-align:center; color:#c4b59a;">
+            <div style="font-family:'Cinzel',serif; font-size:1.6rem; margin-bottom:1.2rem; color:#d4a855;">Spire Oracle</div>
+            <div style="margin-bottom:1rem; font-size:0.9rem; opacity:0.7;">Enter password to continue</div>
+            <input id="auth-input" type="password" autocomplete="off"
+                style="background:#1a1a2e; border:1px solid #2a2a4a; color:#c4b59a; padding:0.6rem 1rem; border-radius:6px; font-size:1rem; text-align:center; outline:none; width:220px;"
+                placeholder="Password" />
+            <br/>
+            <button id="auth-btn"
+                style="margin-top:0.8rem; background:#d4a855; color:#0a0a12; border:none; padding:0.5rem 1.5rem; border-radius:6px; font-size:0.9rem; cursor:pointer; font-weight:500;">
+                Enter
+            </button>
+            <div id="auth-error" style="color:#e74c3c; margin-top:0.6rem; font-size:0.85rem; display:none;">Incorrect password</div>
+        </div>
+    </div>
+
+    <div id="app" style="display:none;">
         <div class="loading-screen">
             <div class="loading-sigil"></div>
             <div class="loading-text">Consulting the Oracle...</div>
@@ -30,8 +46,61 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">&times;</span>
     </div>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        (function() {
+            var PASS_HASH = '13e033241aab94113711fb9af16b0593a4c0b008bcab9b01874aab0ab755c871';
+            var AUTH_KEY = 'spire_oracle_auth';
+
+            async function sha256(str) {
+                var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+            }
+
+            function unlock() {
+                document.getElementById('auth-gate').style.display = 'none';
+                document.getElementById('app').style.display = '';
+                loadBlazor();
+            }
+
+            function loadBlazor() {
+                var s1 = document.createElement('script');
+                s1.src = '_content/Radzen.Blazor/Radzen.Blazor.js';
+                document.body.appendChild(s1);
+                var s2 = document.createElement('script');
+                s2.src = '_framework/blazor.webassembly.js';
+                document.body.appendChild(s2);
+            }
+
+            async function checkAuth() {
+                if (sessionStorage.getItem(AUTH_KEY) === 'true') {
+                    unlock();
+                    return;
+                }
+                document.getElementById('auth-gate').style.display = 'flex';
+            }
+
+            async function tryLogin() {
+                var pw = document.getElementById('auth-input').value;
+                var hash = await sha256(pw);
+                if (hash === PASS_HASH) {
+                    sessionStorage.setItem(AUTH_KEY, 'true');
+                    unlock();
+                } else {
+                    document.getElementById('auth-error').style.display = 'block';
+                    document.getElementById('auth-input').value = '';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                checkAuth();
+                document.getElementById('auth-btn').addEventListener('click', tryLogin);
+                document.getElementById('auth-input').addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') tryLogin();
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>
