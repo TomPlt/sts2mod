@@ -122,19 +122,25 @@ public class ModEntry
                         var watcher = new FileSystemWatcher(historyPath, "*.run")
                         {
                             NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
-                                | NotifyFilters.LastWrite | NotifyFilters.Size
+                                | NotifyFilters.LastWrite | NotifyFilters.Size,
+                            InternalBufferSize = 65536
                         };
-                        // Track uploaded files to avoid duplicates
-                        var uploaded = new System.Collections.Generic.HashSet<string>();
+                        // Track uploaded files to avoid duplicates — use ConcurrentDictionary for thread safety
+                        var uploaded = new System.Collections.Concurrent.ConcurrentDictionary<string, byte>();
                         void OnRunFile(string filePath, string fileName)
                         {
-                            if (!uploaded.Add(fileName)) return; // already uploaded
+                            if (!uploaded.TryAdd(fileName, 0)) return; // already uploading
                             var timer = new System.Threading.Timer(_ =>
                             {
                                 DebugLogOverlay.Log($"[SpireOracle] New run detected: {fileName}");
                                 _ = CloudSync.UploadRunFile(filePath).ContinueWith(t =>
                                 {
-                                    if (t.IsFaulted) return;
+                                    if (t.IsFaulted)
+                                    {
+                                        uploaded.TryRemove(fileName, out byte _); // allow retry on next event
+                                        DebugLogOverlay.LogErr($"[SpireOracle] Upload failed for {fileName}: {t.Exception?.InnerException?.Message}");
+                                        return;
+                                    }
                                     // Wait for CI to rebuild overlay_data.json, then re-download
                                     ScheduleDataRefresh();
                                 });
@@ -143,6 +149,7 @@ public class ModEntry
                         watcher.Created += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
                         watcher.Changed += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
                         watcher.Renamed += (_, e) => OnRunFile(e.FullPath, e.Name ?? "");
+                        watcher.Error += (_, e) => DebugLogOverlay.LogErr($"[SpireOracle] FileWatcher error: {e.GetException().Message}");
                         watcher.EnableRaisingEvents = true;
                         _runWatchers.Add(watcher);
                         DebugLogOverlay.Log($"[SpireOracle] Watching for runs: {historyPath}");

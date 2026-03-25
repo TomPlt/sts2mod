@@ -129,10 +129,14 @@ public static class CloudSync
     /// Upload a .run file to the data repo.
     /// Uses GitHub Contents API to create/update the file.
     /// </summary>
+    private static readonly System.Threading.SemaphoreSlim _uploadLock = new(1, 1);
+
     public static async Task UploadRunFile(string runFilePath)
     {
         if (_http == null || _config == null) return;
 
+        // Serialize uploads to avoid SHA conflicts from concurrent GitHub API writes
+        await _uploadLock.WaitAsync();
         try
         {
             var fileName = Path.GetFileName(runFilePath);
@@ -165,13 +169,25 @@ public static class CloudSync
             var response = await _http.PutAsync(apiUrl, httpContent);
 
             if (response.IsSuccessStatusCode)
+            {
                 DebugLogOverlay.Log($"[SpireOracle] Uploaded {fileName}");
+            }
             else
-                DebugLogOverlay.LogErr($"[SpireOracle] Upload failed: {response.StatusCode}");
+            {
+                var msg = $"Upload failed for {fileName}: {response.StatusCode}";
+                DebugLogOverlay.LogErr($"[SpireOracle] {msg}");
+                throw new InvalidOperationException(msg);
+            }
         }
+        catch (InvalidOperationException) { throw; } // re-throw our own errors
         catch (Exception ex)
         {
             DebugLogOverlay.LogErr($"[SpireOracle] Upload error: {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            _uploadLock.Release();
         }
     }
 }
