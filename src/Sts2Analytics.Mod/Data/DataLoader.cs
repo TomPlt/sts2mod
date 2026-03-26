@@ -19,6 +19,7 @@ public static class DataLoader
     private static Dictionary<string, MapIntelCharacter>? _mapIntel;
     private static Dictionary<string, RefAct>? _refActs;
     private static List<RefEvent>? _sharedEvents;
+    private static Dictionary<string, RefEnemy>? _enemyIndex;
     private static Dictionary<string, PoolRating>? _encounterPools;
     private static Dictionary<string, PoolRating>? _encounterRatings;
     private static Dictionary<string, List<int>>? _damageDistributions;
@@ -161,7 +162,13 @@ public static class DataLoader
                             _refActs[act.Name] = act;
                     }
                     _sharedEvents = refData?.SharedEvents ?? new List<RefEvent>();
-                    DebugLogOverlay.Log($"[SpireOracle] Loaded reference data: {_refActs.Count} acts, {_sharedEvents.Count} shared events");
+
+                    // Build enemy index by parsing raw JSON (avoids Godot generic deserialization issues)
+                    _enemyIndex = new Dictionary<string, RefEnemy>(StringComparer.OrdinalIgnoreCase);
+                    using var refDoc = JsonDocument.Parse(refJson);
+                    ParseEnemiesFromJson(refDoc.RootElement);
+
+                    DebugLogOverlay.Log($"[SpireOracle] Loaded reference data: {_refActs.Count} acts, {_sharedEvents.Count} shared events, {_enemyIndex.Count} enemies");
                 }
                 catch (Exception refEx)
                 {
@@ -213,6 +220,83 @@ public static class DataLoader
 
     public static List<PlayerRunCount> GetPlayerRunCounts() =>
         _playerRunCounts ?? new List<PlayerRunCount>();
+
+    public static RefEnemy? GetEnemyReference(string name) =>
+        _enemyIndex?.TryGetValue(name, out var enemy) == true ? enemy : null;
+
+    private static void ParseEnemiesFromJson(JsonElement root)
+    {
+        // Parse top-level "monsters" array
+        if (root.TryGetProperty("monsters", out var monstersArr) && monstersArr.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var m in monstersArr.EnumerateArray())
+                IndexEnemy(m);
+        }
+
+        // Parse elites/bosses from acts (override monsters with same name)
+        if (root.TryGetProperty("acts", out var actsArr) && actsArr.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var act in actsArr.EnumerateArray())
+            {
+                if (act.TryGetProperty("elites", out var elites) && elites.ValueKind == JsonValueKind.Array)
+                    foreach (var e in elites.EnumerateArray())
+                        IndexEnemy(e);
+                if (act.TryGetProperty("bosses", out var bosses) && bosses.ValueKind == JsonValueKind.Array)
+                    foreach (var b in bosses.EnumerateArray())
+                        IndexEnemy(b);
+            }
+        }
+    }
+
+    private static void IndexEnemy(JsonElement el)
+    {
+        if (el.ValueKind != JsonValueKind.Object) return;
+        if (!el.TryGetProperty("name", out var nameProp)) return;
+        var name = nameProp.GetString();
+        if (string.IsNullOrEmpty(name)) return;
+
+        string? hp = null;
+        if (el.TryGetProperty("hp", out var hpProp) && hpProp.ValueKind == JsonValueKind.String)
+            hp = hpProp.GetString();
+
+        List<string>? moves = null;
+        if (el.TryGetProperty("moves", out var movesProp) && movesProp.ValueKind == JsonValueKind.Array)
+        {
+            moves = new List<string>();
+            foreach (var m in movesProp.EnumerateArray())
+                if (m.ValueKind == JsonValueKind.String)
+                    moves.Add(m.GetString()!);
+        }
+
+        string? notes = null;
+        if (el.TryGetProperty("notes", out var notesProp) && notesProp.ValueKind == JsonValueKind.String)
+            notes = notesProp.GetString();
+
+        List<string>? monsters = null;
+        if (el.TryGetProperty("monsters", out var monstersProp) && monstersProp.ValueKind == JsonValueKind.Array)
+        {
+            monsters = new List<string>();
+            foreach (var m in monstersProp.EnumerateArray())
+                if (m.ValueKind == JsonValueKind.String)
+                    monsters.Add(m.GetString()!);
+        }
+
+        _enemyIndex![name] = new RefEnemy(name, hp, moves, notes, monsters);
+    }
+
+    /// <summary>
+    /// Returns (mean, sampleSize) from the raw damage distribution for an encounter or pool.
+    /// </summary>
+    public static (double Mean, int SampleSize)? GetHistoricalDamage(string poolOrEncounterId)
+    {
+        if (_damageDistributions == null) return null;
+        if (!_damageDistributions.TryGetValue(poolOrEncounterId, out var sorted) || sorted.Count == 0)
+            return null;
+        var mean = 0.0;
+        foreach (var v in sorted) mean += v;
+        mean /= sorted.Count;
+        return (mean, sorted.Count);
+    }
 
     /// <summary>
     /// Compute expected net damage from the damage distribution scaled by Elo matchup score.

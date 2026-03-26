@@ -35,25 +35,25 @@
             "Wake",
             "Slash"
           ],
-          "notes": "Starts with Slow. Starts with Sleep -> Wake -> Slash. Then uses Slash every turn after."
+          "notes": "Starts with Slow. Sleep: Pass Turn. Wake: Gain 10 Strength. Slash: 13 (15) dmg. Slow: Attacks deal 10% extra damage per card played this turn. Starts Sleep \u2192 Wake \u2192 Slash, then Slash every turn."
         },
         {
           "name": "Byrdonis",
-          "hp": "91 - 94 (99)",
+          "hp": "91-94 (99)",
           "moves": [
             "Peck",
             "Swoop"
           ],
-          "notes": "Starts with Territorial 1. Alternates between Swoop -> Peck."
+          "notes": "Starts with Territorial 1. Peck: 3x3 (4x3) dmg. Swoop: 17 (19) dmg. Territorial X: gains X strength at end of turn. Alternates Swoop \u2192 Peck."
         },
         {
           "name": "Phrog Parasite",
-          "hp": "61 - 64 (66 - 68)",
+          "hp": "61-64 (66-68)",
           "moves": [
             "Infect",
             "Lash"
           ],
-          "notes": "Starts with Infested 4. Alternates between Infect -> Lash. Summons 4 Wrigglers after death."
+          "notes": "Starts with Infested 4. Infect: Add 3 Infection to Discard. Lash: 4x4 (5x4) dmg. Summons 4 Wrigglers after death (start stunned). Alternates Infect \u2192 Lash."
         }
       ],
       "bosses": [
@@ -67,7 +67,7 @@
             "Stomp",
             "Crush"
           ],
-          "notes": "Plow X: The first time Ceremonial Beast's HP reaches X or below, it becomes stunned and loses all strength. Starts with Stamp, then uses Plow until stunned, then cycles Beast Cry -> Stomp -> Crush."
+          "notes": "Stamp: Gains Plow 150 (160). Plow: 18 (20) dmg + 2 Strength each turn. At \u2264150 (160) HP, stunned and loses all Strength. Beast Cry: Apply Ringing (play only 1 card). Stomp: 15 (17) dmg. Crush: 17 (19) dmg + 3 (4) Strength. Starts Stamp, then Plow until stunned, then cycles Beast Cry \u2192 Stomp \u2192 Crush."
         },
         {
           "name": "The Kin",
@@ -76,7 +76,14 @@
             "Kin Follower",
             "Kin Priest"
           ],
-          "notes": "Kin Priest cycles Orb of Frailty -> Orb of Weakness -> Beam -> Ritual. Kin Follower cycles Quick Slash -> Boomerang -> Power Dance."
+          "notes": "Kin Priest cycles Orb of Frailty 8 (9) + Frail \u2192 Orb of Weakness 8 (9) + Weak \u2192 Beam 3x3 \u2192 Ritual +2 (3) Str. Kin Follower (minion) cycles Quick Slash 5 \u2192 Boomerang 2x2 \u2192 Power Dance +2 (3) Str.",
+          "hp": "Priest 190 (199), Followers 58-59 (62-63)",
+          "moves": [
+            "Orb of Frailty",
+            "Orb of Weakness",
+            "Beam",
+            "Ritual"
+          ]
         },
         {
           "name": "Vantom",
@@ -87,7 +94,7 @@
             "Dismember",
             "Prepare"
           ],
-          "notes": "Starts with Slippery 9. Cycles through Ink Blot -> Inky Lance -> Dismember -> Prepare."
+          "notes": "Starts with Slippery 9 (first 9 times loses HP, only lose 1). Ink Blot: 7 (8) dmg. Inky Lance: 6x2 (7x2) dmg. Dismember: 27 (30) dmg + 3 Wounds to discard. Prepare: Gain 2 Strength. Cycles Ink Blot \u2192 Inky Lance \u2192 Dismember \u2192 Prepare."
         }
       ],
       "events": [
@@ -365,19 +372,19 @@
             "Inertia",
             "Piercing Stabs"
           ],
-          "notes": "Starts with Hardened Shell 15. Cycles through Smash -> Zoom -> Inertia -> Piercing Stabs."
+          "notes": "Starts with Hardened Shell 15. Smash: 9 (11) dmg + 5 Dazed to discard. Zoom: 16 (17) dmg + 10 (13) block. Inertia: Gain 3 (4) Strength + 3 Dazed to discard. Piercing Stabs: 7x2 (8x2) dmg. Cannot lose more than 15 HP per turn. Cycles Smash \u2192 Zoom \u2192 Inertia \u2192 Piercing Stabs."
         },
         {
           "name": "Phantasmal Gardeners",
           "monsters": "4 Phantasmal Gardeners",
-          "hp": "26 - 31 (27 - 32) each",
+          "hp": "26-31 (27-32) each",
           "moves": [
             "Bite",
             "Lash",
             "Flail",
             "Enlarge"
           ],
-          "notes": "Starts with Skittish 6 (7). 1st starts with Flail, 2nd with Bite, 3rd with Lash, 4th with Enlarge. Then cycles Bite -> Lash -> Flail -> Enlarge."
+          "notes": "Starts with Skittish 6 (7). Bite: 5 dmg. Lash: 7 dmg. Flail: 1x3 dmg. Enlarge: Gain 2 (3) Strength. 1st starts Flail, 2nd Bite, 3rd Lash, 4th Enlarge. Then cycle Bite \u2192 Lash \u2192 Flail \u2192 Enlarge. Skittish: first hit each turn gains X block."
         },
         {
           "name": "Terror Eel",
@@ -387,7 +394,7 @@
             "Thrash",
             "Terror"
           ],
-          "notes": "Starts with Shriek 75. Cycles Crash -> Thrash until stunned at 75 HP, then uses Terror, then cycles Crash -> Thrash again."
+          "notes": "Starts with Shriek 75. Crash: 16 (18) dmg. Thrash: 3x3 (4x3) dmg + 6 Vigor. Terror: Apply 99 Vulnerable. Cycles Crash \u2192 Thrash until stunned at 75 HP, then Terror, then resumes Crash \u2192 Thrash."
         }
       ],
       "bosses": [
@@ -400,7 +407,7 @@
             "Slash 2",
             "Soul Siphon"
           ],
-          "notes": "Starts with 12 Plating and sleeps for 3 turns or until losing HP. On wakeup, all Plating is removed. Cycles Slash -> Disembowel -> Slash 2 -> Soul Siphon."
+          "notes": "Starts with 12 Plating, sleeps 3 turns or until losing HP. On wakeup, Plating removed. Slash: 19 (21) dmg. Disembowel: 9x2 (10x2) dmg. Slash 2: 12 (14) dmg + 12 (14) block. Soul Siphon: -2 Str, -2 Dex, +2 Str. Cycles Slash \u2192 Disembowel \u2192 Slash 2 \u2192 Soul Siphon."
         },
         {
           "name": "Soul Fysh",
@@ -412,7 +419,7 @@
             "Fade",
             "Scream"
           ],
-          "notes": "Beckon: 1 cost status, lose 6 HP if in hand at end of turn. Cycles Beckon -> De-Gas -> Gaze -> Fade -> Scream."
+          "notes": "Beckon: 1-cost status, lose 6 HP if in hand at end of turn. Shuffles Beckons into draw+discard. De-Gas: 16 (17) dmg. Gaze: 7 (8) dmg + Beckon to discard. Fade: Gain 2 Intangible (1 ticks immediately). Scream: 11 (12) dmg + 3 Vulnerable. Cycles Beckon \u2192 De-Gas \u2192 Gaze \u2192 Fade \u2192 Scream."
         },
         {
           "name": "Waterfall Giant",
@@ -425,7 +432,7 @@
             "Pressure Gun",
             "Pressure Up"
           ],
-          "notes": "Steam Eruption X: After dying, wait 1 turn, then attack for X damage. Cycles Pressurize -> Stomp -> Ram -> Siphon -> Pressure Gun -> Pressure Up."
+          "notes": "Steam Eruption X: after dying, wait 1 turn, then attack for X damage. Pressurize: +15 (20) Steam Eruption. Stomp: 15 (16) dmg + 1 Weak + 3 Steam. Ram: 10 (11) dmg + 3 Steam. Siphon: Heal 15 + 3 Steam. Pressure Gun: 20 (23) + 5*N dmg + 3 Steam (N=uses). Pressure Up: 13 (14) dmg + 3 Steam. Cycles through all 6 moves."
         }
       ],
       "events": [
@@ -678,13 +685,13 @@
         {
           "name": "Decimillipede",
           "monsters": "3 Decimillipede segments",
-          "hp": "40 - 46 (46 - 52) per segment",
+          "hp": "40-46 (46-52) per segment",
           "moves": [
             "Writhe",
             "Bulk",
             "Constrict"
           ],
-          "notes": "Starts with Reattach. Segments cycle Writhe -> Bulk -> Constrict. When killed, spends one turn dead and then revives with 25 HP."
+          "notes": "3 segments. Starts with Reattach. Writhe: 5x2 (6x2) dmg. Bulk: 6 (7) dmg + 2 Strength. Constrict: 8 (9) dmg + 1 Weak. Segments cycle Writhe \u2192 Bulk \u2192 Constrict (each starts at different point). Reattach: revives after 2 turns with 25 HP if other segments alive."
         },
         {
           "name": "Entomancer",
@@ -694,7 +701,7 @@
             "Bees",
             "Spear"
           ],
-          "notes": "Starts with Personal Hive 1. Cycles Bees -> Spear -> Pheromone Spit. After reaching 3 stacks of Personal Hive, switches to gaining 2 strength with Pheromone Spit."
+          "notes": "Starts with Personal Hive 1. Bees: 3x7 (3x8) dmg. Spear: 18 (20) dmg. Pheromone Spit: gain 1 Personal Hive + 1 Strength (if <3 Hive) or 2 Strength (if at 3). Personal Hive X: add X Dazed to draw pile when hit. Cycles Bees \u2192 Spear \u2192 Pheromone Spit."
         },
         {
           "name": "Infested Prisms",
@@ -705,7 +712,7 @@
             "Whirlwind",
             "Pulsate"
           ],
-          "notes": "Starts with Vital Spark 1. Cycles Jab -> Radiate -> Whirlwind -> Pulsate."
+          "notes": "Starts with Vital Spark 1. Jab: 22 (24) dmg. Radiate: 16 (18) dmg + 16 (18) block. Whirlwind: 9x3 (10x3) dmg. Pulsate: 20 (22) block + 4 (5) Strength. Vital Spark X: first attack each turn gives attacker X energy. Cycles Jab \u2192 Radiate \u2192 Whirlwind \u2192 Pulsate."
         }
       ],
       "bosses": [
@@ -715,7 +722,15 @@
             "Crusher",
             "Rocket"
           ],
-          "notes": "Crusher: 209 (219) HP. Cycles Thrash -> Enlarging Strike -> Bug Sting -> Adapt -> Guarded Strike. Rocket: 199 (209) HP. Cycles Targeting Reticle -> Precision Beam -> Charge Up -> Laser -> Recharge. Both start with Back Attack and Crab Rage."
+          "notes": "Two enemies. Both start with Back Attack (50% more dmg from behind) and Crab Rage (ally dies: +6 Str, +99 Block). Crusher cycles Thrash 12 (14) \u2192 Enlarging Strike 4 \u2192 Bug Sting 6x2 (7x2) +2 Weak +2 Frail \u2192 Adapt +2 Str \u2192 Guarded Strike 12 (14) +18 Block. Rocket cycles Targeting Reticle 3 (4) \u2192 Precision Beam 18 (20) \u2192 Charge Up +2 (3) Str \u2192 Laser 31 (35) \u2192 Recharge (pass).",
+          "hp": "Crusher 209 (219), Rocket 199 (209)",
+          "moves": [
+            "Thrash",
+            "Enlarging Strike",
+            "Bug Sting",
+            "Adapt",
+            "Guarded Strike"
+          ]
         },
         {
           "name": "Knowledge Demon",
@@ -726,7 +741,7 @@
             "Knowledge Overwhelming",
             "Ponder"
           ],
-          "notes": "Cycles Curse of Knowledge -> Slap -> Knowledge Overwhelming -> Ponder until Curse of Knowledge used 3 times, then cycles Slap -> Knowledge Overwhelming -> Ponder. Disintegration X: Take X damage at end of your turn."
+          "notes": "Curse of Knowledge: choose between two debuffs (Disintegration 6/7/8 or Mind Rot/Sloth/Waste Away). Slap: 17 (18) dmg. Knowledge Overwhelming: 8x3 (9x3) dmg. Ponder: 11 (13) dmg + Heal 30 + 2 (3) Str. Cycles CoK \u2192 Slap \u2192 KO \u2192 Ponder. After 3 CoK uses, drops CoK from cycle."
         },
         {
           "name": "The Insatiable",
@@ -737,7 +752,7 @@
             "Lunging Bite",
             "Salivate"
           ],
-          "notes": "Starts with Liquify Ground, then cycles Thrash -> Lunging Bite -> Salivate -> Thrash. Sandpit X: In X turns, instantly die."
+          "notes": "Sandpit X: in X turns, instantly die. Liquify Ground: Gain Sandpit 4 + shuffle 6 Frantic Escapes (3 draw, 3 discard). Frantic Escape: 1-cost status, increases card cost and Sandpit by 1. Thrash: 8x2 (9x2) dmg. Lunging Bite: 28 (31) dmg. Salivate: +2 (3) Str. Starts Liquify Ground, then cycles Thrash \u2192 Lunging Bite \u2192 Salivate \u2192 Thrash."
         }
       ],
       "events": [
@@ -956,7 +971,11 @@
             "Spectral Knight",
             "Magi Knight"
           ],
-          "notes": "Flail Knight (101 HP): Starts with Ram, then randomly uses War Chant, Flail, Ram. Spectral Knight (93 HP): Starts with Hex then Soul Slash, then randomly uses Soul Slash and Soul Flame. Magi Knight (82 HP): Cycles Power Shield -> Dampen -> Spear -> Prep -> Magic Bomb."
+          "notes": "3 knights. Flail Knight: Ram 15 (17), Flail 9x2 (10x2), War Chant +3 Str. Starts Ram, then random (no move 3x in row). Spectral Knight: Hex (all cards ethereal), Soul Slash 15 (17), Soul Flame 3x3 (4x3). Starts Hex \u2192 Soul Slash, then random. Magi Knight: Dampen (downgrades cards), Power Shield 6 (7) + 5 (9) block, Spear 10 (11), Prep 5 (9) block, Magic Bomb 35 (40). Cycles Power Shield \u2192 Dampen \u2192 Spear \u2192 Prep \u2192 Magic Bomb.",
+          "hp": "Flail 101 (108), Spectral 93 (97), Magi 82 (89)",
+          "moves": [
+            "Various per knight"
+          ]
         },
         {
           "name": "Mecha Knight",
@@ -967,7 +986,7 @@
             "Windup",
             "Heavy Cleave"
           ],
-          "notes": "Starts with Artifact 3. Starts with Charge, then cycles Flamethrower -> Windup -> Heavy Cleave."
+          "notes": "Starts with Artifact 3. Charge: 25 (30) dmg. Flamethrower: Add 4 Burns to hand. Windup: 15 block + 5 Strength. Heavy Cleave: 35 (40) dmg. Starts Charge, then cycles Flamethrower \u2192 Windup \u2192 Heavy Cleave."
         },
         {
           "name": "Soul Nexus",
@@ -977,7 +996,7 @@
             "Maelstrom",
             "Drain Life"
           ],
-          "notes": "Starts with Soul Burn, then picks randomly between Soul Burn, Maelstrom, and Drain Life. Cannot use the same move twice in a row."
+          "notes": "Soul Burn: 29 (31) dmg. Maelstrom: 6x4 (7x4) dmg. Drain Life: 18 (19) dmg + 2 Vulnerable + 2 Weak. Starts Soul Burn, then random (no repeats). All options equally likely."
         }
       ],
       "bosses": [
@@ -990,11 +1009,11 @@
             "Chomp",
             "Pulverize"
           ],
-          "notes": "Starts the fight with infinite HP. Dramatic Open loses infinite max HP, clears all powers from itself, and gains Hunger of the Void. Then cycles Beam -> Chomp -> Pulverize. Hunger of the Void: Every 10th card drawn is removed from combat and Doormaker gains 1 (2) Strength."
+          "notes": "Starts with infinite HP. Dramatic Open: loses infinite max HP, clears all powers, gains Hunger of the Void. Hunger of the Void: every 10th card drawn is removed, Doormaker gains 1 (2) Str. Beam: 10x3 (11x3) dmg. Chomp: 40 (45) dmg. Pulverize: 20 (22) dmg + 2 (3) Str. Starts Dramatic Open, then cycles Beam \u2192 Chomp \u2192 Pulverize."
         },
         {
           "name": "Queen",
-          "hp": "400 (419)",
+          "hp": "400 (419), Amalgam 199 (211)",
           "monsters": [
             "Queen",
             "Torch Head Amalgam"
@@ -1007,7 +1026,7 @@
             "Execution",
             "Enrage"
           ],
-          "notes": "Starts with Torch Head Amalgam. Begins with Puppet Strings -> You Are Mine! While Amalgam alive, always does Burn Bright For Me. After Amalgam dies, cycles Off With Your Head -> Execution -> Enrage."
+          "notes": "Starts with Torch Head Amalgam. Puppet Strings: Chains of Binding 3. You Are Mine!: 99 Frail + 99 Weak + 99 Vulnerable. While Amalgam alive: Burn Bright For Me (allies +1 Str, 20 block). If Amalgam dies: cycles Off With Your Head 3x5 (4x5) \u2192 Execution 15 (18) \u2192 Enrage +2 Str. Amalgam cycles Tackle 18 (19) x2 \u2192 Soul Beam 8x3 \u2192 Weak Tackle 14 (15) x2."
         },
         {
           "name": "Test Subject #C14",
@@ -1039,7 +1058,17 @@
               ],
               "notes": "Starts with Nemesis (immediately gains 1 Intangible). Cycles Lacerate -> Big Pounce -> Burning Growl."
             }
-          ]
+          ],
+          "hp": "Stage1 100 (111), Stage2 200 (212), Stage3 300 (313)",
+          "moves": [
+            "Bite",
+            "Skull Bash",
+            "Multi-Claw",
+            "Lacerate",
+            "Big Pounce",
+            "Burning Growl"
+          ],
+          "notes": "3 stages. Stage 1: Enrage 3 (+3 Str per skill played). Bite 20 (22), Skull Bash 14 (16) +1 Vuln. Cycles Bite \u2192 Skull Bash. Revives to Stage 2. Stage 2: Painful Stabs 1 (shuffle Wounds on unblocked dmg). Multi-Claw 10xN (11xN), N=3+uses. Stage 3: Nemesis (Intangible every other turn). Lacerate 10x3 (11x3), Big Pounce 45, Burning Growl 3 (5) Burns +2 (3) Str. Cycles Lacerate \u2192 Big Pounce \u2192 Burning Growl."
         }
       ],
       "events": [
@@ -1711,5 +1740,840 @@
       },
       "removePrice": "75 + 25*N (N = # of times card removal has been purchased previously)"
     }
-  }
+  },
+  "monsters": [
+    {
+      "name": "Axebot",
+      "hp": "40-44 (42-46)",
+      "moves": [
+        "Boot Up",
+        "One-Two",
+        "Sharpen",
+        "Hammer Uppercut"
+      ],
+      "notes": "Starts with Stock 2. Stock X: When killed, a new Axebot spawns (Stock X-1). Boot Up: 10 Block + 1 Str. One-Two: 5x2 (6x2). Sharpen: +4 Str. Hammer Uppercut: 8 (10) + 1 Weak + 1 Frail. Random moves, can't Sharpen 2x in a row."
+    },
+    {
+      "name": "Bowlbug (Egg)",
+      "hp": "21-22 (23-24)",
+      "moves": [
+        "Bite",
+        "Buff",
+        "Stunned"
+      ],
+      "notes": "Starts with Imbalanced (stunned if attack fully blocked). Bite: 7 (8). Buff: +15 (16) Str. Stunned: pass turn. Always uses Bite."
+    },
+    {
+      "name": "Bowlbug (Nectar)",
+      "hp": "35-38 (36-39)",
+      "moves": [
+        "Block",
+        "Thrash"
+      ],
+      "notes": "Block 7 (8). Thrash: 3 dmg. Starts Thrash \u2192 Buff (+15/16 Str). Then Thrash every turn."
+    },
+    {
+      "name": "Bowlbug (Rock)",
+      "hp": "45-48 (46-49)",
+      "moves": [
+        "Headbutt"
+      ],
+      "notes": "Starts with Artifact 2. Headbutt: 15 (16) dmg. Uses Headbutt every turn. If fully blocked, stunned for a turn."
+    },
+    {
+      "name": "Bowlbug (Silk)",
+      "hp": "40-43 (41-44)",
+      "moves": [
+        "Toxic Spit",
+        "Thrash"
+      ],
+      "notes": "Toxic Spit: Apply 1 Weak. Thrash: 4x2 (5x2). Alternates Toxic Spit \u2192 Thrash."
+    },
+    {
+      "name": "Calcified Cultist",
+      "hp": "38-41 (39-42)",
+      "moves": [
+        "Incantation",
+        "Dark Strike"
+      ],
+      "notes": "Incantation: Gain Ritual 2. Dark Strike: 9 (11). Starts Incantation, then Dark Strike every turn."
+    },
+    {
+      "name": "Chomper",
+      "hp": "60-64 (63-67)",
+      "moves": [
+        "Clamp",
+        "Screech"
+      ],
+      "notes": "Clamp: 8x2 (9x2). Screech: 3 Dazed to Discard. 1st starts Clamp, 2nd starts Screech. Cycle Clamp \u2192 Screech."
+    },
+    {
+      "name": "Corpse Slug",
+      "hp": "25-27 (27-29)",
+      "moves": [
+        "Whip Slap",
+        "Glomp",
+        "Gloop"
+      ],
+      "notes": "Whip Slap: 3x2. Glomp: 8 (9). Gloop: Apply 2 Frail. 1st picks randomly, then cycle Whip Slap \u2192 Glomp \u2192 Gloop."
+    },
+    {
+      "name": "Cubex Construct",
+      "hp": "65 (70)",
+      "moves": [
+        "Charge Up",
+        "Repeater Blast",
+        "Expel Blast",
+        "Submerge"
+      ],
+      "notes": "Starts with Ravenous 4 (5). Ravenous: when enemy dies, stunned + gain X Str. Charge Up: +2 Str. Repeater Blast: 7 (8) + 2 Str. Expel Blast: 5x2 (6x2). Submerge: 15 Block. Cycles Charge Up \u2192 Repeater Blast \u2192 Repeater Blast \u2192 Expel Blast \u2192 Submerge."
+    },
+    {
+      "name": "Damp Cultist",
+      "hp": "51-53 (52-54)",
+      "moves": [
+        "Incantation",
+        "Dark Strike"
+      ],
+      "notes": "Incantation: Ritual 5 (6). Dark Strike: 1 (3). Starts Incantation, then Dark Strike every turn."
+    },
+    {
+      "name": "Devoted Sculptor",
+      "hp": "162 (172)",
+      "moves": [
+        "Forbidden Incantation",
+        "Savage"
+      ],
+      "notes": "Starts with 13 Block + Artifact 1. Forbidden Incantation: Gain 9 Ritual. Savage: 12 (15). Starts Forbidden Incantation, then Savage every turn."
+    },
+    {
+      "name": "Exoskeleton",
+      "hp": "24-28 (25-29)",
+      "moves": [
+        "Skitter",
+        "Mandible",
+        "Enrage"
+      ],
+      "notes": "Skitter: 1x3 (1x4). Mandible: 8 (9). Enrage: +2 Str. 1st starts Skitter, 2nd Mandible, 3rd Enrage. After Skitter\u2192Mandible, after Mandible\u2192Enrage, after Enrage\u2192random Skitter/Mandible."
+    },
+    {
+      "name": "Fabricator",
+      "hp": "150 (155)",
+      "moves": [
+        "Fabricate",
+        "Fabricating Strike",
+        "Disintegrate"
+      ],
+      "notes": "Fabricate: summon 1 Defensive + 1 Aggro Bot. Fabricating Strike: 18 (21) + summon 1 Aggro Bot. Disintegrate: 11 (13). If \u22642 allies: random Fabricate/Fabricating Strike. If \u22653 allies: Disintegrate. Can't summon same minion consecutively."
+    },
+    {
+      "name": "Fake Merchant",
+      "hp": "165 (175)",
+      "moves": [
+        "Swipe",
+        "Spew Coins",
+        "Throw Relic",
+        "Enrage"
+      ],
+      "notes": "Starts with Hard to Kill 9 (reduce all damage to 9 max). Swipe: 13 (15). Spew Coins: 2x8. Throw Relic: 9 (10) + 1 Frail. Enrage: +2 Str. Starts Swipe, then random moves. After Throw Relic: random Swipe/Spew Coins."
+    },
+    {
+      "name": "Flyconid",
+      "hp": "47-49 (51-53)",
+      "moves": [
+        "Frail Spores",
+        "Smash",
+        "Illusion"
+      ],
+      "notes": "Frail Spores: 8 (9) + 2 Frail. Smash: 11 (12). Illusion: summon 1 Eye with Teeth. Eye with Teeth (6 HP): Distract (3 Dazed to discard), revives next turn at full HP."
+    },
+    {
+      "name": "Fogmog",
+      "hp": "74 (78)",
+      "moves": [
+        "Swipe",
+        "Vulnerable Spores",
+        "Headbutt"
+      ],
+      "notes": "Swipe: 8 (9) + 1 Str. Vulnerable Spores: Apply 2 Vulnerable. Headbutt: 14 (16)."
+    },
+    {
+      "name": "Eye with Teeth",
+      "hp": "6",
+      "moves": [
+        "Distract"
+      ],
+      "notes": "Starts with Illusion Illusion: When this dies, revives next turn at full HP | Always uses Distract."
+    },
+    {
+      "name": "Fossil Stalker",
+      "hp": "51 - 53 (54 - 56)",
+      "moves": [
+        "Latch",
+        "Tackle",
+        "Lash"
+      ],
+      "notes": "Starts with Suck 3 Suck X: Whenever Fossil Stalker deals unblocked attack damage, it gains X strength. | Starts with Latch. Then chooses randomly between allowed options of Tackle, Latch, and Lash (allowed options equally likely). Moves cannot be used more than twice in a row."
+    },
+    {
+      "name": "Frog Knight",
+      "hp": "191 (199)",
+      "moves": [
+        "Tongue Lash",
+        "Strike Down Evil",
+        "For the Queen",
+        "Beetle Charge"
+      ],
+      "notes": "Starts with Plating 15 (19) | Cycles through Tongue Lash -> Strike Down Evil -> For the Queen. After For the Queen, if below half HP and Beetle Charge has not been used, then uses Beetle Charge before starting the cycle over."
+    },
+    {
+      "name": "Fuzzy Wurm Crawler",
+      "hp": "55 - 57 (58 - 59)",
+      "moves": [
+        "Acid Goop",
+        "Inhale"
+      ],
+      "notes": "Starts with Acid Goop. Then cycles through Inhale -> Acid Goop -> Acid Goop."
+    },
+    {
+      "name": "Globe Head",
+      "hp": "148 (158)",
+      "moves": [
+        "Shocking Slap",
+        "Thunder Strike",
+        "Galvanic Burst"
+      ],
+      "notes": "Starts with Galvanic 6. Galvanic X: You take X damage when a Power is played. | Cycles through Shocking Slap -> Thunder Strike -> Galvanic Burst."
+    },
+    {
+      "name": "Gremlin Merc",
+      "hp": "47 - 49 (51 - 53)",
+      "moves": [
+        "Gimme",
+        "Double Smash",
+        "Hehe"
+      ],
+      "notes": "Starts with Surprise and Thievery 20 Surprise: When killed, summons 1 Sneaky Gremlin and 1 Fat Gremlin (they start stunned) Thievery X: Steals X gold when attacking (stolen gold is held by Fat Gremlin once summoned) | Cycles through Gimme -> Double Smash -> Hehe."
+    },
+    {
+      "name": "Fat Gremlin",
+      "hp": "13 - 17 (14 - 18)",
+      "moves": [
+        "Flee"
+      ],
+      "notes": "Starts stunned when summoned after killing Gremlin Merc. | Always uses Flee."
+    },
+    {
+      "name": "Sneaky Gremlin",
+      "hp": "10 - 14 (11 - 15)",
+      "moves": [
+        "Tackle"
+      ],
+      "notes": "Starts stunned when summoned after killing Gremlin Merc. | Always uses Tackle."
+    },
+    {
+      "name": "Haunted Ship",
+      "hp": "63 (67)",
+      "moves": [
+        "Ramming Speed",
+        "Haunt",
+        "Swipe",
+        "Stomp"
+      ],
+      "notes": "Starts with Ramming Speed -> Haunt. Then picks randomly between Ramming Speed, Swipe, and Stomp (allowed options equally likely). Cannot use same move twice in a row."
+    },
+    {
+      "name": "Hunter Killer",
+      "hp": "121 (126)",
+      "moves": [
+        "Tenderizing Goop",
+        "Bite",
+        "Puncture"
+      ],
+      "notes": "Tender: Whenever you play a card, lose 1 strength and 1 dexterity this turn. | Starts with Tenderizing Goop. Then chooses randomly between Bite and Puncture each turn. Bite cannot be used twice in a row. Puncture cannot be used more than twice in a row."
+    },
+    {
+      "name": "Inklet",
+      "hp": "11 - 17 (12 - 18)",
+      "moves": [
+        "Jab",
+        "Whirlwind",
+        "Piercing Gaze"
+      ],
+      "notes": "Starts with Slippery 1 Slippery X: The next time this enemy loses HP, it loses 1 HP instead. | Front and back Inklet start with Jab. Middle Inklet starts with Whirlwind. Alternates between Jab -> Whirlwind or Piercing Gaze (chosen randomly, equally likely)."
+    },
+    {
+      "name": "Leaf Slime (Small)",
+      "hp": "11 - 15 (12 - 16)",
+      "moves": [
+        "Tackle",
+        "Goop"
+      ],
+      "notes": "Starts randomly with Tackle or Goop. Then alternates between them."
+    },
+    {
+      "name": "Leaf Slime (Medium)",
+      "hp": "32 - 35 (33 - 36)",
+      "moves": [
+        "Sticky Shot",
+        "Clump Shot"
+      ],
+      "notes": "Starts with Sticky Shot then alternates Clump Shot -> Sticky Shot."
+    },
+    {
+      "name": "Living Fog",
+      "hp": "80 (82)",
+      "moves": [
+        "Advanced Gas",
+        "Bloat",
+        "Super Gas Blast"
+      ],
+      "notes": "Smoggy: You can only play 1 skill per turn. | Starts with Advanced Gas. Then alternates between Bloat -> Super Gas Blast."
+    },
+    {
+      "name": "Gas Bomb",
+      "hp": "7 (8)",
+      "moves": [
+        "Explode"
+      ],
+      "notes": "Gas Bomb is a minion. | Uses Explode and dies."
+    },
+    {
+      "name": "Living Shield",
+      "hp": "55 (65)",
+      "moves": [
+        "Shield Slam",
+        "Smash"
+      ],
+      "notes": "Starts with Rampart 25 Rampart X: Gives Turret Operator X block at the start of the player's turn. | Uses Shield Slam every turn if Turret Operator is alive. Then uses Smash every turn once Turret Operator is dead."
+    },
+    {
+      "name": "Louse Progenitor",
+      "hp": "134 - 136 (138 - 141)",
+      "moves": [
+        "Web Cannon",
+        "Curl and Grow",
+        "Pounce"
+      ],
+      "notes": "Starts with Curl Up Curl Up: Gain 14 (18) block upon first being hit. | Cycles through Web Cannon -> Curl and Grow -> Pounce."
+    },
+    {
+      "name": "Mawler",
+      "hp": "72 (76)",
+      "moves": [
+        "Claw",
+        "Roar",
+        "Rip & Tear"
+      ],
+      "notes": "Starts with Claw. Then chooses randomly between Rip & Tear, Roar, and Claw (all allowed options equally likely). Roar can only be used once. Claw and Rip & Tear cannot be used twice in a row."
+    },
+    {
+      "name": "Myte",
+      "hp": "61 - 67 (64 - 69)",
+      "moves": [
+        "Toxic",
+        "Bite",
+        "Suck"
+      ],
+      "notes": "Toxic (status): At the end of your turn, take 5 damage if this is in your hand. 1 cost, exhausts. | First Myte starts with Toxic, second Myte starts with Suck. Then continue cycling through Toxic -> Bite -> Suck."
+    },
+    {
+      "name": "Nibbit",
+      "hp": "42 - 46 (44 - 48)",
+      "moves": [
+        "Butt",
+        "Slice",
+        "Hiss"
+      ],
+      "notes": "In the single Nibbit encounter, it cycles through Butt -> Slice -> Hiss. In the two Nibbits encounter, the front starts with Slice and the back starts with Hiss. They then continue the cycle Butt -> Slice -> Hiss."
+    },
+    {
+      "name": "Ovicopter",
+      "hp": "124 - 130 (126 - 132)",
+      "moves": [
+        "Lay Eggs",
+        "Smash",
+        "Tenderizer",
+        "Nutritional Paste"
+      ],
+      "notes": "Lay Eggs will summon until there are 3 allies alive (no allies alive -> summons 3, 1 allies alive -> summons 2, etc) | Starts with Lay Eggs -> Smash -> Tenderizer."
+    },
+    {
+      "name": "Tough Egg",
+      "hp": "14 - 18 (15 - 19)",
+      "moves": [
+        "Hatch"
+      ],
+      "notes": "Starts with Hatch 1. Hatch X: Hatches after X turns. | Always uses Hatch."
+    },
+    {
+      "name": "Hatchling",
+      "hp": "19 - 22 (20 - 23)",
+      "moves": [
+        "Nibble"
+      ],
+      "notes": "Always uses Nibble."
+    },
+    {
+      "name": "Owl Magistrate",
+      "hp": "234 (243)",
+      "moves": [
+        "Magistrate Scrutiny",
+        "Peck Assault",
+        "Judicial Flight",
+        "Verdict"
+      ],
+      "notes": "Soar: Receives 50% less attack damage until it lands. | Cycles through Magistrate Scrutiny -> Peck Assault -> Judicial Flight -> Verdict."
+    },
+    {
+      "name": "Punch Construct",
+      "hp": "55 (60)",
+      "moves": [
+        "Ready",
+        "Strong Punch",
+        "Fast Punch"
+      ],
+      "notes": "Starts with Artifact 1. | Regular encounter: Cycles through Ready -> Strong Punch -> Fast Punch. Punch-Off event: First Punch Construct starts the cycle with Strong Punch (second starts with Ready like usual)."
+    },
+    {
+      "name": "Ruby Raider (Assassin)",
+      "hp": "18 - 23 (19 - 24)",
+      "moves": [
+        "Killshot"
+      ],
+      "notes": "Always uses Killshot."
+    },
+    {
+      "name": "Ruby Raider (Axe)",
+      "hp": "20 - 22 (21 - 23)",
+      "moves": [
+        "Swing",
+        "Big Swing"
+      ],
+      "notes": "Cycles through Swing -> Swing -> Big Swing."
+    },
+    {
+      "name": "Ruby Raider (Brute)",
+      "hp": "30 - 33 (31 - 34)",
+      "moves": [
+        "Beat",
+        "Roar"
+      ],
+      "notes": "Alternates between Beat -> Roar."
+    },
+    {
+      "name": "Ruby Raider (Crossbow)",
+      "hp": "18 - 21 (19 - 22)",
+      "moves": [
+        "Fire",
+        "Reload"
+      ],
+      "notes": "Alternates between Reload -> Fire."
+    },
+    {
+      "name": "Ruby Raider (Tracker)",
+      "hp": "21 - 25 (22 - 26)",
+      "moves": [
+        "Track",
+        "Hounds"
+      ],
+      "notes": "Starts with Track, then uses Hounds every turn."
+    },
+    {
+      "name": "Scroll of Biting",
+      "hp": "31 - 38 (32 - 39)",
+      "moves": [
+        "Chomp",
+        "Chew",
+        "More Teeth"
+      ],
+      "notes": "Starts with Paper Cuts 2 Paper Cuts X: Whenever you take unblocked attack damage from this enemy, lose X Max HP. | First scroll picks its first move randomly. Scrolls 2 and 3 starts with the next moves in the cycle Chomp -> Chew -> More Teeth. Scroll 4 (if present) starts with More Teeth. Then follows pattern Chomp -> More Teeth -> Chew, but after Chew picks randomly between Chomp and More Teeth and resumes pattern."
+    },
+    {
+      "name": "Seapunk",
+      "hp": "44 - 46 (47 - 49)",
+      "moves": [
+        "Sea Kick",
+        "Spinning Kick",
+        "Bubble Burp"
+      ],
+      "notes": "Cycles through Sea Kick -> Spinning Kick -> Bubble Burp."
+    },
+    {
+      "name": "Sewer Clam",
+      "hp": "56 (58)",
+      "moves": [
+        "Pressurize",
+        "Jet"
+      ],
+      "notes": "Starts with Plating 8 (9). | Alternates between Pressurize -> Jet."
+    },
+    {
+      "name": "Shrinker Beetle",
+      "hp": "38 - 40 (40 - 42)",
+      "moves": [
+        "Shrinker",
+        "Chomp",
+        "Stomp"
+      ],
+      "notes": "Shrink: Deal 30% reduced damage. | Starts with Shrinker. Then alternates Chomp -> Stomp."
+    },
+    {
+      "name": "Slimed Berserker",
+      "hp": "266 (276)",
+      "moves": [
+        "Vomit Ichor",
+        "Leeching Hug",
+        "Smother",
+        "Furious Pummeling"
+      ],
+      "notes": "Cycles through Vomit Ichor -> Furious Pummeling -> Leeching Hug -> Smother."
+    },
+    {
+      "name": "Slithering Strangler",
+      "hp": "53 - 55 (54 - 56)",
+      "moves": [
+        "Constrict",
+        "Thwack",
+        "Lash"
+      ],
+      "notes": "Constrict X: While the Slithering Strangler is alive, take X damage at the end of your turn. | Alternates between Constrict -> Thwack/Lash (chooses between Thwack and Lash at random, equally likely)"
+    },
+    {
+      "name": "Sludge Spinner",
+      "hp": "37 - 39 (41 - 42)",
+      "moves": [
+        "Oil Spray",
+        "Slam",
+        "Rage"
+      ],
+      "notes": "Starts with Oil Spray. Then chooses randomly between all allowed moves each turn. Cannot use any move twice in a row."
+    },
+    {
+      "name": "Slumbering Beetle",
+      "hp": "86 (89)",
+      "moves": [
+        "Sleep",
+        "Roll Out"
+      ],
+      "notes": "Starts with Plating 15 (18) and Slumber 3 Slumber X: Counter decreases after taking a turn or losing HP. Awakens at the end of its turn if counter has reached 0. | Sleeps until it awakens. Then uses Roll Out every turn."
+    },
+    {
+      "name": "Snapping Jaxfruit",
+      "hp": "31 - 33 (34 - 36)",
+      "moves": [
+        "Energy Orb"
+      ],
+      "notes": "Always uses Energy Orb."
+    },
+    {
+      "name": "Spiny Toad",
+      "hp": "116 - 119 (121 - 124)",
+      "moves": [
+        "Protruding Spikes",
+        "Spike Explosion",
+        "Tongue Lash"
+      ],
+      "notes": "Cycles through Protruding Spikes -> Spike Explosion -> Tongue Lash."
+    },
+    {
+      "name": "The Lost",
+      "hp": "93 (99)",
+      "moves": [
+        "Debilitating Smog",
+        "Eye Lasers"
+      ],
+      "notes": "Alternates between Debilitating Smog -> Eye Lasers"
+    },
+    {
+      "name": "The Forgotten",
+      "hp": "106 (111)",
+      "moves": [
+        "Miasma",
+        "Dread"
+      ],
+      "notes": "Alternates between Miasma -> Dread."
+    },
+    {
+      "name": "The Obscura",
+      "hp": "123 (129)",
+      "moves": [
+        "Illusion",
+        "Piercing Gaze",
+        "Wail",
+        "Hardening Strike"
+      ],
+      "notes": "Starts with Illusion. Then chooses randomly between Piercing Gaze, Wail, and Hardening Strike (allowed options equally likely). Cannot use any move twice in a row."
+    },
+    {
+      "name": "Parafright",
+      "hp": "21",
+      "moves": [
+        "Slam"
+      ],
+      "notes": "Starts with Illusion. Illusion: When this dies, revives next turn at full HP | Always uses Slam."
+    },
+    {
+      "name": "Thieving Hopper",
+      "hp": "79 (84)",
+      "moves": [
+        "Thievery",
+        "Nab",
+        "Hat Trick",
+        "Flutter",
+        "Escape"
+      ],
+      "notes": "Starts with Escape Artist Escape Artist: Tries to escape the combat after 5 turns. (Stolen card is taken from draw or discard pile. Chooses a random card with priorities: 1. non-imbued uncommon card, 2. non-imbued common, rare, or event card, 3. non-imbued basic or quest card, 4. imbued or ancient card, 5. curse or anything else) Swipe: Upon killing this enemy, the stolen card is returned. Flutter X: Receives 50% less attack damage. Deal attack damage X times to remove Flutter and stun it. (Warning: Game softlocks if Thieving Hopper cannot find a valid target to steal) | Always uses Thievery -> Flutter -> Hat Trick -> Nab -> Escape."
+    },
+    {
+      "name": "Toadpole",
+      "hp": "21 - 25 (22 - 26)",
+      "moves": [
+        "Spike Spit",
+        "Whirl",
+        "Spiken"
+      ],
+      "notes": "Front Toadpole starts with Spiken. Non-front Toadpole(s) start with Whirl. Then continue following cycle Spike Spit -> Whirl -> Spiken (then repeat)."
+    },
+    {
+      "name": "Tunneler",
+      "hp": "87 (92)",
+      "moves": [
+        "Bite",
+        "Burrow",
+        "Below"
+      ],
+      "notes": "Burrowed: Block is not removed at the start of Tunneler's turn. Becomes stunned if all block is removed. | Starts with Bite -> Burrow. While Burrowed, always uses Below."
+    },
+    {
+      "name": "Turret Operator",
+      "hp": "41 (51)",
+      "moves": [
+        "Unload",
+        "Reload"
+      ],
+      "notes": "Cycles through Unload -> Unload -> Reload."
+    },
+    {
+      "name": "Twig Slime (S)",
+      "hp": "7 - 11 (8 - 12)",
+      "moves": [
+        "Tackle"
+      ],
+      "notes": "Uses Tackle every turn."
+    },
+    {
+      "name": "Twig Slime (M)",
+      "hp": "26 - 28 (27 - 29)",
+      "moves": [
+        "Clump Shot",
+        "Sticky Shot"
+      ],
+      "notes": "Starts with Sticky Shot -> Clump Shot. Then chooses randomly each turn between Sticky Shot and Clump Shot (allowed options equally likely). Cannot use Sticky Shot twice in a row, and cannot use Clump shot more than twice in a row."
+    },
+    {
+      "name": "Two-Tailed Rat",
+      "hp": "17 - 21 (18 - 22)",
+      "moves": [
+        "Scratch",
+        "Disease Bite",
+        "Screech",
+        "Call for Backup"
+      ],
+      "notes": "First Rat starts randomly with Scratch, Disesase Bite, or Screech. 2nd Rat has next move after it in the cycle Scratch -> Disease Bite -> Screech, and 3rd Rat has the next after that. If Call for Backup is not allowed for a rat, it picks randomly between Scratch, Disease Bite, and Screech (equal weight among allowed options). If Call for Backup is allowed for a rat, then it has a 75% chance to Call for Backup, and remaining 25% to pick randomly between Scratch, Disease Bite, and Screech (equal weight among allowed options)."
+    },
+    {
+      "name": "Vine Shambler",
+      "hp": "61 (64)",
+      "moves": [
+        "Grasping Vines",
+        "Swipe",
+        "Chomp"
+      ],
+      "notes": "Tangled X: Attacks cost 1 additional energy for X turns. | Cycles through Swipe -> Grasping Vines -> Chomp."
+    },
+    {
+      "name": "Wriggler",
+      "hp": "17 - 21 (18 - 22)",
+      "moves": [
+        "Nasty Bite",
+        "Wriggle"
+      ],
+      "notes": "If spawned from Phrog Parasite's death, starts stunned. Otherwise (or after stun), Wrigglers in positions 1 & 3 start with Nasty Bite and Wrigglers in positions 2 & 4 start with Wriggle. They then alternate between Nasty Bite -> Wriggle."
+    },
+    {
+      "name": "Axebots",
+      "notes": "2 Axebots. Each has Stock 2 (respawns twice). Boot Up: 10 Block + 1 Str. One-Two: 5x2 (6x2). Sharpen: +4 Str. Hammer Uppercut: 8 (10) + Weak + Frail. Random moves, can't Sharpen 2x in a row.",
+      "hp": "40-44 (42-46) each",
+      "moves": [
+        "Boot Up",
+        "One-Two",
+        "Sharpen",
+        "Hammer Uppercut"
+      ]
+    },
+    {
+      "name": "Bowlbugs",
+      "notes": "4 types: Egg (Bite 7/8, +15/16 Str), Rock (Headbutt 15/16, Artifact 2), Silk (Toxic Spit + Thrash 4x2/5x2), Nectar (Thrash 3 + Buff +15/16 Str). Egg has Imbalanced (stunned if fully blocked).",
+      "hp": "21-48 (23-49)",
+      "moves": [
+        "Bite",
+        "Headbutt",
+        "Toxic Spit",
+        "Thrash"
+      ]
+    },
+    {
+      "name": "Chompers",
+      "notes": "2 Chompers. Clamp: 8x2 (9x2). Screech: 3 Dazed to Discard. 1st starts Clamp, 2nd starts Screech. Cycle Clamp \u2192 Screech.",
+      "hp": "60-64 (63-67) each",
+      "moves": [
+        "Clamp",
+        "Screech"
+      ]
+    },
+    {
+      "name": "Construct Menagerie",
+      "notes": "Fabricator (150/155 HP) + minion bots. Fabricate: summon bots. Fabricating Strike: 18 (21) + summon. Disintegrate: 11 (13). Guardbot: 15 Block. Noisebot: Dazed. Stabbot: 11 (12) + Frail. Zapbot: 14 (15) + High Voltage.",
+      "hp": "Fabricator 150 (155)",
+      "moves": [
+        "Fabricate",
+        "Fabricating Strike",
+        "Disintegrate"
+      ]
+    },
+    {
+      "name": "Corpse Slugs",
+      "notes": "2-3 Corpse Slugs. Whip Slap: 3x2. Glomp: 8 (9). Gloop: 2 Frail. 1st picks randomly, subsequent start at next move in cycle. Cycle Whip Slap \u2192 Glomp \u2192 Gloop.",
+      "hp": "25-27 (27-29) each",
+      "moves": [
+        "Whip Slap",
+        "Glomp",
+        "Gloop"
+      ]
+    },
+    {
+      "name": "Cultists",
+      "notes": "Calcified Cultist: Ritual 2, then Dark Strike 9 (11) every turn. Damp Cultist: Ritual 5 (6), then Dark Strike 1 (3) every turn.",
+      "hp": "38-53 (39-54)",
+      "moves": [
+        "Incantation",
+        "Dark Strike"
+      ]
+    },
+    {
+      "name": "Exoskeletons",
+      "notes": "3 Exoskeletons. Skitter: 1x3 (1x4). Mandible: 8 (9). Enrage: +2 Str. 1st starts Skitter, 2nd Mandible, 3rd Enrage. After Skitter\u2192Mandible, after Mandible\u2192Enrage, after Enrage\u2192random.",
+      "hp": "24-28 (25-29) each",
+      "moves": [
+        "Skitter",
+        "Mandible",
+        "Enrage"
+      ]
+    },
+    {
+      "name": "Inklets",
+      "notes": "3-4 Inklets. Jab: 3 (4). Whirlwind: 2x3 (3x3). Piercing Gaze: 10 (11). Alternates Jab \u2192 random Whirlwind or Piercing Gaze.",
+      "hp": "11-17 (12-18) each",
+      "moves": [
+        "Jab",
+        "Whirlwind",
+        "Piercing Gaze"
+      ]
+    },
+    {
+      "name": "Mytes",
+      "notes": "2 Mytes. Toxic: 2 Toxic to Hand + 2 (3) Str. Bite: 13 (15). Suck: 4 (6). 1st starts Toxic, 2nd starts Bite. Cycle Toxic \u2192 Bite \u2192 Suck.",
+      "hp": "61-67 (64-69) each",
+      "moves": [
+        "Toxic",
+        "Bite",
+        "Suck"
+      ]
+    },
+    {
+      "name": "Nibbits",
+      "notes": "2 Nibbits. Butt: 12 (13). Slice: 6 (7) + 5 (6) Block. Hiss: +2 (3) Str. Front starts Slice, back starts Hiss. Cycle Butt \u2192 Slice \u2192 Hiss.",
+      "hp": "42-46 (44-48) each",
+      "moves": [
+        "Butt",
+        "Slice",
+        "Hiss"
+      ]
+    },
+    {
+      "name": "Overgrowth Crawlers",
+      "notes": "Fuzzy Wurm Crawler. Acid Goop: 4 (6). Gorge: +7 Str. Starts Acid Goop \u2192 Gorge. Repeat.",
+      "hp": "55-57 (58-59)",
+      "moves": [
+        "Acid Goop",
+        "Gorge"
+      ]
+    },
+    {
+      "name": "Ruby Raiders",
+      "notes": "3-4 Raiders of different types. Assassin: Killshot 11 (12). Axe: Swing 5 (6) + Heavy Swing 12 (13). Brute: Beat 7 (8) + Rally +3 Str. Crossbow: Fire 14 (16) + Hunker 3 Block. Tracker: Track 2 Frail + Barrage 1x8 (1x9).",
+      "hp": "18-33 (19-34) each",
+      "moves": [
+        "Killshot",
+        "Swing",
+        "Beat",
+        "Fire",
+        "Track"
+      ]
+    },
+    {
+      "name": "Scrolls of Biting",
+      "notes": "2-3 Scrolls. Chomp: 14 (16). More Teeth: 5x2 (6x2). Chew: +2 Str. Pattern Chomp \u2192 More Teeth \u2192 Chew, after Chew random Chomp/More Teeth.",
+      "hp": "31-38 (32-39) each",
+      "moves": [
+        "Chomp",
+        "More Teeth",
+        "Chew"
+      ]
+    },
+    {
+      "name": "Slimes",
+      "notes": "Mix of Leaf and Twig slimes. Leaf (Small): Tackle 3 (4) + 1 Slimed. Leaf (Medium): Sticky Shot 2 Slimed + Slam 8 (9). Twig (Small): Tackle 4 (5). Twig (Medium): Clump Shot 11 (12) + 1 Slimed.",
+      "hp": "7-35 (8-36) each",
+      "moves": [
+        "Tackle",
+        "Sticky Shot",
+        "Slam",
+        "Clump Shot"
+      ]
+    },
+    {
+      "name": "The Lost And Forgotten",
+      "notes": "The Lost (93/99 HP): Debilitating Smog -2 (-3) Str, Pummel 4x2 (5x2) + 2 (3) Str. The Forgotten (106/111 HP): Miasma -2 (-3) Dex, Concentrated Strike 13 (15) + Dex amount, Block 8 + 2 (3) Dex.",
+      "hp": "Lost 93 (99), Forgotten 106 (111)",
+      "moves": [
+        "Debilitating Smog",
+        "Pummel",
+        "Miasma",
+        "Concentrated Strike"
+      ]
+    },
+    {
+      "name": "Toadpoles",
+      "notes": "2-3 Toadpoles. Starts with Thorns. Spike Spit: Lose 2 Thorns + 3x3 (4x3). Nibble: 7 (8). Spikify: Gain 2 Thorns.",
+      "hp": "21-25 (22-26) each",
+      "moves": [
+        "Spike Spit",
+        "Nibble",
+        "Spikify"
+      ]
+    },
+    {
+      "name": "Two-Tailed Rats",
+      "notes": "3 Rats. Scratch: 8 (9). Disease Bite: 6 (7) + 1 Frail. Screech: Apply 2 Weak. Call for Backup: summon new rat. 75% chance to Call for Backup if available (after 2 turns, max 3 total). Screech has 3-turn cooldown. Can't repeat Scratch/Disease Bite.",
+      "hp": "17-21 (18-22) each",
+      "moves": [
+        "Scratch",
+        "Disease Bite",
+        "Screech",
+        "Call for Backup"
+      ]
+    }
+  ]
 }

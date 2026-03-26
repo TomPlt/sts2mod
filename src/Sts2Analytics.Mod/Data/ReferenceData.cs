@@ -13,6 +13,13 @@ public record RefEvent(
     [property: JsonPropertyName("condition")] string? Condition,
     [property: JsonPropertyName("options")] List<RefEventOption> Options);
 
+public record RefEnemy(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("hp")] string? Hp = null,
+    [property: JsonPropertyName("moves")] List<string>? Moves = null,
+    [property: JsonPropertyName("notes")] string? Notes = null,
+    [property: JsonPropertyName("monsters")] List<string>? Monsters = null);
+
 public record RefAct(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("displayName")] string DisplayName,

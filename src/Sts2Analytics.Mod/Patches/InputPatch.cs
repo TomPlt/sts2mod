@@ -28,8 +28,10 @@ public static class InputPatch
 
         if (keyEvent.Keycode == Key.F4)
         {
-            // Toggle per-card Elo badges in deck viewer
-            DeckViewPatch.ToggleCardElos();
+            if (CombatOverlay.IsInCombat)
+                CombatOverlay.Toggle();
+            else
+                DeckViewPatch.ToggleCardElos();
             return;
         }
 

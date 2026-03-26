@@ -81,6 +81,15 @@ public static class CombatPatch
             var dmgResult = DataLoader.GetExpectedDamage(encounterId, score)
                          ?? DataLoader.GetExpectedDamage(poolContext ?? "", score);
 
+            // Look up enemy reference data (movesets, HP, notes)
+            var enemyRef = DataLoader.GetEnemyReference(encName);
+
+            // Look up historical (raw) damage — try encounter-specific, fall back to pool
+            var histResult = DataLoader.GetHistoricalDamage(encounterId)
+                          ?? DataLoader.GetHistoricalDamage(poolContext ?? "");
+            var histAvg = histResult?.Mean ?? 0;
+            var histN = histResult?.SampleSize ?? 0;
+
             // Build display text
             var lines = new List<string>();
             lines.Add($"vs {encName}");
@@ -91,7 +100,7 @@ public static class CombatPatch
             }
             lines.Add($"Encounter: {oppElo:F0}  Deck: {deckElo:F0}");
 
-            CombatOverlay.Show(lines, oppElo, deckElo);
+            CombatOverlay.Show(lines, oppElo, deckElo, enemyRef, histAvg, histN);
 
             var expLog = dmgResult?.Expected;
             DebugLogOverlay.Log($"[SpireOracle] Combat: {encounterId} score={score:F2} exp={expLog:F0} (enc={encRating?.Elo:F0}, pool={poolRating?.Elo:F0}, deck={deckElo:F0})");
