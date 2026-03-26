@@ -313,6 +313,7 @@ public static class ExportCommand
     {
         using var conn = new SqliteConnection($"Data Source={dbPath}");
         conn.Open();
+        Schema.Initialize(conn);
         Schema.Migrate(conn);
 
         Console.WriteLine("Exporting mod overlay data...");
@@ -337,6 +338,10 @@ public static class ExportCommand
         // Process ancient choice ratings
         var ancientEngine = new AncientRatingEngine(conn);
         ancientEngine.ProcessAllRuns();
+
+        // Process ancient outcome ratings
+        var ancientOutcomeEngine = new AncientOutcomeRatingEngine(conn);
+        ancientOutcomeEngine.ProcessAllRuns();
 
         // Process outcome ratings (pick preference + run outcome)
         var outcomeEngine = new OutcomeRatingEngine(conn);
@@ -556,9 +561,45 @@ public static class ExportCommand
                 r => r.CharKey,
                 r => new AncientCharRating(r.Rating, r.Rd, r.Games)));
 
+        // Ancient win rates: win rate when picked vs when skipped
+        var ancientWinRates = conn.Query("""
+            SELECT ac.TextKey,
+                   SUM(CASE WHEN ac.WasChosen = 1 THEN 1 ELSE 0 END) AS TimesPicked,
+                   SUM(CASE WHEN ac.WasChosen = 0 THEN 1 ELSE 0 END) AS TimesSkipped,
+                   SUM(CASE WHEN ac.WasChosen = 1 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
+                   SUM(CASE WHEN ac.WasChosen = 0 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
+            FROM AncientChoices ac
+            JOIN Floors f ON ac.FloorId = f.Id
+            JOIN Runs r ON f.RunId = r.Id
+            GROUP BY ac.TextKey
+            """).ToDictionary(r => (string)r.TextKey);
+
         var ancientByKey = ancientRatings
             .Where(r => (string)r.Character == "ALL")
             .GroupBy(r => (string)r.ChoiceKey).ToList();
+
+        // Ancient outcome ratings
+        var ancientOutcomeRatings = conn.Query(
+            "SELECT ChoiceKey, Character, Context, Rating, RatingDeviation, GamesPlayed FROM AncientOutcomeGlicko2Ratings")
+            .ToList();
+        var ancientOutcomeByKey = ancientOutcomeRatings
+            .Where(r => (string)r.Character == "ALL" && (string)r.Context == "overall")
+            .ToDictionary(r => (string)r.ChoiceKey);
+        var ancientOutcomeCharRatings = ancientOutcomeRatings
+            .Where(r => (string)r.Character != "ALL")
+            .GroupBy(r => ((string)r.ChoiceKey, ((string)r.Character).Replace("CHARACTER.", "").ToLower()))
+            .Select(g => {
+                var best = g.FirstOrDefault(r => (string)r.Context == "neow")
+                    ?? g.FirstOrDefault(r => (string)r.Context == "post_act1")
+                    ?? g.First();
+                return new { ChoiceKey = g.Key.Item1, CharKey = g.Key.Item2,
+                    Rating = (double)best.Rating, Rd = (double)best.RatingDeviation,
+                    Games = (int)(long)best.GamesPlayed };
+            })
+            .GroupBy(r => r.ChoiceKey)
+            .ToDictionary(g => g.Key, g => g.ToDictionary(
+                r => r.CharKey,
+                r => new AncientCharRating(r.Rating, r.Rd, r.Games)));
 
         var ancientStats = ancientByKey.Select(g =>
         {
@@ -587,7 +628,27 @@ public static class ExportCommand
 
             var byChar = charRatings.TryGetValue(key, out var cr) && cr.Count > 0 ? cr : null;
 
-            return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2, pickRate, games, byChar);
+            // Outcome ratings
+            double outcomeRating = 0, outcomeRd = 350;
+            if (ancientOutcomeByKey.TryGetValue(key, out var oc))
+            {
+                outcomeRating = (double)oc.Rating;
+                outcomeRd = (double)oc.RatingDeviation;
+            }
+            var byCharOutcome = ancientOutcomeCharRatings.TryGetValue(key, out var co) && co.Count > 0 ? co : null;
+
+            double winRatePicked = 0, winRateSkipped = 0;
+            if (ancientWinRates.TryGetValue(key, out var wr))
+            {
+                var tp = (long)wr.TimesPicked;
+                var ts = (long)wr.TimesSkipped;
+                winRatePicked = tp > 0 ? (double)(long)wr.WinsWhenPicked / tp : 0;
+                winRateSkipped = ts > 0 ? (double)(long)wr.WinsWhenSkipped / ts : 0;
+            }
+
+            return new ModAncientStats(key, rating, rd, rNeow, rdNeow, rPost1, rdPost1, rPost2, rdPost2, pickRate, games, byChar,
+                OutcomeRating: outcomeRating, OutcomeRd: outcomeRd, ByCharacterOutcome: byCharOutcome,
+                WinRatePicked: winRatePicked, WinRateSkipped: winRateSkipped);
         }).ToList();
 
         // Build map intel data per character per act

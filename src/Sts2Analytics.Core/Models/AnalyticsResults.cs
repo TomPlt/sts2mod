@@ -69,7 +69,10 @@ public record ModAncientStats(
     double RatingPostAct1, double RdPostAct1,
     double RatingPostAct2, double RdPostAct2,
     double PickRate = 0, int Games = 0,
-    Dictionary<string, AncientCharRating>? ByCharacter = null);
+    Dictionary<string, AncientCharRating>? ByCharacter = null,
+    double OutcomeRating = 0, double OutcomeRd = 350,
+    Dictionary<string, AncientCharRating>? ByCharacterOutcome = null,
+    double WinRatePicked = 0, double WinRateSkipped = 0);
 
 public record AncientCharRating(double Rating, double Rd, int Games);
 

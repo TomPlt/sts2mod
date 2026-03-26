@@ -50,7 +50,12 @@ public record AncientStats(
     [property: JsonPropertyName("rdPostAct2")] double RdPostAct2 = 350,
     [property: JsonPropertyName("pickRate")] double PickRate = 0,
     [property: JsonPropertyName("games")] int Games = 0,
-    [property: JsonPropertyName("byCharacter")] Dictionary<string, AncientCharRating>? ByCharacter = null);
+    [property: JsonPropertyName("byCharacter")] Dictionary<string, AncientCharRating>? ByCharacter = null,
+    [property: JsonPropertyName("outcomeRating")] double OutcomeRating = 0,
+    [property: JsonPropertyName("outcomeRd")] double OutcomeRd = 350,
+    [property: JsonPropertyName("byCharacterOutcome")] Dictionary<string, AncientCharRating>? ByCharacterOutcome = null,
+    [property: JsonPropertyName("winRatePicked")] double WinRatePicked = 0,
+    [property: JsonPropertyName("winRateSkipped")] double WinRateSkipped = 0);
 
 public record AncientCharRating(
     [property: JsonPropertyName("rating")] double Rating,

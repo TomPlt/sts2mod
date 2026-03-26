@@ -19,7 +19,7 @@ else
     <div class="controls-row">
         <div class="card-selector">
             <input type="text" class="search-input" placeholder="Search cards..."
-                   @bind="_searchText" @bind:event="oninput" />
+                   @bind="_searchText" @bind:event="oninput" @bind:after="UpdateSearch" />
             @if (!string.IsNullOrEmpty(_searchText) && _searchResults.Count > 0)
             {
                 <div class="search-dropdown">
@@ -149,15 +149,12 @@ else
         BuildChart();
     }
 
-    private List<string> _lastSearchText = [];
-
-    protected override void OnParametersSet()
+    private void UpdateSearch()
     {
         if (!string.IsNullOrEmpty(_searchText) && _searchText.Length >= 2)
         {
-            var search = _searchText.ToLowerInvariant();
             _searchResults = _availableCards
-                .Where(c => FormatName(c).Contains(search, StringComparison.OrdinalIgnoreCase))
+                .Where(c => FormatName(c).Contains(_searchText, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(c => FormatName(c))
                 .Take(20)
                 .ToList();
@@ -175,46 +172,77 @@ else
 
         var history = _data.CardRatingHistory.AsEnumerable();
 
-        // Apply player filter
         if (Filter.Player != null)
             history = history.Where(h => h.Source == Filter.Player);
 
-        var historyList = history.ToList();
+        var selectedSet = _selectedCards.ToHashSet();
+        var relevantHistory = history.Where(h => selectedSet.Contains(h.CardId)).ToList();
+
+        // Build unified timeline: all unique (runId, timestamp) sorted by runId
+        var timeline = relevantHistory
+            .Select(h => (h.RunId, h.Timestamp))
+            .Distinct()
+            .OrderBy(t => t.RunId)
+            .ToList();
+
+        if (timeline.Count == 0) return;
+
+        // Format labels — deduplicate same-day labels with run index
+        var labels = timeline.Select(t =>
+            DateTime.TryParse(t.Timestamp, out var dt) ? dt.ToString("MMM dd") : t.RunId.ToString()
+        ).ToList();
+
+        var enabledMetrics = new List<(string key, string label, LineType line)>();
+        if (_showPick) enabledMetrics.Add(("pick", "Pick", LineType.Solid));
+        if (_showOutcome) enabledMetrics.Add(("outcome", "Outcome", LineType.Dashed));
+        if (_showCombat) enabledMetrics.Add(("combat", "Combat", LineType.Dotted));
 
         for (int i = 0; i < _selectedCards.Count; i++)
         {
             var cardId = _selectedCards[i];
             var color = CardColors[i % CardColors.Length];
-            var cardHistory = historyList.Where(h => h.CardId == cardId).ToList();
 
-            if (_showPick)
-                AddSeries(cardHistory, cardId, "pick", "Pick", color, LineType.Solid);
-            if (_showOutcome)
-                AddSeries(cardHistory, cardId, "outcome", "Outcome", color, LineType.Dashed);
-            if (_showCombat)
-                AddSeries(cardHistory, cardId, "combat", "Combat", color, LineType.Dotted);
-        }
-    }
-
-    private void AddSeries(List<CardRatingHistoryEntry> cardHistory, string cardId,
-        string metric, string metricLabel, string color, LineType lineType)
-    {
-        var points = cardHistory
-            .Where(h => h.Metric == metric)
-            .OrderBy(h => h.RunId)
-            .Select(h =>
+            foreach (var (metricKey, metricLabel, lineType) in enabledMetrics)
             {
-                var date = DateTime.TryParse(h.Timestamp, out var dt) ? dt.ToString("MMM dd") : h.RunId.ToString();
-                return new ChartPoint(date, h.Rating);
-            })
-            .ToList();
+                // Build lookup: runId -> rating for this card+metric
+                var ratingByRun = relevantHistory
+                    .Where(h => h.CardId == cardId && h.Metric == metricKey)
+                    .GroupBy(h => h.RunId)
+                    .ToDictionary(g => g.Key, g => g.Last().Rating);
 
-        if (points.Count > 0)
-        {
-            var title = _selectedCards.Count > 1
-                ? $"{FormatName(cardId)} — {metricLabel}"
-                : metricLabel;
-            _chartSeries.Add(new ChartSeries(title, color, lineType, points));
+                if (ratingByRun.Count == 0) continue;
+
+                // Walk the unified timeline, carrying forward last known rating (start at 1500)
+                var points = new List<ChartPoint>();
+                double lastRating = 1500;
+                bool started = false;
+
+                for (int j = 0; j < timeline.Count; j++)
+                {
+                    var runId = timeline[j].RunId;
+                    if (ratingByRun.TryGetValue(runId, out var rating))
+                    {
+                        if (!started)
+                        {
+                            // Insert starting point at 1500 one step before first data
+                            if (j > 0)
+                                points.Add(new ChartPoint(labels[j - 1], 1500));
+                            else
+                                points.Add(new ChartPoint(labels[j], 1500));
+                        }
+                        started = true;
+                        lastRating = rating;
+                    }
+
+                    if (started)
+                        points.Add(new ChartPoint(labels[j], lastRating));
+                }
+
+                var title = _selectedCards.Count > 1
+                    ? $"{FormatName(cardId)} — {metricLabel}"
+                    : metricLabel;
+                _chartSeries.Add(new ChartSeries(title, color, lineType, points));
+            }
         }
     }
 

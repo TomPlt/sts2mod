@@ -206,13 +206,20 @@ public static class OverlayFactory
     {
         RemoveOverlay(choiceHolder);
 
-        // Use character-specific rating for badge if available
+        // Use outcome rating for badge if available, then character-specific
         var charKey = character?.Replace("CHARACTER.", "").ToLower();
         AncientCharRating? charRating = null;
-        if (charKey != null && stats.ByCharacter != null)
-            stats.ByCharacter.TryGetValue(charKey, out charRating);
+        AncientCharRating? charOutcomeRating = null;
+        if (charKey != null)
+        {
+            if (stats.ByCharacter != null)
+                stats.ByCharacter.TryGetValue(charKey, out charRating);
+            if (stats.ByCharacterOutcome != null)
+                stats.ByCharacterOutcome.TryGetValue(charKey, out charOutcomeRating);
+        }
 
-        var badgeRating = charRating?.Rating ?? stats.Rating;
+        // Badge shows overall power (all characters) as main number
+        var badgeRating = stats.OutcomeRating > 0 ? stats.OutcomeRating : stats.Rating;
 
         var badge = new PanelContainer();
         badge.Name = "SpireOracleAncientBadge";
@@ -273,20 +280,35 @@ public static class OverlayFactory
         var vbox = new VBoxContainer();
         vbox.AddThemeConstantOverride("separation", 2);
 
-        AddStatRow(vbox, "Overall", $"{stats.Rating:F0} ±{stats.Rd:F0}");
+        if (stats.OutcomeRating > 0)
+        {
+            AddStatRow(vbox, "Power", $"{stats.OutcomeRating:F0} ±{stats.OutcomeRd:F0}");
+            AddStatRow(vbox, "Popularity", $"{stats.Rating:F0} ±{stats.Rd:F0}");
+        }
+        else
+        {
+            AddStatRow(vbox, "Popularity", $"{stats.Rating:F0} ±{stats.Rd:F0}");
+        }
         AddStatRow(vbox, "Pick Rate", $"{stats.PickRate * 100:F1}%");
+        AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
+        AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
+        var ancientDelta = stats.WinRatePicked - stats.WinRateSkipped;
+        AddStatRow(vbox, "Delta", $"{ancientDelta:+0.0%;-0.0%;0.0%}");
         AddStatRow(vbox, "Games", $"{stats.Games}");
 
-        if (charRating != null && charKey != null)
+        if (charKey != null && (charRating != null || charOutcomeRating != null))
         {
             var sep = new HSeparator();
             sep.AddThemeConstantOverride("separation", 6);
             vbox.AddChild(sep);
 
             var charLabel = char.ToUpper(charKey[0]) + charKey[1..];
-            AddColoredStatRow(vbox, charLabel, $"{charRating.Rating:F0} ±{charRating.Rd:F0}",
-                new Color(0.36f, 0.72f, 0.83f));
-            AddStatRow(vbox, $"{charLabel} Games", $"{charRating.Games}");
+            if (charOutcomeRating != null)
+                AddColoredStatRow(vbox, $"{charLabel} Power", $"{charOutcomeRating.Rating:F0} ±{charOutcomeRating.Rd:F0}",
+                    new Color(0.36f, 0.72f, 0.83f));
+            if (charRating != null)
+                AddStatRow(vbox, $"{charLabel} Pop", $"{charRating.Rating:F0} ±{charRating.Rd:F0}");
+            AddStatRow(vbox, $"{charLabel} Games", $"{(charOutcomeRating ?? charRating)!.Games}");
         }
 
         detail.AddChild(vbox);
@@ -294,8 +316,8 @@ public static class OverlayFactory
         detail.CustomMinimumSize = new Vector2(260, 0);
         detail.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         detail.GrowHorizontal = Control.GrowDirection.Begin;
-        detail.GrowVertical = Control.GrowDirection.End;
-        detail.Position = new Vector2(-200, -70);
+        detail.GrowVertical = Control.GrowDirection.Begin;
+        detail.Position = new Vector2(-200, -200);
         detail.ZAsRelative = false;
         detail.ZIndex = 200;
         choiceHolder.AddChild(detail);
