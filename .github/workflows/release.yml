@@ -1,0 +1,71 @@
+name: Release Mod
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Update mod_manifest.json version
+        run: |
+          jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' \
+            mods/SpireOracle/mod_manifest.json > /tmp/manifest.json
+          mv /tmp/manifest.json mods/SpireOracle/mod_manifest.json
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build mod
+        run: dotnet build src/Sts2Analytics.Mod -c Release
+
+      - name: Clone data repo
+        run: |
+          git clone https://x-access-token:${{ secrets.DATA_REPO_TOKEN }}@github.com/TomPlt/spire-oracle-data.git /tmp/spire-oracle-data
+
+      - name: Import runs
+        run: |
+          for player_dir in /tmp/spire-oracle-data/runs/*/; do
+            dotnet run --project src/Sts2Analytics.Cli -- import "$player_dir"
+          done
+
+      - name: Export overlay data
+        run: |
+          dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOracle/overlay_data.json
+
+      - name: Copy built DLL
+        run: cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/SpireOracle.dll
+
+      - name: Package release zip
+        run: |
+          cd mods/SpireOracle
+          zip /tmp/SpireOracle-${{ github.ref_name }}.zip \
+            SpireOracle.dll \
+            mod_manifest.json \
+            overlay_data.json \
+            sts2_reference.json \
+            config.example.json \
+            setup.bat \
+            README.txt
+
+      - name: Create GitHub Release
+        run: |
+          gh release create ${{ github.ref_name }} \
+            /tmp/SpireOracle-${{ github.ref_name }}.zip \
+            --title "Spire Oracle ${{ github.ref_name }}" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

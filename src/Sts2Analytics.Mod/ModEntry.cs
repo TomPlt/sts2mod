@@ -20,7 +20,18 @@ public class ModEntry
 
     public static void Initialize()
     {
-        DebugLogOverlay.Log("[SpireOracle] Initializing...");
+        // Read version from manifest
+        string version = "?";
+        foreach (var mod in ModManager.AllMods)
+        {
+            if (mod.manifest?.id == "SpireOracle")
+            {
+                version = mod.manifest.version ?? "?";
+                break;
+            }
+        }
+        DebugLogOverlay.SetVersion(version);
+        DebugLogOverlay.Log($"[SpireOracle] v{version} — Initializing...");
 
         // Find our mod path from the DLL location
         var assemblyPath = typeof(ModEntry).Assembly.Location;

@@ -17,8 +17,11 @@ public static class DebugLogOverlay
     private static PanelContainer? _panel;
     private static VBoxContainer? _vbox;
     private static bool _visible;
+    private static string _version = "?";
 
     public static bool IsVisible => _visible;
+
+    public static void SetVersion(string version) => _version = version;
 
     /// <summary>
     /// Log a message — writes to Godot console AND captures in the ring buffer.
@@ -92,7 +95,7 @@ public static class DebugLogOverlay
 
         // Title
         var title = new Label();
-        title.Text = "SpireOracle Debug Log (F5)";
+        title.Text = $"SpireOracle v{_version} (F5)";
         title.AddThemeFontSizeOverride("font_size", 14);
         title.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
         title.HorizontalAlignment = HorizontalAlignment.Right;
