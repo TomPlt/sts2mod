@@ -7,14 +7,27 @@ using SpireOracle.Data;
 namespace SpireOracle.UI;
 
 /// <summary>
-/// Full-screen run stats overlay. Toggle with F6.
-/// Shows per-combat breakdowns: top 3 played, damage, block for each fight.
+/// Full-screen run stats overlay with line charts. Toggle with F6.
+/// Shows per-card damage/plays over combats as line plots.
 /// </summary>
 public static class RunStatsOverlay
 {
     private const string OverlayName = "SpireOracleRunStats";
     private static Control? _panel;
     private static bool _visible;
+
+    // Colors for different card lines
+    private static readonly Color[] LineColors = new[]
+    {
+        new Color(0.85f, 0.25f, 0.2f),   // red
+        new Color(0.2f, 0.6f, 0.9f),     // blue
+        new Color(0.2f, 0.8f, 0.3f),     // green
+        new Color(0.9f, 0.7f, 0.1f),     // yellow
+        new Color(0.8f, 0.3f, 0.8f),     // purple
+        new Color(0.9f, 0.5f, 0.1f),     // orange
+        new Color(0.3f, 0.9f, 0.8f),     // cyan
+        new Color(0.7f, 0.7f, 0.7f),     // gray
+    };
 
     public static bool IsVisible => _visible;
 
@@ -34,16 +47,30 @@ public static class RunStatsOverlay
 
         var runId = LiveRunDb.CurrentRunId;
 
-        // Per-combat top 3 played
-        var playedPerCombat = LiveRunDb.QueryGroupedStats(
-            @"SELECT c.EncounterId || ' (F' || c.FloorIndex || ')', a.SourceId, COUNT(*) as cnt
+        // Get ordered combat list
+        var combatList = LiveRunDb.QueryTopStats(
+            @"SELECT c.EncounterId, c.FloorIndex
+              FROM Combats c WHERE c.RunId=@runId ORDER BY c.Id", runId);
+
+        if (combatList.Count == 0) return;
+
+        // Top 5 cards by total plays
+        var topCards = LiveRunDb.QueryTopStats(
+            @"SELECT a.SourceId, COUNT(*)
               FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
-              GROUP BY c.Id, a.SourceId ORDER BY c.Id, cnt DESC", runId);
+              GROUP BY a.SourceId ORDER BY COUNT(*) DESC LIMIT 5", runId);
 
-        // Per-combat top 3 damage
+        // Per-combat plays for each top card
+        var playsPerCombat = LiveRunDb.QueryGroupedStats(
+            @"SELECT a.SourceId, c.Id, COUNT(*)
+              FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+              WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
+              GROUP BY a.SourceId, c.Id ORDER BY c.Id", runId);
+
+        // Per-combat damage for each card
         var dmgPerCombat = LiveRunDb.QueryGroupedStats(
-            @"SELECT c.EncounterId || ' (F' || c.FloorIndex || ')', a1.SourceId, SUM(a2.Amount) as total
+            @"SELECT a1.SourceId, CAST(c.Id AS TEXT), SUM(a2.Amount)
               FROM CombatActions a1
               JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
                 AND a2.ActionType='DAMAGE_DEALT'
@@ -54,43 +81,20 @@ public static class RunStatsOverlay
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
               JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY c.Id, a1.SourceId ORDER BY c.Id, total DESC", runId);
-
-        // Per-combat top 3 block
-        var blkPerCombat = LiveRunDb.QueryGroupedStats(
-            @"SELECT c.EncounterId || ' (F' || c.FloorIndex || ')', a1.SourceId, SUM(a2.Amount) as total
-              FROM CombatActions a1
-              JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
-                AND a2.ActionType='BLOCK_GAINED'
-                AND a2.SourceId LIKE 'CHARACTER.%'
-                AND a2.Seq < COALESCE(
-                  (SELECT MIN(a3.Seq) FROM CombatActions a3
-                   WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
-              JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
-              WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY c.Id, a1.SourceId ORDER BY c.Id, total DESC", runId);
+              GROUP BY a1.SourceId, c.Id ORDER BY c.Id", runId);
 
         // HP per combat
         var hpPerCombat = LiveRunDb.QueryTopStats(
-            @"SELECT c.EncounterId || ' (F' || c.FloorIndex || ')', t.StartingHp
+            @"SELECT c.EncounterId, t.StartingHp
               FROM Turns t JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND t.TurnNumber = 1
               ORDER BY c.Id", runId);
 
-        // Overall totals
-        var topCardsOverall = LiveRunDb.QueryTopStats(
-            @"SELECT a.SourceId, COUNT(*)
-              FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
-              WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
-              GROUP BY a.SourceId ORDER BY COUNT(*) DESC LIMIT 10", runId);
-
-        // Group per-combat data: take top 3 per combat
-        var playedByFight = GroupTop3(playedPerCombat);
-        var dmgByFight = GroupTop3(dmgPerCombat);
-        var blkByFight = GroupTop3(blkPerCombat);
-
-        // Get ordered combat list
-        var combats = playedByFight.Keys.ToList();
+        // Combat IDs in order (for x-axis mapping)
+        var combatIds = LiveRunDb.QueryTopStats(
+            @"SELECT CAST(c.Id AS TEXT), c.Id
+              FROM Combats c WHERE c.RunId=@runId ORDER BY c.Id", runId);
+        var combatIdList = combatIds.Select(c => c.label).ToList();
 
         // Build overlay
         _panel = new PanelContainer();
@@ -110,7 +114,7 @@ public static class RunStatsOverlay
         scroll.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 
         var vbox = new VBoxContainer();
-        vbox.AddThemeConstantOverride("separation", 16);
+        vbox.AddThemeConstantOverride("separation", 30);
         vbox.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 
         // Title
@@ -121,101 +125,17 @@ public static class RunStatsOverlay
         title.HorizontalAlignment = HorizontalAlignment.Center;
         vbox.AddChild(title);
 
-        // HP bar across combats
-        if (hpPerCombat.Count > 0)
-        {
-            AddSection(vbox, "HP Over Run");
-            var hpRow = new HBoxContainer();
-            hpRow.AddThemeConstantOverride("separation", 2);
-            var maxHp = hpPerCombat.Max(h => h.value);
-            if (maxHp == 0) maxHp = 1;
-            foreach (var (label, hp) in hpPerCombat)
-            {
-                var col = new VBoxContainer();
-                col.AddThemeConstantOverride("separation", 1);
-                col.SizeFlagsVertical = Control.SizeFlags.ShrinkEnd;
+        // HP line chart
+        AddLineChart(vbox, "HP Over Run", hpPerCombat, combatList,
+            new Color(0.2f, 0.8f, 0.3f), 700, 200);
 
-                var valLbl = new Label();
-                valLbl.Text = $"{hp}";
-                valLbl.AddThemeFontSizeOverride("font_size", 10);
-                valLbl.AddThemeColorOverride("font_color", Colors.White);
-                valLbl.HorizontalAlignment = HorizontalAlignment.Center;
-                col.AddChild(valLbl);
+        // Card plays per combat — multi-line chart
+        AddMultiLineChart(vbox, "Card Plays Per Combat", topCards, playsPerCombat,
+            combatIdList, combatList, 700, 250);
 
-                var bar = new ColorRect();
-                bar.Color = hp > maxHp * 0.5f ? new Color(0.2f, 0.8f, 0.3f) :
-                            hp > maxHp * 0.25f ? new Color(0.9f, 0.7f, 0.2f) :
-                            new Color(0.9f, 0.25f, 0.2f);
-                bar.CustomMinimumSize = new Vector2(30, Math.Max(2, 100f * hp / maxHp));
-                col.AddChild(bar);
-
-                hpRow.AddChild(col);
-            }
-            vbox.AddChild(hpRow);
-        }
-
-        // Per-combat breakdowns
-        foreach (var combat in combats)
-        {
-            var combatSection = new VBoxContainer();
-            combatSection.AddThemeConstantOverride("separation", 4);
-
-            // Combat header
-            var header = new Label();
-            header.Text = FormatCombatName(combat);
-            header.AddThemeFontSizeOverride("font_size", 18);
-            header.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
-            combatSection.AddChild(header);
-
-            // Three columns: Played | Damage | Block
-            var cols = new HBoxContainer();
-            cols.AddThemeConstantOverride("separation", 30);
-
-            var played = playedByFight.GetValueOrDefault(combat, new());
-            var dmg = dmgByFight.GetValueOrDefault(combat, new());
-            var blk = blkByFight.GetValueOrDefault(combat, new());
-
-            AddMiniColumn(cols, "Played", played, new Color(0.5f, 0.5f, 0.7f));
-            AddMiniColumn(cols, "Damage", dmg, new Color(0.85f, 0.25f, 0.2f));
-            AddMiniColumn(cols, "Block", blk, new Color(0.2f, 0.5f, 0.85f));
-
-            combatSection.AddChild(cols);
-            combatSection.AddChild(new HSeparator());
-            vbox.AddChild(combatSection);
-        }
-
-        // Overall top cards
-        if (topCardsOverall.Count > 0)
-        {
-            AddSection(vbox, "Overall Top Cards");
-            var maxVal = topCardsOverall.Max(c => c.value);
-            if (maxVal == 0) maxVal = 1;
-            foreach (var (cardId, count) in topCardsOverall)
-            {
-                var row = new HBoxContainer();
-                row.AddThemeConstantOverride("separation", 8);
-
-                var nameLbl = new Label();
-                nameLbl.Text = FormatCardName(cardId);
-                nameLbl.CustomMinimumSize = new Vector2(160, 0);
-                nameLbl.AddThemeFontSizeOverride("font_size", 14);
-                nameLbl.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.75f));
-                row.AddChild(nameLbl);
-
-                var bar = new ColorRect();
-                bar.Color = new Color(0.5f, 0.5f, 0.7f);
-                bar.CustomMinimumSize = new Vector2(300f * count / maxVal, 16);
-                row.AddChild(bar);
-
-                var valLbl = new Label();
-                valLbl.Text = $"{count}";
-                valLbl.AddThemeFontSizeOverride("font_size", 14);
-                valLbl.AddThemeColorOverride("font_color", Colors.White);
-                row.AddChild(valLbl);
-
-                vbox.AddChild(row);
-            }
-        }
+        // Card damage per combat — multi-line chart
+        AddMultiLineChart(vbox, "Card Damage Per Combat", topCards, dmgPerCombat,
+            combatIdList, combatList, 700, 250);
 
         scroll.AddChild(vbox);
         _panel.AddChild(scroll);
@@ -234,81 +154,206 @@ public static class RunStatsOverlay
         _visible = false;
     }
 
-    private static Dictionary<string, List<(string label, int value)>> GroupTop3(
-        List<(string group, string label, int value)> data)
+    private static void AddLineChart(VBoxContainer parent, string chartTitle,
+        List<(string label, int value)> data, List<(string label, int value)> combatLabels,
+        Color color, float width, float height)
     {
-        var result = new Dictionary<string, List<(string, int)>>();
-        foreach (var (group, label, value) in data)
-        {
-            if (!result.ContainsKey(group))
-                result[group] = new List<(string, int)>();
-            if (result[group].Count < 3)
-                result[group].Add((label, value));
-        }
-        return result;
-    }
+        if (data.Count < 2) return;
 
-    private static void AddSection(VBoxContainer parent, string title)
-    {
-        var lbl = new Label();
-        lbl.Text = title;
-        lbl.AddThemeFontSizeOverride("font_size", 20);
-        lbl.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.85f));
-        parent.AddChild(lbl);
-    }
+        var section = new VBoxContainer();
+        section.AddThemeConstantOverride("separation", 4);
 
-    private static void AddMiniColumn(HBoxContainer parent, string header,
-        List<(string label, int value)> stats, Color barColor)
-    {
-        var col = new VBoxContainer();
-        col.AddThemeConstantOverride("separation", 2);
-        col.CustomMinimumSize = new Vector2(200, 0);
+        var titleLbl = new Label();
+        titleLbl.Text = chartTitle;
+        titleLbl.AddThemeFontSizeOverride("font_size", 20);
+        titleLbl.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.85f));
+        section.AddChild(titleLbl);
 
-        var headerLbl = new Label();
-        headerLbl.Text = header;
-        headerLbl.AddThemeFontSizeOverride("font_size", 14);
-        headerLbl.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
-        col.AddChild(headerLbl);
+        // Chart container
+        var chart = new Control();
+        chart.CustomMinimumSize = new Vector2(width, height);
 
-        var maxVal = stats.Count > 0 ? stats.Max(s => s.value) : 1;
+        var maxVal = data.Max(d => d.value);
         if (maxVal == 0) maxVal = 1;
 
-        foreach (var (cardId, value) in stats)
+        var padding = 40f;
+        var chartW = width - padding * 2;
+        var chartH = height - padding;
+
+        // Line2D
+        var line = new Line2D();
+        line.Width = 2;
+        line.DefaultColor = color;
+        for (int i = 0; i < data.Count; i++)
         {
-            var row = new HBoxContainer();
-            row.AddThemeConstantOverride("separation", 4);
+            var x = padding + chartW * i / Math.Max(data.Count - 1, 1);
+            var y = chartH - chartH * data[i].value / maxVal;
+            line.AddPoint(new Vector2(x, y));
+        }
+        chart.AddChild(line);
 
-            var nameLbl = new Label();
-            nameLbl.Text = FormatCardName(cardId);
-            nameLbl.CustomMinimumSize = new Vector2(100, 0);
-            nameLbl.AddThemeFontSizeOverride("font_size", 12);
-            nameLbl.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.75f));
-            row.AddChild(nameLbl);
+        // Value labels + dots
+        for (int i = 0; i < data.Count; i++)
+        {
+            var x = padding + chartW * i / Math.Max(data.Count - 1, 1);
+            var y = chartH - chartH * data[i].value / maxVal;
 
-            var bar = new ColorRect();
-            bar.Color = barColor;
-            bar.CustomMinimumSize = new Vector2(60f * value / maxVal, 12);
-            row.AddChild(bar);
+            var dot = new ColorRect();
+            dot.Color = color;
+            dot.Position = new Vector2(x - 3, y - 3);
+            dot.Size = new Vector2(6, 6);
+            chart.AddChild(dot);
 
             var valLbl = new Label();
-            valLbl.Text = $"{value}";
-            valLbl.AddThemeFontSizeOverride("font_size", 12);
+            valLbl.Text = $"{data[i].value}";
+            valLbl.Position = new Vector2(x - 10, y - 18);
+            valLbl.AddThemeFontSizeOverride("font_size", 11);
             valLbl.AddThemeColorOverride("font_color", Colors.White);
-            row.AddChild(valLbl);
+            chart.AddChild(valLbl);
 
-            col.AddChild(row);
+            // X-axis label
+            if (i < combatLabels.Count)
+            {
+                var xLbl = new Label();
+                xLbl.Text = FormatShortName(combatLabels[i].label);
+                xLbl.Position = new Vector2(x - 15, chartH + 4);
+                xLbl.AddThemeFontSizeOverride("font_size", 9);
+                xLbl.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.6f));
+                chart.AddChild(xLbl);
+            }
         }
 
-        if (stats.Count == 0)
+        section.AddChild(chart);
+        parent.AddChild(section);
+    }
+
+    private static void AddMultiLineChart(VBoxContainer parent, string chartTitle,
+        List<(string label, int value)> topCards,
+        List<(string group, string label, int value)> perCombatData,
+        List<string> combatIdList,
+        List<(string label, int value)> combatLabels,
+        float width, float height)
+    {
+        if (topCards.Count == 0 || combatIdList.Count < 2) return;
+
+        var section = new VBoxContainer();
+        section.AddThemeConstantOverride("separation", 4);
+
+        var titleLbl = new Label();
+        titleLbl.Text = chartTitle;
+        titleLbl.AddThemeFontSizeOverride("font_size", 20);
+        titleLbl.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.85f));
+        section.AddChild(titleLbl);
+
+        // Legend
+        var legend = new HBoxContainer();
+        legend.AddThemeConstantOverride("separation", 16);
+        for (int i = 0; i < topCards.Count && i < LineColors.Length; i++)
         {
-            var emptyLbl = new Label();
-            emptyLbl.Text = "—";
-            emptyLbl.AddThemeFontSizeOverride("font_size", 12);
-            emptyLbl.AddThemeColorOverride("font_color", new Color(0.4f, 0.4f, 0.5f));
-            col.AddChild(emptyLbl);
+            var legendItem = new HBoxContainer();
+            legendItem.AddThemeConstantOverride("separation", 4);
+            var swatch = new ColorRect();
+            swatch.Color = LineColors[i];
+            swatch.CustomMinimumSize = new Vector2(12, 12);
+            legendItem.AddChild(swatch);
+            var nameLbl = new Label();
+            nameLbl.Text = FormatCardName(topCards[i].label);
+            nameLbl.AddThemeFontSizeOverride("font_size", 12);
+            nameLbl.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.75f));
+            legendItem.AddChild(nameLbl);
+            legend.AddChild(legendItem);
+        }
+        section.AddChild(legend);
+
+        // Build per-card, per-combat value lookup
+        var cardCombatValues = new Dictionary<string, Dictionary<string, int>>();
+        foreach (var (cardId, combatId, value) in perCombatData)
+        {
+            if (!cardCombatValues.ContainsKey(cardId))
+                cardCombatValues[cardId] = new Dictionary<string, int>();
+            cardCombatValues[cardId][combatId] = value;
         }
 
-        parent.AddChild(col);
+        // Find max value across all cards for Y scaling
+        var maxVal = 1;
+        foreach (var card in topCards)
+        {
+            if (cardCombatValues.TryGetValue(card.label, out var vals))
+            {
+                var cardMax = vals.Values.DefaultIfEmpty(0).Max();
+                if (cardMax > maxVal) maxVal = cardMax;
+            }
+        }
+
+        var padding = 40f;
+        var chartW = width - padding * 2;
+        var chartH = height - padding;
+
+        var chart = new Control();
+        chart.CustomMinimumSize = new Vector2(width, height);
+
+        // Draw lines for each top card
+        for (int ci = 0; ci < topCards.Count && ci < LineColors.Length; ci++)
+        {
+            var cardId = topCards[ci].label;
+            var cardVals = cardCombatValues.GetValueOrDefault(cardId, new());
+
+            var line = new Line2D();
+            line.Width = 2;
+            line.DefaultColor = LineColors[ci];
+
+            for (int j = 0; j < combatIdList.Count; j++)
+            {
+                var val = cardVals.GetValueOrDefault(combatIdList[j], 0);
+                var x = padding + chartW * j / Math.Max(combatIdList.Count - 1, 1);
+                var y = chartH - chartH * val / maxVal;
+                line.AddPoint(new Vector2(x, y));
+            }
+            chart.AddChild(line);
+
+            // Dots at each point
+            for (int j = 0; j < combatIdList.Count; j++)
+            {
+                var val = cardVals.GetValueOrDefault(combatIdList[j], 0);
+                if (val == 0) continue;
+                var x = padding + chartW * j / Math.Max(combatIdList.Count - 1, 1);
+                var y = chartH - chartH * val / maxVal;
+
+                var dot = new ColorRect();
+                dot.Color = LineColors[ci];
+                dot.Position = new Vector2(x - 2, y - 2);
+                dot.Size = new Vector2(4, 4);
+                chart.AddChild(dot);
+            }
+        }
+
+        // X-axis labels
+        for (int j = 0; j < combatIdList.Count && j < combatLabels.Count; j++)
+        {
+            var x = padding + chartW * j / Math.Max(combatIdList.Count - 1, 1);
+            var xLbl = new Label();
+            xLbl.Text = FormatShortName(combatLabels[j].label);
+            xLbl.Position = new Vector2(x - 15, chartH + 4);
+            xLbl.AddThemeFontSizeOverride("font_size", 9);
+            xLbl.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.6f));
+            chart.AddChild(xLbl);
+        }
+
+        // Y-axis labels
+        for (int i = 0; i <= 4; i++)
+        {
+            var y = chartH - chartH * i / 4;
+            var gridVal = maxVal * i / 4;
+            var yLbl = new Label();
+            yLbl.Text = $"{gridVal}";
+            yLbl.Position = new Vector2(0, y - 6);
+            yLbl.AddThemeFontSizeOverride("font_size", 10);
+            yLbl.AddThemeColorOverride("font_color", new Color(0.4f, 0.4f, 0.5f));
+            chart.AddChild(yLbl);
+        }
+
+        section.AddChild(chart);
+        parent.AddChild(section);
     }
 
     private static string FormatCardName(string id)
@@ -324,19 +369,11 @@ public static class RunStatsOverlay
         return name + upgrade;
     }
 
-    private static string FormatCombatName(string id)
+    private static string FormatShortName(string id)
     {
-        if (string.IsNullOrEmpty(id)) return "?";
-        var name = id;
-        if (name.StartsWith("ENCOUNTER.")) name = name.Substring(10);
-        // Keep floor info in parens
-        var parenIdx = name.IndexOf(" (");
-        var suffix = "";
-        if (parenIdx > 0) { suffix = name.Substring(parenIdx); name = name.Substring(0, parenIdx); }
-        foreach (var s in new[] { "_WEAK", "_NORMAL", "_ELITE", "_BOSS" })
-            if (name.EndsWith(s)) { name = name.Substring(0, name.Length - s.Length); break; }
-        name = string.Join(" ", name.Split('_').Select(w =>
-            w.Length > 0 ? char.ToUpper(w[0]) + w.Substring(1).ToLower() : w));
-        return name + suffix;
+        var name = FormatCardName(id);
+        if (name.StartsWith("Encounter ")) name = name.Substring(10);
+        if (name.Length > 10) name = name.Substring(0, 10);
+        return name;
     }
 }
