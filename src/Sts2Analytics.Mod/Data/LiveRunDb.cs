@@ -65,6 +65,7 @@ public static class LiveRunDb
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
+                if (reader.IsDBNull(0) || reader.IsDBNull(1)) continue;
                 var label = reader.GetString(0);
                 var value = reader.GetInt32(1);
                 results.Add((label, value));
@@ -94,6 +95,7 @@ public static class LiveRunDb
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
+                if (reader.IsDBNull(0) || reader.IsDBNull(1) || reader.IsDBNull(2)) continue;
                 var group = reader.GetString(0);
                 var label = reader.GetString(1);
                 var value = reader.GetInt32(2);
