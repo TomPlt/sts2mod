@@ -36,19 +36,23 @@ public static class RunStartPatch
                     try { seed = Traverse.Create(state).Field(name).GetValue<object>()?.ToString() ?? ""; } catch { }
             }
 
-            // If still empty, log all RunState properties to help discover
+            // If still empty, dump ALL string/object properties to find seed
             if (string.IsNullOrEmpty(seed))
             {
                 try
                 {
-                    var props = state.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                    var props = state.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                     foreach (var p in props)
                     {
                         try
                         {
                             var val = p.GetValue(state);
-                            if (val != null && p.Name.Contains("eed", StringComparison.OrdinalIgnoreCase))
-                                DebugLogOverlay.Log($"[SpireOracle] RunState.{p.Name} = {val}");
+                            if (val != null)
+                            {
+                                var s = val.ToString() ?? "";
+                                if (s.Length > 0 && s.Length < 100 && s != val.GetType().FullName)
+                                    DebugLogOverlay.Log($"[SpireOracle] RS.{p.Name}({p.PropertyType.Name}) = {s}");
+                            }
                         }
                         catch { }
                     }

@@ -4,17 +4,11 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Runs;
 using SpireOracle.Data;
 using SpireOracle.UI;
 
 namespace SpireOracle.Patches.LiveCapture;
 
-/// <summary>
-/// Captures POWER_CHANGED via Hook.AfterPowerAmountChanged.
-/// AfterPowerAmountChanged(CombatState, PowerModel power, decimal amount, Creature applier, CardModel cardSource)
-/// Id1 = powerId, Id2 = owner creature ID, Amount = amount as int.
-/// </summary>
 [HarmonyPatch(typeof(Hook), "AfterPowerAmountChanged")]
 public static class PowerAmountChangedCapturePatch
 {
@@ -22,7 +16,6 @@ public static class PowerAmountChangedCapturePatch
     public static void Postfix(CombatState combatState, PowerModel power, decimal amount, Creature applier, CardModel cardSource)
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             if (power == null) return;
@@ -31,29 +24,16 @@ public static class PowerAmountChangedCapturePatch
             var sp = powerId.IndexOf(' ');
             if (sp > 0) powerId = powerId.Substring(0, sp);
 
-            var owner = power.Owner;
-            string? ownerId = null;
-            if (owner != null)
-            {
-                try
-                {
-                    ownerId = Traverse.Create(owner).Property("Id").GetValue<object>()?.ToString() ?? "";
-                    var osp = ownerId.IndexOf(' ');
-                    if (osp > 0) ownerId = ownerId.Substring(0, osp);
-                    if (string.IsNullOrEmpty(ownerId)) ownerId = null;
-                }
-                catch { ownerId = owner.GetType().Name; }
-            }
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
+            // Owner = creature the power is on; Applier = creature that applied it
+            var ownerId = DamageGivenCapturePatch.ExtractCreatureId(power.Owner as Creature)
+                       ?? DamageGivenCapturePatch.ExtractCreatureId(applier);
 
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.CombatAction,
                 Id1: powerId,
                 Id2: ownerId,
                 Amount: (int)amount,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
+                ActIndex: 0, FloorIndex: 0,
                 Detail: "POWER_CHANGED"
             ));
         }
