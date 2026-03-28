@@ -138,7 +138,7 @@ public static class TurnStartCapturePatch
 
             // Get turn number — try multiple property/field names
             var turnNumber = 0;
-            foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber" })
+            foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber", "PlayerTurnNumber", "RoundNumber" })
             {
                 if (turnNumber != 0) break;
                 try { turnNumber = Traverse.Create(state).Property(name).GetValue<int>(); } catch { }
@@ -148,13 +148,48 @@ public static class TurnStartCapturePatch
             // Also try on CombatManager directly
             if (turnNumber == 0)
             {
-                foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber" })
+                foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber", "PlayerTurnNumber", "RoundNumber" })
                 {
                     if (turnNumber != 0) break;
                     try { turnNumber = Traverse.Create(cm).Property(name).GetValue<int>(); } catch { }
                     if (turnNumber == 0)
                         try { turnNumber = Traverse.Create(cm).Field(name).GetValue<int>(); } catch { }
                 }
+            }
+            // Discovery: log int properties on CombatState if turn still 0
+            if (turnNumber == 0)
+            {
+                try
+                {
+                    var props = state.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                    foreach (var p in props)
+                    {
+                        if (p.PropertyType == typeof(int))
+                        {
+                            try
+                            {
+                                var val = (int)p.GetValue(state)!;
+                                if (val > 0)
+                                    DebugLogOverlay.Log($"[SpireOracle] CombatState.{p.Name} = {val}");
+                            }
+                            catch { }
+                        }
+                    }
+                    var fields = state.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    foreach (var f in fields)
+                    {
+                        if (f.FieldType == typeof(int) && f.Name.Contains("urn", StringComparison.OrdinalIgnoreCase))
+                        {
+                            try
+                            {
+                                var val = (int)f.GetValue(state)!;
+                                DebugLogOverlay.Log($"[SpireOracle] CombatState._{f.Name} = {val}");
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch { }
             }
 
             // Get local player for HP and energy

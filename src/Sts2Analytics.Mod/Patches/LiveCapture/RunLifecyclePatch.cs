@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Runs;
 using SpireOracle.Data;
@@ -8,7 +9,6 @@ namespace SpireOracle.Patches.LiveCapture;
 
 /// <summary>
 /// Patches RunManager.GenerateMap to capture the start of a new run.
-/// GenerateMap is called once at run start after character/deck selection.
 /// </summary>
 [HarmonyPatch(typeof(RunManager), "GenerateMap")]
 public static class RunStartPatch
@@ -26,21 +26,39 @@ public static class RunStartPatch
             var state = Traverse.Create(runManager).Property("State").GetValue<RunState>();
             if (state == null) return;
 
-            // Get seed
+            // Discover seed — dump properties to find the right one
             var seed = "";
-            try
+            foreach (var name in new[] { "Seed", "SeedString", "RunSeed", "SeedValue" })
             {
-                seed = Traverse.Create(state).Property("Seed").GetValue<object>()?.ToString() ?? "";
-            }
-            catch { }
-            if (string.IsNullOrEmpty(seed))
-            {
-                try { seed = Traverse.Create(state).Field("Seed").GetValue<object>()?.ToString() ?? ""; } catch { }
+                if (!string.IsNullOrEmpty(seed)) break;
+                try { seed = Traverse.Create(state).Property(name).GetValue<object>()?.ToString() ?? ""; } catch { }
+                if (string.IsNullOrEmpty(seed))
+                    try { seed = Traverse.Create(state).Field(name).GetValue<object>()?.ToString() ?? ""; } catch { }
             }
 
-            // Get ascension level — try multiple names
+            // If still empty, log all RunState properties to help discover
+            if (string.IsNullOrEmpty(seed))
+            {
+                try
+                {
+                    var props = state.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                    foreach (var p in props)
+                    {
+                        try
+                        {
+                            var val = p.GetValue(state);
+                            if (val != null && p.Name.Contains("eed", StringComparison.OrdinalIgnoreCase))
+                                DebugLogOverlay.Log($"[SpireOracle] RunState.{p.Name} = {val}");
+                        }
+                        catch { }
+                    }
+                }
+                catch { }
+            }
+
+            // Ascension
             var ascension = 0;
-            foreach (var name in new[] { "Ascension", "AscensionLevel" })
+            foreach (var name in new[] { "Ascension", "AscensionLevel", "CurrentAscension" })
             {
                 if (ascension != 0) break;
                 try { ascension = Traverse.Create(state).Property(name).GetValue<int>(); } catch { }
@@ -48,7 +66,7 @@ public static class RunStartPatch
                     try { ascension = Traverse.Create(state).Field(name).GetValue<int>(); } catch { }
             }
 
-            // Get character
+            // Character
             var player = InputPatch.GetLocalPlayer(runManager, state);
             var character = "";
             if (player != null)
@@ -78,29 +96,64 @@ public static class RunStartPatch
 }
 
 /// <summary>
-/// Patches RunManager.WinRun to capture a victory (Amount=1).
+/// Manually patches RunManager.WinRun and AbandonInternal via reflection.
+/// String-based [HarmonyPatch] doesn't work for these async methods.
 /// </summary>
-// WinRun is async; patch by string name since nameof() won't compile
-[HarmonyPatch(typeof(RunManager), "WinRun")]
-public static class RunWinPatch
+public static class RunEndPatch
 {
-    [HarmonyPostfix]
-    public static void Postfix()
+    public static void Apply(Harmony harmony)
+    {
+        var prefix = new HarmonyMethod(typeof(RunEndPatch), nameof(WinPrefix));
+        var abandonPrefix = new HarmonyMethod(typeof(RunEndPatch), nameof(AbandonPrefix));
+
+        // Patch WinRun
+        try
+        {
+            var winMethod = typeof(RunManager).GetMethod("WinRun",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (winMethod != null)
+            {
+                harmony.Patch(winMethod, prefix: prefix);
+                DebugLogOverlay.Log("[SpireOracle] Patched RunManager.WinRun");
+            }
+            else
+                DebugLogOverlay.LogErr("[SpireOracle] RunManager.WinRun not found");
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] Failed to patch WinRun: {ex.Message}");
+        }
+
+        // Patch AbandonInternal
+        try
+        {
+            var abandonMethod = typeof(RunManager).GetMethod("AbandonInternal",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (abandonMethod != null)
+            {
+                harmony.Patch(abandonMethod, prefix: abandonPrefix);
+                DebugLogOverlay.Log("[SpireOracle] Patched RunManager.AbandonInternal");
+            }
+            else
+                DebugLogOverlay.LogErr("[SpireOracle] RunManager.AbandonInternal not found");
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] Failed to patch AbandonInternal: {ex.Message}");
+        }
+    }
+
+    public static void WinPrefix()
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.EndRun,
-                Id1: null,
-                Id2: null,
-                Amount: 1,
-                ActIndex: 0,
-                FloorIndex: 0,
+                Id1: null, Id2: null,
+                Amount: 1, ActIndex: 0, FloorIndex: 0,
                 Detail: null
             ));
-
             DebugLogOverlay.Log("[SpireOracle] EndRun: Win");
         }
         catch (Exception ex)
@@ -108,37 +161,66 @@ public static class RunWinPatch
             DebugLogOverlay.LogErr($"[SpireOracle] RunWinPatch error: {ex.Message}");
         }
     }
-}
 
-/// <summary>
-/// Patches RunManager.AbandonInternal to capture abandon/death (Amount=0).
-/// </summary>
-// AbandonInternal is async; patch by string name since nameof() won't compile
-[HarmonyPatch(typeof(RunManager), "AbandonInternal")]
-public static class RunAbandonPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix()
+    public static void AbandonPrefix()
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.EndRun,
-                Id1: null,
-                Id2: null,
-                Amount: 0,
-                ActIndex: 0,
-                FloorIndex: 0,
+                Id1: null, Id2: null,
+                Amount: 0, ActIndex: 0, FloorIndex: 0,
                 Detail: null
             ));
-
             DebugLogOverlay.Log("[SpireOracle] EndRun: Abandon/Death");
         }
         catch (Exception ex)
         {
             DebugLogOverlay.LogErr($"[SpireOracle] RunAbandonPatch error: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Called from ModEntry's run file watcher when a .run file appears.
+    /// Parses the .run file to extract win/seed, links it to the current LiveRun.
+    /// </summary>
+    public static void LinkRunFile(string fileName, string filePath)
+    {
+        if (!LiveRunDb.IsInitialized) return;
+
+        // Parse .run file to get win status and seed
+        var win = 0;
+        var seed = "";
+        try
+        {
+            var json = System.IO.File.ReadAllText(filePath);
+            // Quick parse — look for "win":true/false and "seed":"..."
+            if (json.Contains("\"win\":true") || json.Contains("\"win\": true"))
+                win = 1;
+            // Extract seed
+            var seedIdx = json.IndexOf("\"seed\"");
+            if (seedIdx >= 0)
+            {
+                var colonIdx = json.IndexOf(':', seedIdx);
+                var quoteStart = json.IndexOf('"', colonIdx + 1);
+                var quoteEnd = json.IndexOf('"', quoteStart + 1);
+                if (quoteStart >= 0 && quoteEnd > quoteStart)
+                    seed = json.Substring(quoteStart + 1, quoteEnd - quoteStart - 1);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] Failed to parse .run file: {ex.Message}");
+        }
+
+        // End the run with win status, seed, and filename
+        LiveRunDb.Enqueue(new DbAction(
+            Kind: DbActionKind.EndRun,
+            Id1: fileName, Id2: seed,
+            Amount: win, ActIndex: 0, FloorIndex: 0,
+            Detail: null
+        ));
+        DebugLogOverlay.Log($"[SpireOracle] Run ended: {fileName} win={win} seed={seed}");
     }
 }

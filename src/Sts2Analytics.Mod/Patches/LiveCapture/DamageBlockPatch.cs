@@ -13,10 +13,6 @@ using SpireOracle.UI;
 
 namespace SpireOracle.Patches.LiveCapture;
 
-/// <summary>
-/// Captures DAMAGE_DEALT via Hook.AfterDamageGiven.
-/// AfterDamageGiven(PlayerChoiceContext, CombatState, Creature dealer, DamageResult results, ValueProp, Creature target, CardModel)
-/// </summary>
 [HarmonyPatch(typeof(Hook), "AfterDamageGiven")]
 public static class DamageGivenCapturePatch
 {
@@ -25,25 +21,17 @@ public static class DamageGivenCapturePatch
         Creature dealer, DamageResult results, ValueProp props, Creature target, CardModel cardSource)
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             if (results == null) return;
             var amount = results.TotalDamage;
             if (amount <= 0) return;
-
-            var dealerId = ExtractId(dealer);
-            var targetId = ExtractId(target);
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.CombatAction,
-                Id1: dealerId,
-                Id2: targetId,
+                Id1: ExtractCreatureId(dealer),
+                Id2: ExtractCreatureId(target),
                 Amount: amount,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
+                ActIndex: 0, FloorIndex: 0,
                 Detail: "DAMAGE_DEALT"
             ));
         }
@@ -53,20 +41,32 @@ public static class DamageGivenCapturePatch
         }
     }
 
-    private static string? ExtractId(Creature? c)
+    internal static string? ExtractCreatureId(Creature? c)
     {
         if (c == null) return null;
-        var id = c.ToString() ?? "";
-        var sp = id.IndexOf(' ');
-        if (sp > 0) id = id.Substring(0, sp);
-        return string.IsNullOrEmpty(id) ? null : id;
+        try
+        {
+            var id = Traverse.Create(c).Property("Id").GetValue<object>()?.ToString() ?? "";
+            var sp = id.IndexOf(' ');
+            if (sp > 0) id = id.Substring(0, sp);
+            if (!string.IsNullOrEmpty(id)) return id;
+        }
+        catch { }
+        foreach (var name in new[] { "ModelId", "Name" })
+        {
+            try
+            {
+                var id = Traverse.Create(c).Property(name).GetValue<object>()?.ToString() ?? "";
+                var sp = id.IndexOf(' ');
+                if (sp > 0) id = id.Substring(0, sp);
+                if (!string.IsNullOrEmpty(id)) return id;
+            }
+            catch { }
+        }
+        return c.GetType().Name;
     }
 }
 
-/// <summary>
-/// Captures DAMAGE_TAKEN via Hook.AfterDamageReceived.
-/// AfterDamageReceived(PlayerChoiceContext, IRunState, CombatState, Creature target, DamageResult result, ValueProp, Creature dealer, CardModel)
-/// </summary>
 [HarmonyPatch(typeof(Hook), "AfterDamageReceived")]
 public static class DamageReceivedCapturePatch
 {
@@ -75,25 +75,17 @@ public static class DamageReceivedCapturePatch
         Creature target, DamageResult result, ValueProp props, Creature dealer, CardModel cardSource)
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             if (result == null) return;
             var amount = result.TotalDamage;
             if (amount <= 0) return;
-
-            var targetId = ExtractId(target);
-            var dealerId = ExtractId(dealer);
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.CombatAction,
-                Id1: targetId,
-                Id2: dealerId,
+                Id1: DamageGivenCapturePatch.ExtractCreatureId(target),
+                Id2: DamageGivenCapturePatch.ExtractCreatureId(dealer),
                 Amount: amount,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
+                ActIndex: 0, FloorIndex: 0,
                 Detail: "DAMAGE_TAKEN"
             ));
         }
@@ -102,21 +94,8 @@ public static class DamageReceivedCapturePatch
             DebugLogOverlay.LogErr($"[SpireOracle] DamageReceivedCapturePatch error: {ex.Message}");
         }
     }
-
-    private static string? ExtractId(Creature? c)
-    {
-        if (c == null) return null;
-        var id = c.ToString() ?? "";
-        var sp = id.IndexOf(' ');
-        if (sp > 0) id = id.Substring(0, sp);
-        return string.IsNullOrEmpty(id) ? null : id;
-    }
 }
 
-/// <summary>
-/// Captures BLOCK_GAINED via Hook.AfterBlockGained.
-/// AfterBlockGained(CombatState, Creature, decimal amount, ValueProp, CardModel)
-/// </summary>
 [HarmonyPatch(typeof(Hook), "AfterBlockGained")]
 public static class BlockGainedCapturePatch
 {
@@ -124,24 +103,15 @@ public static class BlockGainedCapturePatch
     public static void Postfix(CombatState combatState, Creature creature, decimal amount, ValueProp props, CardModel cardSource)
     {
         if (!LiveRunDb.IsInitialized) return;
-
         try
         {
             if (amount <= 0) return;
-
-            var creatureId = creature?.ToString() ?? "";
-            var sp = creatureId.IndexOf(' ');
-            if (sp > 0) creatureId = creatureId.Substring(0, sp);
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.CombatAction,
-                Id1: creatureId,
+                Id1: DamageGivenCapturePatch.ExtractCreatureId(creature) ?? "unknown",
                 Id2: null,
                 Amount: (int)amount,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
+                ActIndex: 0, FloorIndex: 0,
                 Detail: "BLOCK_GAINED"
             ));
         }

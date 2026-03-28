@@ -142,9 +142,28 @@ public static class LiveRunDb
             case DbActionKind.EndRun:
                 if (_currentRunId > 0)
                 {
-                    ExecuteUpdate(tx,
-                        "UPDATE LiveRuns SET EndedAt = @p1, Win = @p2, RunFileName = @p3 WHERE Id = @p4",
-                        Now(), a.Amount, a.Id1, _currentRunId);
+                    if (a.Detail == "LINK_FILE")
+                    {
+                        // Just link the run file name, don't change Win or EndedAt
+                        ExecuteUpdate(tx,
+                            "UPDATE LiveRuns SET RunFileName = @p1 WHERE Id = @p2",
+                            a.Id1, _currentRunId);
+                        break;
+                    }
+                    // Id1=RunFileName, Id2=Seed, Amount=Win
+                    var setSeed = !string.IsNullOrEmpty(a.Id2) ? ", Seed = @p5" : "";
+                    if (!string.IsNullOrEmpty(a.Id2))
+                    {
+                        ExecuteUpdate(tx,
+                            $"UPDATE LiveRuns SET EndedAt = @p1, Win = @p2, RunFileName = @p3, Seed = @p4 WHERE Id = @p5",
+                            Now(), a.Amount, a.Id1, a.Id2, _currentRunId);
+                    }
+                    else
+                    {
+                        ExecuteUpdate(tx,
+                            "UPDATE LiveRuns SET EndedAt = @p1, Win = @p2, RunFileName = @p3 WHERE Id = @p4",
+                            Now(), a.Amount, a.Id1, _currentRunId);
+                    }
                     _currentRunId = 0;
                 }
                 break;

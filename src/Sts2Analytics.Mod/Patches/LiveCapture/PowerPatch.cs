@@ -35,10 +35,14 @@ public static class PowerAmountChangedCapturePatch
             string? ownerId = null;
             if (owner != null)
             {
-                ownerId = owner.ToString() ?? "";
-                var osp = ownerId.IndexOf(' ');
-                if (osp > 0) ownerId = ownerId.Substring(0, osp);
-                if (string.IsNullOrEmpty(ownerId)) ownerId = null;
+                try
+                {
+                    ownerId = Traverse.Create(owner).Property("Id").GetValue<object>()?.ToString() ?? "";
+                    var osp = ownerId.IndexOf(' ');
+                    if (osp > 0) ownerId = ownerId.Substring(0, osp);
+                    if (string.IsNullOrEmpty(ownerId)) ownerId = null;
+                }
+                catch { ownerId = owner.GetType().Name; }
             }
 
             var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();

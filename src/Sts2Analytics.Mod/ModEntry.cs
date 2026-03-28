@@ -134,6 +134,7 @@ public class ModEntry
         _harmony = new Harmony("com.sts2mod.spireoracle");
         _harmony.PatchAll(typeof(ModEntry).Assembly);
         Patches.LiveCapture.CardPlayedCapturePatch.Apply(_harmony);
+        Patches.LiveCapture.RunEndPatch.Apply(_harmony);
         DebugLogOverlay.Log("[SpireOracle] Harmony patches applied.");
 
         // Watch for new .run files to auto-upload
@@ -180,6 +181,7 @@ public class ModEntry
                             var timer = new System.Threading.Timer(_ =>
                             {
                                 DebugLogOverlay.Log($"[SpireOracle] New run detected: {fileName}");
+                                Patches.LiveCapture.RunEndPatch.LinkRunFile(fileName, filePath);
                                 _ = CloudSync.UploadRunFile(filePath).ContinueWith(t =>
                                 {
                                     if (t.IsFaulted)
