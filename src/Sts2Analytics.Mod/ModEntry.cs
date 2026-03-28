@@ -22,7 +22,7 @@ public class ModEntry
     {
         // Read version from manifest
         string version = "?";
-        foreach (var mod in ModManager.AllMods)
+        foreach (var mod in ModManager.Mods)
         {
             if (mod.manifest?.id == "SpireOracle")
             {
@@ -45,7 +45,7 @@ public class ModEntry
         // Fallback: search ModManager
         if (_modPath == null || !File.Exists(Path.Combine(_modPath, "overlay_data.json")))
         {
-            foreach (var mod in ModManager.AllMods)
+            foreach (var mod in ModManager.Mods)
             {
                 if (mod.manifest?.id == "SpireOracle")
                 {
@@ -63,6 +63,9 @@ public class ModEntry
         }
 
         DebugLogOverlay.Log($"[SpireOracle] Mod path: {_modPath}");
+
+        // Initialize live run capture DB
+        LiveRunDb.Initialize(_modPath);
 
         // Cloud sync: load config and download latest data
         CloudSync.LoadConfig(_modPath);
