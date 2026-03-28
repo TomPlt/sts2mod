@@ -54,6 +54,20 @@ public static class CardRewardPatch
                     OverlayFactory.AddOverlay(holder, stats, DataLoader.SkipElo);
                     overlaysAdded++;
 
+                    // Live capture: card offered
+                    if (LiveRunDb.IsInitialized)
+                    {
+                        LiveRunDb.Enqueue(new DbAction(
+                            DbActionKind.RewardDecision,
+                            Id1: fullCardId,
+                            Id2: null,
+                            Amount: 0,
+                            ActIndex: actIndex,
+                            FloorIndex: 0,
+                            Detail: "CARD_OFFER"
+                        ));
+                    }
+
                     // Add combat forecast if we have deck data
                     if (currentDeck != null && character != null && actIndex >= 0)
                     {
