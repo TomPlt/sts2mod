@@ -138,6 +138,7 @@ public class ModEntry
         Patches.LiveCapture.RewardPickPatch.Apply(_harmony);
         Patches.LiveCapture.CardPickPatch.Apply(_harmony);
         Patches.LiveCapture.CardPilePatch.Apply(_harmony);
+        Patches.LiveCapture.RestSitePatch.Apply(_harmony);
         DebugLogOverlay.Log("[SpireOracle] Harmony patches applied.");
 
         // Watch for new .run files to auto-upload
