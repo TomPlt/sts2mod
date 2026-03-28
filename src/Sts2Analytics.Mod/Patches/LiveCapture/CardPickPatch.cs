@@ -47,50 +47,66 @@ public static class CardPickPatch
             string cardId = "";
             int wasPicked = 0;
 
-            // Try known property names
-            foreach (var name in new[] { "CardId", "Card", "CardModelId", "Id" })
-            {
-                if (!string.IsNullOrEmpty(cardId)) break;
-                try { cardId = Traverse.Create(__instance).Property(name).GetValue<object>()?.ToString() ?? ""; } catch { }
-                if (string.IsNullOrEmpty(cardId))
-                    try { cardId = Traverse.Create(__instance).Field(name).GetValue<object>()?.ToString() ?? ""; } catch { }
-            }
-            var sp = cardId.IndexOf(' ');
-            if (sp > 0) cardId = cardId.Substring(0, sp);
-
-            // Try WasPicked
-            foreach (var name in new[] { "WasPicked", "wasPicked", "Picked", "IsSelected", "Selected" })
+            // Dump all properties and fields for discovery
+            var props = __instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var p in props)
             {
                 try
                 {
-                    wasPicked = Traverse.Create(__instance).Property(name).GetValue<bool>() ? 1 : 0;
-                    break;
-                }
-                catch { }
-                try
-                {
-                    wasPicked = Traverse.Create(__instance).Field(name).GetValue<bool>() ? 1 : 0;
-                    break;
-                }
-                catch { }
-            }
-
-            // Discovery: dump all properties if card not found
-            if (string.IsNullOrEmpty(cardId))
-            {
-                var props = __instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (var p in props)
-                {
-                    try
+                    var val = p.GetValue(__instance);
+                    if (val != null)
                     {
-                        var val = p.GetValue(__instance);
-                        if (val != null)
-                            DebugLogOverlay.Log($"[SpireOracle] CardChoiceHist.{p.Name}({p.PropertyType.Name}) = {val}");
+                        var s = val.ToString() ?? "";
+                        DebugLogOverlay.Log($"[SpireOracle] CCH.{p.Name}({p.PropertyType.Name}) = {s}");
+                        // If it's a card-like object, try to get its Id
+                        if (s == "SerializableCard" || p.PropertyType.Name.Contains("Card"))
+                        {
+                            try
+                            {
+                                var innerIdObj = Traverse.Create(val).Property("Id").GetValue<object>()
+                                              ?? Traverse.Create(val).Field("Id").GetValue<object>();
+                                if (innerIdObj != null)
+                                    DebugLogOverlay.Log($"[SpireOracle] CCH.{p.Name}.Id = {innerIdObj}");
+                            }
+                            catch { }
+                            try
+                            {
+                                var innerIdObj = Traverse.Create(val).Property("id").GetValue<object>()
+                                              ?? Traverse.Create(val).Field("id").GetValue<object>();
+                                if (innerIdObj != null)
+                                    DebugLogOverlay.Log($"[SpireOracle] CCH.{p.Name}.id = {innerIdObj}");
+                            }
+                            catch { }
+                        }
                     }
-                    catch { }
                 }
-                return;
+                catch { }
             }
+            var fields = __instance.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var f in fields)
+            {
+                try
+                {
+                    var val = f.GetValue(__instance);
+                    if (val != null)
+                    {
+                        DebugLogOverlay.Log($"[SpireOracle] CCH._{f.Name}({f.FieldType.Name}) = {val}");
+                        if (f.FieldType.Name.Contains("Card") || val.ToString() == "SerializableCard")
+                        {
+                            try
+                            {
+                                var innerIdObj = Traverse.Create(val).Property("Id").GetValue<object>()
+                                              ?? Traverse.Create(val).Field("Id").GetValue<object>();
+                                if (innerIdObj != null)
+                                    DebugLogOverlay.Log($"[SpireOracle] CCH._{f.Name}.Id = {innerIdObj}");
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch { }
+            }
+            return; // Skip enqueue for now — just discovery
 
             var decisionType = wasPicked == 1 ? "CARD_PICK" : "CARD_SKIP";
             var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();

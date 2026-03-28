@@ -34,7 +34,9 @@ public static class MapMoveCapturePatch
 
             var actIndex = state.CurrentActIndex;
             var floorIndex = 0;
-            try { floorIndex = Traverse.Create(state).Property("CurrentFloorIndex").GetValue<int>(); } catch { }
+            try { floorIndex = Traverse.Create(state).Property("TotalFloor").GetValue<int>(); } catch { }
+            if (floorIndex == 0)
+                try { floorIndex = Traverse.Create(state).Property("ActFloor").GetValue<int>(); } catch { }
 
             // Look up map point type
             string pointTypeStr = "Unknown";
