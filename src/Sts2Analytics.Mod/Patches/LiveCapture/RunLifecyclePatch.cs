@@ -7,11 +7,10 @@ using SpireOracle.UI;
 namespace SpireOracle.Patches.LiveCapture;
 
 /// <summary>
-/// Patches RunManager.FinalizeStartingRelics to capture the start of a new run.
-/// FinalizeStartingRelics is called after character/deck selection when the run actually begins.
+/// Patches RunManager.GenerateMap to capture the start of a new run.
+/// GenerateMap is called once at run start after character/deck selection.
 /// </summary>
-// FinalizeStartingRelics is async; patch by string name since nameof() won't compile
-[HarmonyPatch(typeof(RunManager), "FinalizeStartingRelics")]
+[HarmonyPatch(typeof(RunManager), "GenerateMap")]
 public static class RunStartPatch
 {
     [HarmonyPostfix]
@@ -39,16 +38,14 @@ public static class RunStartPatch
                 try { seed = Traverse.Create(state).Field("Seed").GetValue<object>()?.ToString() ?? ""; } catch { }
             }
 
-            // Get ascension level
+            // Get ascension level — try multiple names
             var ascension = 0;
-            try
+            foreach (var name in new[] { "Ascension", "AscensionLevel" })
             {
-                ascension = Traverse.Create(state).Property("AscensionLevel").GetValue<int>();
-            }
-            catch { }
-            if (ascension == 0)
-            {
-                try { ascension = Traverse.Create(state).Field("AscensionLevel").GetValue<int>(); } catch { }
+                if (ascension != 0) break;
+                try { ascension = Traverse.Create(state).Property(name).GetValue<int>(); } catch { }
+                if (ascension == 0)
+                    try { ascension = Traverse.Create(state).Field(name).GetValue<int>(); } catch { }
             }
 
             // Get character

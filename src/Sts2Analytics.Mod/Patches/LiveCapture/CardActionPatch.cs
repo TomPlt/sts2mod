@@ -1,10 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Hooks;
-using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Runs;
 using SpireOracle.Data;
 using SpireOracle.UI;
@@ -12,47 +10,105 @@ using SpireOracle.UI;
 namespace SpireOracle.Patches.LiveCapture;
 
 /// <summary>
-/// Captures CARD_PLAYED via Hook.AfterCardPlayed.
-/// CardPlay has Card and Target; extracts IDs and enqueues CombatAction.
+/// Captures CARD_PLAYED by manually patching all PlayCardAction constructors.
+/// Applied during Harmony.PatchAll since the attribute-based approach fails on async methods.
 /// </summary>
-[HarmonyPatch(typeof(Hook), "AfterCardPlayed")]
 public static class CardPlayedCapturePatch
 {
-    [HarmonyPostfix]
-    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public static void Apply(Harmony harmony)
+    {
+        try
+        {
+            // Try to patch ExecuteAction on PlayCardAction via reflection
+            var methods = typeof(PlayCardAction).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prefix = new HarmonyMethod(typeof(CardPlayedCapturePatch), nameof(ExecutePrefix));
+            var patched = false;
+            foreach (var method in methods)
+            {
+                DebugLogOverlay.Log($"[SpireOracle] PlayCardAction method: {method.Name} ({method.GetParameters().Length} params)");
+                if (method.Name == "ExecuteAction")
+                {
+                    try
+                    {
+                        harmony.Patch(method, prefix: prefix);
+                        DebugLogOverlay.Log($"[SpireOracle] Patched PlayCardAction.ExecuteAction");
+                        patched = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugLogOverlay.LogErr($"[SpireOracle] Failed to patch ExecuteAction: {ex.Message}");
+                    }
+                }
+            }
+            if (!patched)
+            {
+                // Also try base class GameAction
+                DebugLogOverlay.Log("[SpireOracle] ExecuteAction not found on PlayCardAction, trying base...");
+                var baseMethods = typeof(PlayCardAction).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (var method in baseMethods)
+                {
+                    if (method.Name == "ExecuteAction" && !patched)
+                    {
+                        try
+                        {
+                            harmony.Patch(method, prefix: prefix);
+                            DebugLogOverlay.Log($"[SpireOracle] Patched {method.DeclaringType?.Name}.ExecuteAction");
+                            patched = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            DebugLogOverlay.LogErr($"[SpireOracle] Failed: {ex.Message}");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] CardPlayedCapturePatch.Apply error: {ex.Message}");
+        }
+    }
+
+    public static void ExecutePrefix(object __instance)
     {
         if (!LiveRunDb.IsInitialized) return;
 
         try
         {
-            var card = cardPlay?.Card;
-            if (card == null) return;
+            // Log all property values for diagnostics
+            var cmid = Traverse.Create(__instance).Property("CardModelId").GetValue<object>();
+            var tid = Traverse.Create(__instance).Property("TargetId").GetValue<object>();
+            var player = Traverse.Create(__instance).Property("Player").GetValue<object>();
+            DebugLogOverlay.Log($"[SpireOracle] PlayCard: cmid={cmid} tid={tid} player={player}");
 
-            var cardId = card.Id.ToString() ?? "";
+            var cardId = cmid?.ToString() ?? "";
             var sp = cardId.IndexOf(' ');
             if (sp > 0) cardId = cardId.Substring(0, sp);
-            if (card.CurrentUpgradeLevel > 0)
-                cardId = $"{cardId}+{card.CurrentUpgradeLevel}";
+            if (string.IsNullOrEmpty(cardId)) return;
 
-            var target = cardPlay?.Target;
+            // TargetId is the target creature
             string? targetId = null;
-            if (target != null)
+            try
             {
-                targetId = target.ToString() ?? "";
-                var tsp = targetId.IndexOf(' ');
-                if (tsp > 0) targetId = targetId.Substring(0, tsp);
-                if (string.IsNullOrEmpty(targetId)) targetId = null;
+                var targetObj = Traverse.Create(__instance).Property("TargetId").GetValue<object>();
+                if (targetObj != null)
+                {
+                    targetId = targetObj.ToString() ?? "";
+                    var tsp = targetId.IndexOf(' ');
+                    if (tsp > 0) targetId = targetId.Substring(0, tsp);
+                    if (string.IsNullOrEmpty(targetId) || targetId == "0") targetId = null;
+                }
             }
+            catch { }
 
-            var (actIndex, floorIndex) = GetRunPosition();
-
+            DebugLogOverlay.Log($"[SpireOracle] CARD_PLAYED: {cardId} -> {targetId ?? "none"}");
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.CombatAction,
                 Id1: cardId,
                 Id2: targetId,
                 Amount: 0,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
+                ActIndex: 0,
+                FloorIndex: 0,
                 Detail: "CARD_PLAYED"
             ));
         }
@@ -75,125 +131,5 @@ public static class CardPlayedCapturePatch
             return (actIndex, floorIndex);
         }
         catch { return (0, 0); }
-    }
-}
-
-/// <summary>
-/// Captures CARD_DRAWN via Hook.AfterCardDrawn.
-/// </summary>
-[HarmonyPatch(typeof(Hook), "AfterCardDrawn")]
-public static class CardDrawnCapturePatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)
-    {
-        if (!LiveRunDb.IsInitialized) return;
-
-        try
-        {
-            if (card == null) return;
-
-            var cardId = card.Id.ToString() ?? "";
-            var sp = cardId.IndexOf(' ');
-            if (sp > 0) cardId = cardId.Substring(0, sp);
-            if (card.CurrentUpgradeLevel > 0)
-                cardId = $"{cardId}+{card.CurrentUpgradeLevel}";
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
-            LiveRunDb.Enqueue(new DbAction(
-                Kind: DbActionKind.CombatAction,
-                Id1: cardId,
-                Id2: null,
-                Amount: 0,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
-                Detail: "CARD_DRAWN"
-            ));
-        }
-        catch (Exception ex)
-        {
-            DebugLogOverlay.LogErr($"[SpireOracle] CardDrawnCapturePatch error: {ex.Message}");
-        }
-    }
-}
-
-/// <summary>
-/// Captures CARD_DISCARDED via Hook.AfterCardDiscarded.
-/// </summary>
-[HarmonyPatch(typeof(Hook), "AfterCardDiscarded")]
-public static class CardDiscardedCapturePatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardModel card)
-    {
-        if (!LiveRunDb.IsInitialized) return;
-
-        try
-        {
-            if (card == null) return;
-
-            var cardId = card.Id.ToString() ?? "";
-            var sp = cardId.IndexOf(' ');
-            if (sp > 0) cardId = cardId.Substring(0, sp);
-            if (card.CurrentUpgradeLevel > 0)
-                cardId = $"{cardId}+{card.CurrentUpgradeLevel}";
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
-            LiveRunDb.Enqueue(new DbAction(
-                Kind: DbActionKind.CombatAction,
-                Id1: cardId,
-                Id2: null,
-                Amount: 0,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
-                Detail: "CARD_DISCARDED"
-            ));
-        }
-        catch (Exception ex)
-        {
-            DebugLogOverlay.LogErr($"[SpireOracle] CardDiscardedCapturePatch error: {ex.Message}");
-        }
-    }
-}
-
-/// <summary>
-/// Captures CARD_EXHAUSTED via Hook.AfterCardExhausted.
-/// </summary>
-[HarmonyPatch(typeof(Hook), "AfterCardExhausted")]
-public static class CardExhaustedCapturePatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(CombatState combatState, PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
-    {
-        if (!LiveRunDb.IsInitialized) return;
-
-        try
-        {
-            if (card == null) return;
-
-            var cardId = card.Id.ToString() ?? "";
-            var sp = cardId.IndexOf(' ');
-            if (sp > 0) cardId = cardId.Substring(0, sp);
-            if (card.CurrentUpgradeLevel > 0)
-                cardId = $"{cardId}+{card.CurrentUpgradeLevel}";
-
-            var (actIndex, floorIndex) = CardPlayedCapturePatch.GetRunPosition();
-
-            LiveRunDb.Enqueue(new DbAction(
-                Kind: DbActionKind.CombatAction,
-                Id1: cardId,
-                Id2: null,
-                Amount: 0,
-                ActIndex: actIndex,
-                FloorIndex: floorIndex,
-                Detail: "CARD_EXHAUSTED"
-            ));
-        }
-        catch (Exception ex)
-        {
-            DebugLogOverlay.LogErr($"[SpireOracle] CardExhaustedCapturePatch error: {ex.Message}");
-        }
     }
 }

@@ -136,12 +136,25 @@ public static class TurnStartCapturePatch
             var state = cm.DebugOnlyGetState();
             if (state == null) return;
 
-            // Get turn number
+            // Get turn number — try multiple property/field names
             var turnNumber = 0;
-            try { turnNumber = Traverse.Create(state).Property("TurnNumber").GetValue<int>(); } catch { }
+            foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber" })
+            {
+                if (turnNumber != 0) break;
+                try { turnNumber = Traverse.Create(state).Property(name).GetValue<int>(); } catch { }
+                if (turnNumber == 0)
+                    try { turnNumber = Traverse.Create(state).Field(name).GetValue<int>(); } catch { }
+            }
+            // Also try on CombatManager directly
             if (turnNumber == 0)
             {
-                try { turnNumber = Traverse.Create(state).Field("TurnNumber").GetValue<int>(); } catch { }
+                foreach (var name in new[] { "TurnNumber", "Turn", "CurrentTurn", "_turnNumber" })
+                {
+                    if (turnNumber != 0) break;
+                    try { turnNumber = Traverse.Create(cm).Property(name).GetValue<int>(); } catch { }
+                    if (turnNumber == 0)
+                        try { turnNumber = Traverse.Create(cm).Field(name).GetValue<int>(); } catch { }
+                }
             }
 
             // Get local player for HP and energy
@@ -154,17 +167,60 @@ public static class TurnStartCapturePatch
 
             if (player != null)
             {
-                // CurrentHp is not directly accessible on Player — use Traverse
-                try { startingHp = Traverse.Create(player).Property("CurrentHp").GetValue<int>(); } catch { }
+                // Try HP on Player, then on Player.Creature (Creature has CurrentHp)
+                foreach (var name in new[] { "CurrentHp", "Hp", "Health" })
+                {
+                    if (startingHp != 0) break;
+                    try { startingHp = Traverse.Create(player).Property(name).GetValue<int>(); } catch { }
+                    if (startingHp == 0)
+                        try { startingHp = Traverse.Create(player).Field(name).GetValue<int>(); } catch { }
+                }
+                // Try on player.Creature if Player itself doesn't have HP
                 if (startingHp == 0)
                 {
-                    try { startingHp = Traverse.Create(player).Field("CurrentHp").GetValue<int>(); } catch { }
+                    try
+                    {
+                        var creature = Traverse.Create(player).Property("Creature").GetValue<object>();
+                        if (creature != null)
+                        {
+                            foreach (var name in new[] { "CurrentHp", "Hp" })
+                            {
+                                if (startingHp != 0) break;
+                                try { startingHp = Traverse.Create(creature).Property(name).GetValue<int>(); } catch { }
+                                if (startingHp == 0)
+                                    try { startingHp = Traverse.Create(creature).Field(name).GetValue<int>(); } catch { }
+                            }
+                        }
+                    }
+                    catch { }
                 }
 
-                try { startingEnergy = Traverse.Create(player).Property("CurrentEnergy").GetValue<int>(); } catch { }
+                // Try energy
+                foreach (var name in new[] { "CurrentEnergy", "Energy" })
+                {
+                    if (startingEnergy != 0) break;
+                    try { startingEnergy = Traverse.Create(player).Property(name).GetValue<int>(); } catch { }
+                    if (startingEnergy == 0)
+                        try { startingEnergy = Traverse.Create(player).Field(name).GetValue<int>(); } catch { }
+                }
+                // Try on PlayerCombatState
                 if (startingEnergy == 0)
                 {
-                    try { startingEnergy = Traverse.Create(player).Field("CurrentEnergy").GetValue<int>(); } catch { }
+                    try
+                    {
+                        var pcs = Traverse.Create(player).Property("PlayerCombatState").GetValue<object>();
+                        if (pcs != null)
+                        {
+                            foreach (var name in new[] { "CurrentEnergy", "Energy" })
+                            {
+                                if (startingEnergy != 0) break;
+                                try { startingEnergy = Traverse.Create(pcs).Property(name).GetValue<int>(); } catch { }
+                                if (startingEnergy == 0)
+                                    try { startingEnergy = Traverse.Create(pcs).Field(name).GetValue<int>(); } catch { }
+                            }
+                        }
+                    }
+                    catch { }
                 }
             }
 

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading;
 using Godot;
 using HarmonyLib;
@@ -16,7 +18,24 @@ public class ModEntry
     private static FileSystemWatcher? _watcher;
     private static System.Threading.Timer? _debounceTimer;
     private static string? _modPath;
+    private static string? _nativeLibModPath;
     public static bool OverlayEnabled { get; set; } = true;
+
+    private static IntPtr ResolveNativeLib(Assembly assembly, string libraryName)
+    {
+        if (_nativeLibModPath == null) return IntPtr.Zero;
+        // Try runtimes/win-x64/native/ first
+        var nativePath = Path.Combine(_nativeLibModPath, "runtimes", "win-x64", "native", libraryName + ".dll");
+        if (File.Exists(nativePath) &&
+            System.Runtime.InteropServices.NativeLibrary.TryLoad(nativePath, out var handle))
+            return handle;
+        // Try mod root
+        nativePath = Path.Combine(_nativeLibModPath, libraryName + ".dll");
+        if (File.Exists(nativePath) &&
+            System.Runtime.InteropServices.NativeLibrary.TryLoad(nativePath, out handle))
+            return handle;
+        return IntPtr.Zero;
+    }
 
     public static void Initialize()
     {
@@ -64,6 +83,19 @@ public class ModEntry
 
         DebugLogOverlay.Log($"[SpireOracle] Mod path: {_modPath}");
 
+        // Register assembly resolver so the runtime can find SQLite DLLs next to our mod
+        AssemblyLoadContext.Default.Resolving += (ctx, name) =>
+        {
+            if (_modPath == null) return null;
+            var path = Path.Combine(_modPath, name.Name + ".dll");
+            return File.Exists(path) ? ctx.LoadFromAssemblyPath(path) : null;
+        };
+
+        // Register native library resolver for SQLite (e_sqlite3)
+        // This must be set before SQLitePCL is first used
+        _nativeLibModPath = _modPath;
+        AssemblyLoadContext.Default.ResolvingUnmanagedDll += ResolveNativeLib;
+
         // Initialize live run capture DB
         LiveRunDb.Initialize(_modPath);
 
@@ -101,6 +133,7 @@ public class ModEntry
         // Apply Harmony patches
         _harmony = new Harmony("com.sts2mod.spireoracle");
         _harmony.PatchAll(typeof(ModEntry).Assembly);
+        Patches.LiveCapture.CardPlayedCapturePatch.Apply(_harmony);
         DebugLogOverlay.Log("[SpireOracle] Harmony patches applied.");
 
         // Watch for new .run files to auto-upload
