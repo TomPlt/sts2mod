@@ -77,6 +77,36 @@ public static class LiveRunDb
         return results;
     }
 
+    /// <summary>
+    /// Query returning 3-column rows (group, label, value) for per-combat breakdowns.
+    /// </summary>
+    public static List<(string group, string label, int value)> QueryGroupedStats(string sql, long runId)
+    {
+        var results = new List<(string, string, int)>();
+        if (_dbPath == null) return results;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={_dbPath};Mode=ReadOnly");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.Parameters.AddWithValue("@runId", runId);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var group = reader.GetString(0);
+                var label = reader.GetString(1);
+                var value = reader.GetInt32(2);
+                results.Add((group, label, value));
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] QueryGroupedStats error: {ex.Message}");
+        }
+        return results;
+    }
+
     public static void Initialize(string modPath)
     {
         try
