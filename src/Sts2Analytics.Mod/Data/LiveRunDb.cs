@@ -57,7 +57,7 @@ public static class LiveRunDb
         if (_dbPath == null) return results;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath};Mode=ReadOnly");
+            using var conn = new SqliteConnection($"Data Source={_dbPath}");
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = sql;
@@ -87,7 +87,7 @@ public static class LiveRunDb
         if (_dbPath == null) return results;
         try
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath};Mode=ReadOnly");
+            using var conn = new SqliteConnection($"Data Source={_dbPath}");
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = sql;

@@ -42,9 +42,9 @@ public static class RunStatsOverlay
               GROUP BY a.SourceId ORDER BY COUNT(*) DESC LIMIT 10", runId);
 
         var topDamage = LiveRunDb.QueryTopStats(
-            @"SELECT a1.SourceId, SUM(a2.Amount) as total
+            @"SELECT a1.SourceId, COALESCE(SUM(a2.Amount), 0) as total
               FROM CombatActions a1
-              JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
+              LEFT JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
                 AND a2.ActionType='DAMAGE_DEALT'
                 AND a2.SourceId LIKE 'CHARACTER.%'
                 AND a2.TargetId NOT LIKE 'CHARACTER.%'
@@ -53,12 +53,12 @@ public static class RunStatsOverlay
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
               JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 10", runId);
+              GROUP BY a1.SourceId HAVING total > 0 ORDER BY total DESC LIMIT 10", runId);
 
         var topBlock = LiveRunDb.QueryTopStats(
-            @"SELECT a1.SourceId, SUM(a2.Amount) as total
+            @"SELECT a1.SourceId, COALESCE(SUM(a2.Amount), 0) as total
               FROM CombatActions a1
-              JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
+              LEFT JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
                 AND a2.ActionType='BLOCK_GAINED'
                 AND a2.SourceId LIKE 'CHARACTER.%'
                 AND a2.Seq < COALESCE(
@@ -66,7 +66,7 @@ public static class RunStatsOverlay
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
               JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 10", runId);
+              GROUP BY a1.SourceId HAVING total > 0 ORDER BY total DESC LIMIT 10", runId);
 
         // Summary stats
         var combatCount = LiveRunDb.QueryTopStats(
@@ -74,21 +74,22 @@ public static class RunStatsOverlay
         var turnCount = LiveRunDb.QueryTopStats(
             @"SELECT 't', COUNT(*) FROM Turns t JOIN Combats c ON t.CombatId=c.Id WHERE c.RunId=@runId", runId);
         var totalDmg = LiveRunDb.QueryTopStats(
-            @"SELECT 'd', SUM(a.Amount) FROM CombatActions a
+            @"SELECT 'd', COALESCE(SUM(a.Amount), 0) FROM CombatActions a
               JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND a.ActionType='DAMAGE_DEALT'
                 AND a.SourceId LIKE 'CHARACTER.%' AND a.TargetId NOT LIKE 'CHARACTER.%'", runId);
         var totalTaken = LiveRunDb.QueryTopStats(
-            @"SELECT 't', SUM(a.Amount) FROM CombatActions a
+            @"SELECT 't', COALESCE(SUM(a.Amount), 0) FROM CombatActions a
               JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND a.ActionType='DAMAGE_TAKEN'
                 AND a.SourceId LIKE 'CHARACTER.%'", runId);
         var totalBlock = LiveRunDb.QueryTopStats(
-            @"SELECT 'b', SUM(a.Amount) FROM CombatActions a
+            @"SELECT 'b', COALESCE(SUM(a.Amount), 0) FROM CombatActions a
               JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND a.ActionType='BLOCK_GAINED'
                 AND a.SourceId LIKE 'CHARACTER.%'", runId);
 
+        DebugLogOverlay.Log($"[SpireOracle] F6: runId={runId} played={topPlayed.Count} dmg={topDamage.Count} blk={topBlock.Count}");
         if (topPlayed.Count == 0) return;
 
         // Build overlay
