@@ -41,8 +41,27 @@ dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOr
 
 echo "=== Deploying to game ==="
 cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/
+
+# Copy SQLite dependencies
+for dll in Microsoft.Data.Sqlite.dll SQLitePCLRaw.core.dll SQLitePCLRaw.batteries_v2.dll SQLitePCLRaw.provider.e_sqlite3.dll; do
+    [ -f "src/Sts2Analytics.Mod/bin/Release/net9.0/$dll" ] && cp "src/Sts2Analytics.Mod/bin/Release/net9.0/$dll" mods/SpireOracle/
+done
+
+# Copy native SQLite library for Windows
+NATIVE_DIR="src/Sts2Analytics.Mod/bin/Release/net9.0/runtimes/win-x64/native"
+if [ -d "$NATIVE_DIR" ]; then
+    mkdir -p mods/SpireOracle/runtimes/win-x64/native
+    cp "$NATIVE_DIR"/* mods/SpireOracle/runtimes/win-x64/native/
+fi
+
 cp data/reference/sts2_reference.json mods/SpireOracle/
 cp mods/SpireOracle/SpireOracle.dll mods/SpireOracle/overlay_data.json mods/SpireOracle/mod_manifest.json mods/SpireOracle/sts2_reference.json mods/SpireOracle/config.json "$GAME_DIR/"
+for dll in Microsoft.Data.Sqlite.dll SQLitePCLRaw.core.dll SQLitePCLRaw.batteries_v2.dll SQLitePCLRaw.provider.e_sqlite3.dll; do
+    [ -f "mods/SpireOracle/$dll" ] && cp "mods/SpireOracle/$dll" "$GAME_DIR/"
+done
+if [ -d "mods/SpireOracle/runtimes" ]; then
+    cp -r mods/SpireOracle/runtimes "$GAME_DIR/"
+fi
 
 echo "=== Done ==="
 ls "$GAME_DIR/"
