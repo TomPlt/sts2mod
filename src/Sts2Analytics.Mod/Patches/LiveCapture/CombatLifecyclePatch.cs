@@ -85,20 +85,45 @@ public static class CombatEndCapturePatch
             var cm = CombatManager.Instance;
             if (cm == null) return;
 
-            // PendingLossState is not publicly accessible — use Traverse
+            // Check if any player is dead (HP <= 0) to determine win/loss
             var won = 1;
             try
             {
-                var pendingLoss = Traverse.Create(cm).Property("PendingLossState").GetValue<object>();
-                if (pendingLoss == null)
-                    pendingLoss = Traverse.Create(cm).Field("PendingLossState").GetValue<object>();
-                // PendingLossState is an enum/struct — check if it represents a loss
-                // If the property exists and has a non-default/non-None value, the player lost
-                var pendingLossStr = pendingLoss?.ToString() ?? "";
-                if (!string.IsNullOrEmpty(pendingLossStr) && pendingLossStr != "None" && pendingLossStr != "0")
-                    won = 0;
+                var state = cm.DebugOnlyGetState();
+                var runState = state?.RunState as RunState;
+                var player = InputPatch.GetLocalPlayer(RunManager.Instance, runState);
+                if (player != null)
+                {
+                    var hp = 0;
+                    try { hp = Traverse.Create(player).Property("CurrentHp").GetValue<int>(); } catch { }
+                    if (hp == 0)
+                    {
+                        // Try on Creature
+                        try
+                        {
+                            var creature = Traverse.Create(player).Property("Creature").GetValue<object>();
+                            if (creature != null)
+                                hp = Traverse.Create(creature).Property("CurrentHp").GetValue<int>();
+                        }
+                        catch { }
+                    }
+                    if (hp <= 0) won = 0;
+                }
             }
             catch { }
+            // Also check PendingLossState as fallback
+            if (won == 1)
+            {
+                try
+                {
+                    var pendingLoss = Traverse.Create(cm).Property("PendingLossState").GetValue<object>()
+                                   ?? Traverse.Create(cm).Field("PendingLossState").GetValue<object>();
+                    var pendingLossStr = pendingLoss?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(pendingLossStr) && pendingLossStr != "None" && pendingLossStr != "0")
+                        won = 0;
+                }
+                catch { }
+            }
 
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.EndCombat,
