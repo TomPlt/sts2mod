@@ -136,10 +136,77 @@ public static class CombatEndCapturePatch
             ));
 
             DebugLogOverlay.Log($"[SpireOracle] EndCombat: won={won}");
+
+            // Dump fight summary to F5 debug log
+            DumpCombatSummary();
         }
         catch (Exception ex)
         {
             DebugLogOverlay.LogErr($"[SpireOracle] CombatEndCapturePatch error: {ex.Message}");
+        }
+    }
+
+    private static void DumpCombatSummary()
+    {
+        if (!LiveRunDb.IsInitialized || LiveRunDb.CurrentRunId <= 0) return;
+        try
+        {
+            var runId = LiveRunDb.CurrentRunId;
+
+            var played = LiveRunDb.QueryTopStats(
+                @"SELECT a.SourceId, COUNT(*) FROM CombatActions a
+                  JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+                  WHERE c.RunId=@runId AND c.Id=(SELECT MAX(Id) FROM Combats WHERE RunId=@runId)
+                    AND a.ActionType='CARD_PLAYED'
+                  GROUP BY a.SourceId ORDER BY COUNT(*) DESC LIMIT 5", runId);
+
+            var damage = LiveRunDb.QueryTopStats(
+                @"SELECT a.SourceId || ' -> ' || a.TargetId, a.Amount FROM CombatActions a
+                  JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+                  WHERE c.RunId=@runId AND c.Id=(SELECT MAX(Id) FROM Combats WHERE RunId=@runId)
+                    AND a.ActionType='DAMAGE_DEALT'
+                  ORDER BY a.Amount DESC LIMIT 5", runId);
+
+            var totalDmgDealt = LiveRunDb.QueryTopStats(
+                @"SELECT 'dealt', SUM(a.Amount) FROM CombatActions a
+                  JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+                  WHERE c.RunId=@runId AND c.Id=(SELECT MAX(Id) FROM Combats WHERE RunId=@runId)
+                    AND a.ActionType='DAMAGE_DEALT' AND a.SourceId LIKE 'CHARACTER.%' AND a.TargetId NOT LIKE 'CHARACTER.%'", runId);
+
+            var totalDmgTaken = LiveRunDb.QueryTopStats(
+                @"SELECT 'taken', SUM(a.Amount) FROM CombatActions a
+                  JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+                  WHERE c.RunId=@runId AND c.Id=(SELECT MAX(Id) FROM Combats WHERE RunId=@runId)
+                    AND a.ActionType='DAMAGE_TAKEN' AND a.SourceId LIKE 'CHARACTER.%'", runId);
+
+            var totalBlock = LiveRunDb.QueryTopStats(
+                @"SELECT 'block', SUM(a.Amount) FROM CombatActions a
+                  JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+                  WHERE c.RunId=@runId AND c.Id=(SELECT MAX(Id) FROM Combats WHERE RunId=@runId)
+                    AND a.ActionType='BLOCK_GAINED' AND a.SourceId LIKE 'CHARACTER.%'", runId);
+
+            DebugLogOverlay.Log("--- Fight Summary ---");
+            var dealt = totalDmgDealt.Count > 0 ? totalDmgDealt[0].value : 0;
+            var taken = totalDmgTaken.Count > 0 ? totalDmgTaken[0].value : 0;
+            var block = totalBlock.Count > 0 ? totalBlock[0].value : 0;
+            DebugLogOverlay.Log($"Damage dealt: {dealt}  Taken: {taken}  Block: {block}");
+
+            if (played.Count > 0)
+            {
+                DebugLogOverlay.Log("Cards played:");
+                foreach (var (card, count) in played)
+                    DebugLogOverlay.Log($"  {card}: {count}x");
+            }
+            if (damage.Count > 0)
+            {
+                DebugLogOverlay.Log("Biggest hits:");
+                foreach (var (desc, amount) in damage)
+                    DebugLogOverlay.Log($"  {desc}: {amount}");
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] DumpCombatSummary error: {ex.Message}");
         }
     }
 }

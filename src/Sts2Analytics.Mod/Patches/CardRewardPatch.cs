@@ -243,6 +243,7 @@ public static class CardRewardPatch
 
     private static void AddRunStatsPanel(NCardRewardSelectionScreen screen)
     {
+        DebugLogOverlay.Log($"[SpireOracle] RunStats: init={LiveRunDb.IsInitialized} runId={LiveRunDb.CurrentRunId}");
         if (!LiveRunDb.IsInitialized || LiveRunDb.CurrentRunId <= 0) return;
 
         var ui = screen.GetNodeOrNull<Control>("UI");
@@ -264,6 +265,8 @@ public static class CardRewardPatch
               FROM CombatActions a1
               JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
                 AND a2.ActionType='DAMAGE_DEALT'
+                AND a2.SourceId LIKE 'CHARACTER.%'
+                AND a2.TargetId NOT LIKE 'CHARACTER.%'
                 AND a2.Seq < COALESCE(
                   (SELECT MIN(a3.Seq) FROM CombatActions a3
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
@@ -276,6 +279,7 @@ public static class CardRewardPatch
               FROM CombatActions a1
               JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
                 AND a2.ActionType='BLOCK_GAINED'
+                AND a2.SourceId LIKE 'CHARACTER.%'
                 AND a2.Seq < COALESCE(
                   (SELECT MIN(a3.Seq) FROM CombatActions a3
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
@@ -285,13 +289,12 @@ public static class CardRewardPatch
 
         if (topPlayed.Count == 0 && topDamage.Count == 0 && topBlock.Count == 0) return;
 
-        var panel = new HBoxContainer();
+        var panel = new VBoxContainer();
         panel.Name = "SpireOracleRunStats";
-        panel.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
-        panel.AnchorTop = 1f;
-        panel.Position = new Vector2(0, -40);
-        panel.Alignment = BoxContainer.AlignmentMode.Center;
-        panel.AddThemeConstantOverride("separation", 40);
+        panel.SetAnchorsPreset(Control.LayoutPreset.CenterLeft);
+        panel.Position = new Vector2(20, 0);
+        panel.GrowVertical = Control.GrowDirection.Both;
+        panel.AddThemeConstantOverride("separation", 12);
 
         AddStatColumn(panel, "Most Played", topPlayed);
         AddStatColumn(panel, "Top Damage", topDamage);
@@ -300,7 +303,7 @@ public static class CardRewardPatch
         ui.AddChild(panel);
     }
 
-    private static void AddStatColumn(HBoxContainer parent, string header, List<(string label, int value)> stats)
+    private static void AddStatColumn(VBoxContainer parent, string header, List<(string label, int value)> stats)
     {
         var col = new VBoxContainer();
         col.AddThemeConstantOverride("separation", 2);
