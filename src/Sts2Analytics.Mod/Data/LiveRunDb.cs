@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Data.Sqlite;
 using SpireOracle.UI;
@@ -41,13 +42,47 @@ public static class LiveRunDb
     private static long _currentTurnId;
     private static int _actionSeq;
 
+    private static string? _dbPath;
+
     public static bool IsInitialized => _conn != null;
+    public static long CurrentRunId => _currentRunId;
+
+    /// <summary>
+    /// Query the live DB from the game thread using a separate read-only connection.
+    /// Returns list of (label, value) tuples. Safe to call from any thread (WAL mode).
+    /// </summary>
+    public static List<(string label, int value)> QueryTopStats(string sql, long runId)
+    {
+        var results = new List<(string, int)>();
+        if (_dbPath == null) return results;
+        try
+        {
+            using var conn = new SqliteConnection($"Data Source={_dbPath};Mode=ReadOnly");
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.Parameters.AddWithValue("@runId", runId);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var label = reader.GetString(0);
+                var value = reader.GetInt32(1);
+                results.Add((label, value));
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLogOverlay.LogErr($"[SpireOracle] QueryTopStats error: {ex.Message}");
+        }
+        return results;
+    }
 
     public static void Initialize(string modPath)
     {
         try
         {
             var dbPath = System.IO.Path.Combine(modPath, "spireoracle_live.db");
+            _dbPath = dbPath;
             _conn = new SqliteConnection($"Data Source={dbPath}");
             _conn.Open();
 

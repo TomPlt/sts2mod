@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -183,6 +184,9 @@ public static class CardRewardPatch
 
                 ui.AddChild(container);
             }
+
+            // Run stats panel — top 3 cards played, damage, block
+            AddRunStatsPanel(__instance);
         }
         catch (System.Exception ex)
         {
@@ -235,5 +239,109 @@ public static class CardRewardPatch
             DebugLogOverlay.LogErr($"[SpireOracle] ReadLiveDeck error: {ex.Message}");
             return (null, null, -1);
         }
+    }
+
+    private static void AddRunStatsPanel(NCardRewardSelectionScreen screen)
+    {
+        if (!LiveRunDb.IsInitialized || LiveRunDb.CurrentRunId <= 0) return;
+
+        var ui = screen.GetNodeOrNull<Control>("UI");
+        if (ui == null) return;
+
+        var existing = ui.GetNodeOrNull("SpireOracleRunStats");
+        existing?.QueueFree();
+
+        var runId = LiveRunDb.CurrentRunId;
+
+        var topPlayed = LiveRunDb.QueryTopStats(
+            @"SELECT a.SourceId, COUNT(*) as cnt
+              FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+              WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
+              GROUP BY a.SourceId ORDER BY cnt DESC LIMIT 3", runId);
+
+        var topDamage = LiveRunDb.QueryTopStats(
+            @"SELECT a1.SourceId, SUM(a2.Amount) as total
+              FROM CombatActions a1
+              JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
+                AND a2.ActionType='DAMAGE_DEALT'
+                AND a2.Seq < COALESCE(
+                  (SELECT MIN(a3.Seq) FROM CombatActions a3
+                   WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
+              JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+              WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
+              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 3", runId);
+
+        var topBlock = LiveRunDb.QueryTopStats(
+            @"SELECT a1.SourceId, SUM(a2.Amount) as total
+              FROM CombatActions a1
+              JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
+                AND a2.ActionType='BLOCK_GAINED'
+                AND a2.Seq < COALESCE(
+                  (SELECT MIN(a3.Seq) FROM CombatActions a3
+                   WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
+              JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+              WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
+              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 3", runId);
+
+        if (topPlayed.Count == 0 && topDamage.Count == 0 && topBlock.Count == 0) return;
+
+        var panel = new HBoxContainer();
+        panel.Name = "SpireOracleRunStats";
+        panel.SetAnchorsPreset(Control.LayoutPreset.BottomWide);
+        panel.AnchorTop = 1f;
+        panel.Position = new Vector2(0, -40);
+        panel.Alignment = BoxContainer.AlignmentMode.Center;
+        panel.AddThemeConstantOverride("separation", 40);
+
+        AddStatColumn(panel, "Most Played", topPlayed);
+        AddStatColumn(panel, "Top Damage", topDamage);
+        AddStatColumn(panel, "Top Block", topBlock);
+
+        ui.AddChild(panel);
+    }
+
+    private static void AddStatColumn(HBoxContainer parent, string header, List<(string label, int value)> stats)
+    {
+        var col = new VBoxContainer();
+        col.AddThemeConstantOverride("separation", 2);
+
+        var headerLabel = new Label();
+        headerLabel.Text = header;
+        headerLabel.AddThemeFontSizeOverride("font_size", 20);
+        headerLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
+        headerLabel.HorizontalAlignment = HorizontalAlignment.Center;
+        col.AddChild(headerLabel);
+
+        for (int i = 0; i < stats.Count; i++)
+        {
+            var row = new Label();
+            row.Text = $"{i + 1}. {FormatCardName(stats[i].label)} ({stats[i].value})";
+            row.AddThemeFontSizeOverride("font_size", 18);
+            row.AddThemeColorOverride("font_color", Colors.White);
+            col.AddChild(row);
+        }
+        if (stats.Count == 0)
+        {
+            var empty = new Label();
+            empty.Text = "—";
+            empty.AddThemeFontSizeOverride("font_size", 18);
+            empty.AddThemeColorOverride("font_color", new Color(0.4f, 0.4f, 0.5f));
+            col.AddChild(empty);
+        }
+
+        parent.AddChild(col);
+    }
+
+    private static string FormatCardName(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return "?";
+        var name = id;
+        if (name.StartsWith("CARD.")) name = name.Substring(5);
+        var upgrade = "";
+        var plusIdx = name.IndexOf('+');
+        if (plusIdx > 0) { upgrade = name.Substring(plusIdx); name = name.Substring(0, plusIdx); }
+        name = string.Join(" ", name.Split('_').Select(w =>
+            w.Length > 0 ? char.ToUpper(w[0]) + w.Substring(1).ToLower() : w));
+        return name + upgrade;
     }
 }
