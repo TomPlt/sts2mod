@@ -253,17 +253,13 @@ public static class CardRewardPatch
 
         var runId = LiveRunDb.CurrentRunId;
 
-        // Get top 8 most played cards
         var topPlayed = LiveRunDb.QueryTopStats(
             @"SELECT a.SourceId, COUNT(*) as cnt
               FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
-              GROUP BY a.SourceId ORDER BY cnt DESC LIMIT 8", runId);
+              GROUP BY a.SourceId ORDER BY cnt DESC LIMIT 5", runId);
 
-        if (topPlayed.Count == 0) return;
-
-        // Get damage per card (keyed by card ID)
-        var dmgByCard = LiveRunDb.QueryTopStats(
+        var topDamage = LiveRunDb.QueryTopStats(
             @"SELECT a1.SourceId, SUM(a2.Amount) as total
               FROM CombatActions a1
               JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
@@ -275,10 +271,9 @@ public static class CardRewardPatch
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
               JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY a1.SourceId", runId)
-            .ToDictionary(x => x.label, x => x.value);
+              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 5", runId);
 
-        var blkByCard = LiveRunDb.QueryTopStats(
+        var topBlock = LiveRunDb.QueryTopStats(
             @"SELECT a1.SourceId, SUM(a2.Amount) as total
               FROM CombatActions a1
               JOIN CombatActions a2 ON a2.TurnId=a1.TurnId AND a2.Seq > a1.Seq
@@ -289,135 +284,43 @@ public static class CardRewardPatch
                    WHERE a3.TurnId=a1.TurnId AND a3.Seq > a1.Seq AND a3.ActionType='CARD_PLAYED'), 9999)
               JOIN Turns t ON a1.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
-              GROUP BY a1.SourceId", runId)
-            .ToDictionary(x => x.label, x => x.value);
+              GROUP BY a1.SourceId ORDER BY total DESC LIMIT 5", runId);
 
-        // Find max values for bar scaling
-        var maxPlayed = topPlayed.Max(x => x.value);
-        var maxDmg = dmgByCard.Count > 0 ? dmgByCard.Values.Max() : 1;
-        var maxBlk = blkByCard.Count > 0 ? blkByCard.Values.Max() : 1;
-        var maxStat = Math.Max(maxDmg, maxBlk);
-        if (maxStat == 0) maxStat = 1;
+        if (topPlayed.Count == 0 && topDamage.Count == 0 && topBlock.Count == 0) return;
 
-        const float BAR_WIDTH = 180f;
-
-        // Background panel
-        var panel = new PanelContainer();
+        var panel = new VBoxContainer();
         panel.Name = "SpireOracleRunStats";
         panel.SetAnchorsPreset(Control.LayoutPreset.CenterLeft);
-        panel.Position = new Vector2(10, 0);
+        panel.Position = new Vector2(20, 0);
         panel.GrowVertical = Control.GrowDirection.Both;
+        panel.AddThemeConstantOverride("separation", 8);
 
-        var bgStyle = new StyleBoxFlat();
-        bgStyle.BgColor = new Color(0.02f, 0.02f, 0.05f, 0.85f);
-        bgStyle.BorderColor = new Color(0.3f, 0.3f, 0.4f, 0.4f);
-        bgStyle.BorderWidthBottom = 1;
-        bgStyle.BorderWidthTop = 1;
-        bgStyle.BorderWidthLeft = 1;
-        bgStyle.BorderWidthRight = 1;
-        bgStyle.CornerRadiusBottomLeft = 6;
-        bgStyle.CornerRadiusBottomRight = 6;
-        bgStyle.CornerRadiusTopLeft = 6;
-        bgStyle.CornerRadiusTopRight = 6;
-        bgStyle.ContentMarginLeft = 10;
-        bgStyle.ContentMarginRight = 10;
-        bgStyle.ContentMarginTop = 8;
-        bgStyle.ContentMarginBottom = 8;
-        panel.AddThemeStyleboxOverride("panel", bgStyle);
+        AddStatSection(panel, "Most Played", topPlayed);
+        AddStatSection(panel, "Top Damage", topDamage);
+        AddStatSection(panel, "Top Block", topBlock);
 
-        var vbox = new VBoxContainer();
-        vbox.AddThemeConstantOverride("separation", 4);
-
-        // Title
-        var title = new Label();
-        title.Text = "Run Stats";
-        title.AddThemeFontSizeOverride("font_size", 18);
-        title.AddThemeColorOverride("font_color", new Color(0.83f, 0.33f, 0.16f));
-        vbox.AddChild(title);
-
-        vbox.AddChild(new HSeparator());
-
-        // Legend
-        var legend = new HBoxContainer();
-        legend.AddThemeConstantOverride("separation", 8);
-        AddLegendItem(legend, "Plays", new Color(0.5f, 0.5f, 0.6f));
-        AddLegendItem(legend, "Dmg", new Color(0.85f, 0.25f, 0.2f));
-        AddLegendItem(legend, "Blk", new Color(0.2f, 0.5f, 0.85f));
-        vbox.AddChild(legend);
-
-        // Bar chart rows
-        foreach (var (cardId, playCount) in topPlayed)
-        {
-            var dmg = dmgByCard.GetValueOrDefault(cardId, 0);
-            var blk = blkByCard.GetValueOrDefault(cardId, 0);
-
-            var row = new VBoxContainer();
-            row.AddThemeConstantOverride("separation", 1);
-
-            // Card name + counts
-            var nameLabel = new Label();
-            nameLabel.Text = $"{FormatCardName(cardId)}  {playCount}x";
-            if (dmg > 0) nameLabel.Text += $"  {dmg} dmg";
-            if (blk > 0) nameLabel.Text += $"  {blk} blk";
-            nameLabel.AddThemeFontSizeOverride("font_size", 14);
-            nameLabel.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.85f));
-            row.AddChild(nameLabel);
-
-            // Bar
-            var barRow = new HBoxContainer();
-            barRow.AddThemeConstantOverride("separation", 1);
-            barRow.CustomMinimumSize = new Vector2(BAR_WIDTH, 8);
-
-            // Play count bar (gray)
-            var playBar = new ColorRect();
-            playBar.Color = new Color(0.5f, 0.5f, 0.6f, 0.7f);
-            playBar.CustomMinimumSize = new Vector2(BAR_WIDTH * playCount / maxPlayed, 8);
-            barRow.AddChild(playBar);
-            row.AddChild(barRow);
-
-            // Damage + Block bar
-            if (dmg > 0 || blk > 0)
-            {
-                var statBar = new HBoxContainer();
-                statBar.AddThemeConstantOverride("separation", 1);
-                statBar.CustomMinimumSize = new Vector2(BAR_WIDTH, 6);
-
-                if (dmg > 0)
-                {
-                    var dmgBar = new ColorRect();
-                    dmgBar.Color = new Color(0.85f, 0.25f, 0.2f, 0.8f);
-                    dmgBar.CustomMinimumSize = new Vector2(BAR_WIDTH * dmg / maxStat, 6);
-                    statBar.AddChild(dmgBar);
-                }
-                if (blk > 0)
-                {
-                    var blkBar = new ColorRect();
-                    blkBar.Color = new Color(0.2f, 0.5f, 0.85f, 0.8f);
-                    blkBar.CustomMinimumSize = new Vector2(BAR_WIDTH * blk / maxStat, 6);
-                    statBar.AddChild(blkBar);
-                }
-                row.AddChild(statBar);
-            }
-
-            vbox.AddChild(row);
-        }
-
-        panel.AddChild(vbox);
         panel.MouseFilter = Control.MouseFilterEnum.Ignore;
         ui.AddChild(panel);
     }
 
-    private static void AddLegendItem(HBoxContainer parent, string text, Color color)
+    private static void AddStatSection(VBoxContainer parent, string header, List<(string label, int value)> stats)
     {
-        var swatch = new ColorRect();
-        swatch.Color = color;
-        swatch.CustomMinimumSize = new Vector2(10, 10);
-        parent.AddChild(swatch);
-        var label = new Label();
-        label.Text = text;
-        label.AddThemeFontSizeOverride("font_size", 12);
-        label.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
-        parent.AddChild(label);
+        if (stats.Count == 0) return;
+
+        var headerLabel = new Label();
+        headerLabel.Text = header;
+        headerLabel.AddThemeFontSizeOverride("font_size", 16);
+        headerLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.7f));
+        parent.AddChild(headerLabel);
+
+        for (int i = 0; i < stats.Count; i++)
+        {
+            var row = new Label();
+            row.Text = $"  {FormatCardName(stats[i].label)}: {stats[i].value}";
+            row.AddThemeFontSizeOverride("font_size", 14);
+            row.AddThemeColorOverride("font_color", Colors.White);
+            parent.AddChild(row);
+        }
     }
 
     private static string FormatCardName(string id)
