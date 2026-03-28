@@ -94,6 +94,20 @@ public static class LiveRunDb
             schemaCmd.CommandText = LiveRunSchema.Sql;
             schemaCmd.ExecuteNonQuery();
 
+            // Migration: add Profile column if missing
+            try
+            {
+                using var migCmd = _conn.CreateCommand();
+                migCmd.CommandText = "SELECT Profile FROM LiveRuns LIMIT 1";
+                migCmd.ExecuteScalar();
+            }
+            catch
+            {
+                using var migCmd = _conn.CreateCommand();
+                migCmd.CommandText = "ALTER TABLE LiveRuns ADD COLUMN Profile TEXT NOT NULL DEFAULT ''";
+                migCmd.ExecuteNonQuery();
+            }
+
             _running = true;
             _writerThread = new Thread(WriterLoop)
             {
@@ -166,9 +180,10 @@ public static class LiveRunDb
         switch (a.Kind)
         {
             case DbActionKind.StartRun:
+                // Id1=seed, Id2=character, Amount=ascension, Detail=profile
                 ExecuteInsert(tx,
-                    "INSERT INTO LiveRuns (Seed, Character, Ascension, StartedAt) VALUES (@p1, @p2, @p3, @p4)",
-                    a.Id1 ?? "", a.Id2 ?? "", a.Amount, Now());
+                    "INSERT INTO LiveRuns (Seed, Character, Ascension, Profile, StartedAt) VALUES (@p1, @p2, @p3, @p4, @p5)",
+                    a.Id1 ?? "", a.Id2 ?? "", a.Amount, a.Detail ?? "", Now());
                 _currentRunId = LastInsertRowId(tx);
                 _currentCombatId = 0;
                 _currentTurnId = 0;

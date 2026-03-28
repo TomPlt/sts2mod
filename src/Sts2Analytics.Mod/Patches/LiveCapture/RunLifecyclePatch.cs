@@ -91,6 +91,18 @@ public static class RunStartPatch
                 if (spaceIdx > 0) character = character.Substring(0, spaceIdx);
             }
 
+            // Detect profile from Godot user data path
+            // Path looks like: .../steam/76561198332920058/modded/profile1
+            var profile = "";
+            try
+            {
+                var dataPath = Godot.ProjectSettings.GlobalizePath("user://");
+                // Extract profileN from path
+                var match = System.Text.RegularExpressions.Regex.Match(dataPath, @"(profile\d+)");
+                if (match.Success) profile = match.Value;
+            }
+            catch { }
+
             LiveRunDb.Enqueue(new DbAction(
                 Kind: DbActionKind.StartRun,
                 Id1: seed,
@@ -98,10 +110,10 @@ public static class RunStartPatch
                 Amount: ascension,
                 ActIndex: 0,
                 FloorIndex: 0,
-                Detail: null
+                Detail: profile
             ));
 
-            DebugLogOverlay.Log($"[SpireOracle] StartRun: seed={seed} char={character} asc={ascension}");
+            DebugLogOverlay.Log($"[SpireOracle] StartRun: seed={seed} char={character} asc={ascension} profile={profile}");
         }
         catch (Exception ex)
         {

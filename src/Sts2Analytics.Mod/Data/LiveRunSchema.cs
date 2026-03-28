@@ -8,6 +8,7 @@ public static class LiveRunSchema
             Seed TEXT NOT NULL,
             Character TEXT NOT NULL,
             Ascension INTEGER NOT NULL DEFAULT 0,
+            Profile TEXT NOT NULL DEFAULT '',
             StartedAt TEXT NOT NULL,
             EndedAt TEXT,
             Win INTEGER,
