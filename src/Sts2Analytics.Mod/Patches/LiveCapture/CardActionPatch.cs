@@ -75,13 +75,7 @@ public static class CardPlayedCapturePatch
 
         try
         {
-            // Log all property values for diagnostics
-            var cmid = Traverse.Create(__instance).Property("CardModelId").GetValue<object>();
-            var tid = Traverse.Create(__instance).Property("TargetId").GetValue<object>();
-            var player = Traverse.Create(__instance).Property("Player").GetValue<object>();
-            DebugLogOverlay.Log($"[SpireOracle] PlayCard: cmid={cmid} tid={tid} player={player}");
-
-            var cardId = cmid?.ToString() ?? "";
+            var cardId = Traverse.Create(__instance).Property("CardModelId").GetValue<object>()?.ToString() ?? "";
             var sp = cardId.IndexOf(' ');
             if (sp > 0) cardId = cardId.Substring(0, sp);
             if (string.IsNullOrEmpty(cardId)) return;
@@ -127,7 +121,12 @@ public static class CardPlayedCapturePatch
             var actIndex = state?.CurrentActIndex ?? 0;
             var floorIndex = 0;
             if (state != null)
-                floorIndex = Traverse.Create(state).Property("CurrentFloorIndex").GetValue<int>();
+            {
+                // TotalFloor is the overall floor counter across all acts
+                try { floorIndex = Traverse.Create(state).Property("TotalFloor").GetValue<int>(); } catch { }
+                if (floorIndex == 0)
+                    try { floorIndex = Traverse.Create(state).Property("ActFloor").GetValue<int>(); } catch { }
+            }
             return (actIndex, floorIndex);
         }
         catch { return (0, 0); }

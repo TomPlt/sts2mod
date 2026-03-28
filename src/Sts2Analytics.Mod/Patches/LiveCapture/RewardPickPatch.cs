@@ -52,7 +52,7 @@ public static class RewardPickPatch
             var sp = relicId.IndexOf(' ');
             if (sp > 0) relicId = relicId.Substring(0, sp);
 
-            // Discovery: log all properties if relic not found
+            // Discovery: log all properties AND fields if relic not found
             if (string.IsNullOrEmpty(relicId))
             {
                 var props = __instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -63,6 +63,17 @@ public static class RewardPickPatch
                         var val = p.GetValue(__instance);
                         if (val != null)
                             DebugLogOverlay.Log($"[SpireOracle] PickRelicAction.{p.Name} = {val}");
+                    }
+                    catch { }
+                }
+                var fields = __instance.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                foreach (var f in fields)
+                {
+                    try
+                    {
+                        var val = f.GetValue(__instance);
+                        if (val != null)
+                            DebugLogOverlay.Log($"[SpireOracle] PickRelicAction._{f.Name} = {val}");
                     }
                     catch { }
                 }

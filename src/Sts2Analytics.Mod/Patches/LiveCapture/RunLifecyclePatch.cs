@@ -36,25 +36,36 @@ public static class RunStartPatch
                     try { seed = Traverse.Create(state).Field(name).GetValue<object>()?.ToString() ?? ""; } catch { }
             }
 
-            // If still empty, dump ALL string/object properties to find seed
+            // Try SeedHelper static properties/fields
             if (string.IsNullOrEmpty(seed))
             {
                 try
                 {
-                    var props = state.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                    foreach (var p in props)
+                    var seedHelperType = state.GetType().Assembly.GetType("MegaCrit.Sts2.Core.Helpers.SeedHelper");
+                    if (seedHelperType != null)
                     {
-                        try
+                        var sprops = seedHelperType.GetProperties(BindingFlags.Public | BindingFlags.Static);
+                        foreach (var p in sprops)
                         {
-                            var val = p.GetValue(state);
-                            if (val != null)
+                            try
                             {
-                                var s = val.ToString() ?? "";
-                                if (s.Length > 0 && s.Length < 100 && s != val.GetType().FullName)
-                                    DebugLogOverlay.Log($"[SpireOracle] RS.{p.Name}({p.PropertyType.Name}) = {s}");
+                                var val = p.GetValue(null);
+                                if (val != null)
+                                    DebugLogOverlay.Log($"[SpireOracle] SeedHelper.{p.Name}({p.PropertyType.Name}) = {val}");
                             }
+                            catch { }
                         }
-                        catch { }
+                        var sfields = seedHelperType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+                        foreach (var f in sfields)
+                        {
+                            try
+                            {
+                                var val = f.GetValue(null);
+                                if (val != null)
+                                    DebugLogOverlay.Log($"[SpireOracle] SeedHelper._{f.Name}({f.FieldType.Name}) = {val}");
+                            }
+                            catch { }
+                        }
                     }
                 }
                 catch { }

@@ -34,13 +34,17 @@ public static class CombatStartCapturePatch
 
             var actIndex = state.RunState?.CurrentActIndex ?? 0;
 
-            // Get floor index
+            // Get floor index — TotalFloor is the overall floor counter
             var floorIndex = 0;
             try
             {
                 var runState = state.RunState as RunState;
                 if (runState != null)
-                    floorIndex = Traverse.Create(runState).Property("CurrentFloorIndex").GetValue<int>();
+                {
+                    try { floorIndex = Traverse.Create(runState).Property("TotalFloor").GetValue<int>(); } catch { }
+                    if (floorIndex == 0)
+                        try { floorIndex = Traverse.Create(runState).Property("ActFloor").GetValue<int>(); } catch { }
+                }
             }
             catch { }
 
