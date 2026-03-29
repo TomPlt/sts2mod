@@ -166,7 +166,8 @@ public class ModEntry
                     var baseDir = Path.Combine(steamDir, profileDir);
                     if (!Directory.Exists(baseDir)) continue;
 
-                    foreach (var profile in Directory.GetDirectories(baseDir, "profile*"))
+                    var profilePattern = CloudSync.Profile != null ? CloudSync.Profile : "profile*";
+                    foreach (var profile in Directory.GetDirectories(baseDir, profilePattern))
                     {
                         var historyPath = Path.Combine(profile, "saves", "history");
                         if (!Directory.Exists(historyPath)) continue;

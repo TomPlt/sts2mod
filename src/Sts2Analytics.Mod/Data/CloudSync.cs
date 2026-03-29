@@ -16,7 +16,8 @@ namespace SpireOracle.Data;
 
 public record SyncConfig(
     [property: JsonPropertyName("githubToken")] string GithubToken,
-    [property: JsonPropertyName("playerName")] string PlayerName);
+    [property: JsonPropertyName("playerName")] string PlayerName,
+    [property: JsonPropertyName("profile")] string? Profile = null);
 
 public static class CloudSync
 {
@@ -27,6 +28,7 @@ public static class CloudSync
     private static HttpClient? _http;
 
     public static bool IsConfigured => _config != null;
+    public static string? Profile => _config?.Profile;
 
     public static void LoadConfig(string modPath)
     {

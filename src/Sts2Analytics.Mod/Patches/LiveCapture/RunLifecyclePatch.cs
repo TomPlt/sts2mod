@@ -18,6 +18,8 @@ public static class RunStartPatch
     public static void Postfix()
     {
         if (!LiveRunDb.IsInitialized) return;
+        // GenerateMap is called per act — only create a new run if none is active
+        if (LiveRunDb.CurrentRunId > 0) return;
 
         try
         {
