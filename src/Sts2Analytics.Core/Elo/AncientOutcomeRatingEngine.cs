@@ -6,7 +6,7 @@ namespace Sts2Analytics.Core.Elo;
 
 /// <summary>
 /// Glicko-2 for ancient choices where pick only counts as a win if the run wins.
-/// Picked+Won=1.0, Picked+Lost=0.0 (skipped wins), AllSkipped+Lost=0.5 draw.
+/// Picked+Won=1.0 vs Skipped=0.0 (clear signal). Run lost=0.5 draw (inconclusive).
 /// </summary>
 public class AncientOutcomeRatingEngine
 {
@@ -79,8 +79,8 @@ public class AncientOutcomeRatingEngine
                         matchups[p.TextKey] = new();
                     foreach (var s in skipped)
                     {
-                        // Picked + Won: pick validated. Picked + Lost: skipped wins.
-                        matchups[p.TextKey].Add((s.TextKey, runWon ? 1.0 : 0.0));
+                        // Won: picked validated (1.0 vs 0.0). Lost: inconclusive draw (0.5 vs 0.5).
+                        matchups[p.TextKey].Add((s.TextKey, runWon ? 1.0 : 0.5));
                     }
                 }
 
@@ -90,7 +90,7 @@ public class AncientOutcomeRatingEngine
                         matchups[s.TextKey] = new();
                     foreach (var p in picked)
                     {
-                        matchups[s.TextKey].Add((p.TextKey, runWon ? 0.0 : 1.0));
+                        matchups[s.TextKey].Add((p.TextKey, runWon ? 0.0 : 0.5));
                     }
                 }
 
