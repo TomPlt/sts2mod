@@ -121,6 +121,9 @@ public static class OverlayFactory
         AddStatRow(vbox, "Win (Picked)", $"{stats.WinRatePicked:P1}");
         AddStatRow(vbox, "Win (Skipped)", $"{stats.WinRateSkipped:P1}");
         AddStatRow(vbox, "Delta", $"{stats.Delta:+0.0%;-0.0%;0.0%}");
+        var offered = stats.TimesPicked + stats.TimesSkipped;
+        if (offered > 0)
+            AddStatRow(vbox, "Offered", $"{offered} runs ({stats.TimesPicked} picked)");
 
         if (!string.IsNullOrEmpty(stats.BlindSpot))
         {

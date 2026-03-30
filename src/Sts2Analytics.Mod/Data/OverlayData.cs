@@ -32,7 +32,9 @@ public record CardStats(
     [property: JsonPropertyName("outcomeEloAct2")] double OutcomeEloAct2 = 0,
     [property: JsonPropertyName("outcomeRdAct2")] double OutcomeRdAct2 = 350,
     [property: JsonPropertyName("outcomeEloAct3")] double OutcomeEloAct3 = 0,
-    [property: JsonPropertyName("outcomeRdAct3")] double OutcomeRdAct3 = 350);
+    [property: JsonPropertyName("outcomeRdAct3")] double OutcomeRdAct3 = 350,
+    [property: JsonPropertyName("timesPicked")] int TimesPicked = 0,
+    [property: JsonPropertyName("timesSkipped")] int TimesSkipped = 0);
 
 public record PoolRating(
     [property: JsonPropertyName("elo")] double Elo,

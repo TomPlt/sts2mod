@@ -8,6 +8,10 @@ public class FilterState
     public int? AscensionMax { get; set; }
     public string? Character { get; set; }
     public string? Player { get; set; }
+    public bool HideMultiplayer { get; set; }
+
+    /// <summary>Set of run IDs that are multiplayer (share a seed with another player).</summary>
+    public HashSet<long> MultiplayerRunIds { get; set; } = [];
 
     public event Action? OnChange;
 
@@ -19,9 +23,10 @@ public class FilterState
         if (Player != null && run.Source != Player) return false;
         if (AscensionMin.HasValue && run.Ascension < AscensionMin.Value) return false;
         if (AscensionMax.HasValue && run.Ascension > AscensionMax.Value) return false;
+        if (HideMultiplayer && MultiplayerRunIds.Contains(run.Id)) return false;
         return true;
     }
 
     public bool HasAscensionFilter => AscensionMin.HasValue || AscensionMax.HasValue;
-    public bool HasAnyFilter => HasAscensionFilter || Character != null || Player != null;
+    public bool HasAnyFilter => HasAscensionFilter || Character != null || Player != null || HideMultiplayer;
 }

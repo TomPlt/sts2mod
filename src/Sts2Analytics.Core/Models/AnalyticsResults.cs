@@ -61,7 +61,8 @@ public record ModCardStats(
     double OutcomeElo = 0, double OutcomeRd = 350,
     double OutcomeEloAct1 = 0, double OutcomeRdAct1 = 350,
     double OutcomeEloAct2 = 0, double OutcomeRdAct2 = 350,
-    double OutcomeEloAct3 = 0, double OutcomeRdAct3 = 350);
+    double OutcomeEloAct3 = 0, double OutcomeRdAct3 = 350,
+    int TimesPicked = 0, int TimesSkipped = 0);
 
 public record ModAncientStats(
     string ChoiceKey, double Rating, double Rd,

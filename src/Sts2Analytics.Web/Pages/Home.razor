@@ -43,11 +43,17 @@ else
                 {
                     <div class="char-row">
                         <span class="char-tag @c.CssClass">@c.Name</span>
-                        <div class="char-bar-track">
-                            <div class="char-bar-fill" style="width: @(c.WinRate * 100)%"></div>
+                        <div class="char-bar-area">
+                            <div class="char-stacked-bar">
+                                <div class="char-bar-win" style="width: @((c.Runs > 0 ? (double)c.Wins / c.Runs * 100 : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                                <div class="char-bar-loss" style="width: @((c.Runs > 0 ? (double)c.Losses / c.Runs * 100 : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                            </div>
+                            <div class="char-bar-meta">
+                                <span class="char-record"><span class="win-count">@c.Wins W</span> <span class="loss-count">@c.Losses L</span></span>
+                                <span class="char-asc">avg Asc @c.AvgAscension.ToString("F1")</span>
+                            </div>
                         </div>
                         <span class="char-rate mono">@c.WinRate.ToString("P0")</span>
-                        <span class="dim-text" style="font-size: 0.75rem;">@c.Runs runs</span>
                     </div>
                 }
             }
@@ -175,7 +181,7 @@ else
     private int _wins;
     private int _losses;
 
-    record CharacterStat(string Name, string CssClass, int Runs, double WinRate);
+    record CharacterStat(string Name, string CssClass, int Runs, int Wins, int Losses, double WinRate, double AvgAscension);
     record EliteBar(string Label, double WinRate);
 
     protected override async Task OnInitializedAsync()
@@ -209,7 +215,10 @@ else
                 var name = FormatName(g.Key);
                 var css = GetCharClass(g.Key);
                 var wins = g.Count(r => r.Win);
-                return new CharacterStat(name, css, g.Count(), g.Count() > 0 ? (double)wins / g.Count() : 0);
+                var losses = g.Count() - wins;
+                var avgAsc = g.Average(r => r.Ascension);
+                return new CharacterStat(name, css, g.Count(), wins, losses,
+                    g.Count() > 0 ? (double)wins / g.Count() : 0, avgAsc);
             })
             .OrderByDescending(c => c.WinRate)
             .ToList();
@@ -281,32 +290,75 @@ else
         display: flex;
         align-items: center;
         gap: 0.6rem;
-        padding: 0.35rem 0;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(212, 168, 106, 0.04);
+    }
+
+    .char-row:last-child {
+        border-bottom: none;
     }
 
     .char-row .char-tag {
         min-width: 7rem;
     }
 
-    .char-bar-track {
+    .char-bar-area {
         flex: 1;
-        height: 6px;
-        background: var(--void-3);
-        border-radius: 3px;
-        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
-    .char-bar-fill {
+    .char-stacked-bar {
+        display: flex;
+        height: 10px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--void-3);
+    }
+
+    .char-bar-win {
         height: 100%;
-        border-radius: 3px;
-        background: linear-gradient(90deg, var(--ember-dim), var(--ember));
+        background: var(--positive, #4ade80);
         transition: width 0.6s ease;
+    }
+
+    .char-bar-loss {
+        height: 100%;
+        background: var(--negative, #f87171);
+        transition: width 0.6s ease;
+    }
+
+    .char-bar-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        line-height: 1;
+    }
+
+    .char-record {
+        display: flex;
+        gap: 0.4rem;
+    }
+
+    .win-count {
+        color: var(--positive, #4ade80);
+    }
+
+    .loss-count {
+        color: var(--negative, #f87171);
+    }
+
+    .char-asc {
+        opacity: 0.7;
     }
 
     .char-rate {
         min-width: 2.5rem;
         text-align: right;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 600;
         color: var(--text-primary);
     }
 

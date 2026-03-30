@@ -515,6 +515,9 @@ public static class ExportCommand
                 else if (oar.Context.EndsWith("_ACT3")) { if (oar.Rating > oAct3) { oAct3 = oar.Rating; oRdAct3 = oar.RatingDeviation; } }
             }
 
+            var timesPicked = w?.TimesPicked ?? 0;
+            var timesSkipped = w?.TimesSkipped ?? 0;
+
             return new ModCardStats(id, elo, rd, pickRate, winPicked, winSkipped, delta, act1, rdAct1, act2, rdAct2, act3, rdAct3,
                 blindSpotType, bsScore, bsPickRate, bsWinDelta,
                 CombatElo: combatElo, CombatRd: combatRdVal,
@@ -523,7 +526,8 @@ public static class ExportCommand
                 OutcomeElo: outcomeElo, OutcomeRd: outcomeRdVal,
                 OutcomeEloAct1: oAct1, OutcomeRdAct1: oRdAct1,
                 OutcomeEloAct2: oAct2, OutcomeRdAct2: oRdAct2,
-                OutcomeEloAct3: oAct3, OutcomeRdAct3: oRdAct3);
+                OutcomeEloAct3: oAct3, OutcomeRdAct3: oRdAct3,
+                TimesPicked: timesPicked, TimesSkipped: timesSkipped);
         }).ToList();
 
         // Build ancient stats for mod export
@@ -561,17 +565,24 @@ public static class ExportCommand
                 r => r.CharKey,
                 r => new AncientCharRating(r.Rating, r.Rd, r.Games)));
 
-        // Ancient win rates: win rate when picked vs when skipped
+        // Ancient win rates: win rate when picked vs when skipped (per-run)
         var ancientWinRates = conn.Query("""
-            SELECT ac.TextKey,
-                   SUM(CASE WHEN ac.WasChosen = 1 THEN 1 ELSE 0 END) AS TimesPicked,
-                   SUM(CASE WHEN ac.WasChosen = 0 THEN 1 ELSE 0 END) AS TimesSkipped,
-                   SUM(CASE WHEN ac.WasChosen = 1 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
-                   SUM(CASE WHEN ac.WasChosen = 0 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
-            FROM AncientChoices ac
-            JOIN Floors f ON ac.FloorId = f.Id
-            JOIN Runs r ON f.RunId = r.Id
-            GROUP BY ac.TextKey
+            WITH RunAncient AS (
+                SELECT ac.TextKey, f.RunId,
+                       MAX(ac.WasChosen) AS EverChosen,
+                       r.Win
+                FROM AncientChoices ac
+                JOIN Floors f ON ac.FloorId = f.Id
+                JOIN Runs r ON f.RunId = r.Id
+                GROUP BY ac.TextKey, f.RunId
+            )
+            SELECT TextKey,
+                   SUM(EverChosen) AS TimesPicked,
+                   SUM(1 - EverChosen) AS TimesSkipped,
+                   SUM(CASE WHEN EverChosen = 1 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
+                   SUM(CASE WHEN EverChosen = 0 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
+            FROM RunAncient
+            GROUP BY TextKey
             """).ToDictionary(r => (string)r.TextKey);
 
         var ancientByKey = ancientRatings

@@ -41,11 +41,22 @@
             </select>
         </div>
     }
+
+    @if (_hasMultiplayer)
+    {
+        <div class="filter-group">
+            <label class="filter-checkbox">
+                <input type="checkbox" checked="@Filter.HideMultiplayer" @onchange="OnHideMultiplayerChanged" />
+                <span class="filter-label">Solo only</span>
+            </label>
+        </div>
+    }
 </div>
 
 @code {
     private List<string> _characters = [];
     private List<string> _players = [];
+    private bool _hasMultiplayer;
     private string _ascensionPreset = "";
 
     protected override async Task OnInitializedAsync()
@@ -62,6 +73,15 @@
             .Distinct()
             .OrderBy(s => s)
             .ToList();
+
+        // Detect multiplayer: runs sharing a seed across different players
+        var mpIds = data.Runs
+            .GroupBy(r => r.Seed)
+            .Where(g => g.Select(r => r.Source).Distinct().Count() > 1)
+            .SelectMany(g => g.Select(r => r.Id))
+            .ToHashSet();
+        Filter.MultiplayerRunIds = mpIds;
+        _hasMultiplayer = mpIds.Count > 0;
     }
 
     private void OnAscensionPresetChanged(ChangeEventArgs e)
@@ -100,6 +120,12 @@
     {
         var val = e.Value?.ToString();
         Filter.Player = string.IsNullOrEmpty(val) ? null : val;
+        Filter.NotifyChanged();
+    }
+
+    private void OnHideMultiplayerChanged(ChangeEventArgs e)
+    {
+        Filter.HideMultiplayer = e.Value is true;
         Filter.NotifyChanged();
     }
 
@@ -168,5 +194,17 @@
     .filter-select option {
         background: var(--void-2);
         color: var(--text-primary);
+    }
+
+    .filter-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+    }
+
+    .filter-checkbox input[type="checkbox"] {
+        accent-color: var(--ember-dim);
+        cursor: pointer;
     }
 </style>

@@ -18,17 +18,26 @@ public class RelicAnalytics
         var (where, parameters) = BuildWhereClause(filter);
 
         var sql = $"""
+            WITH RunRelic AS (
+                SELECT
+                    rc.RelicId,
+                    f.RunId,
+                    MAX(rc.WasPicked) AS EverPicked,
+                    r.Win
+                FROM RelicChoices rc
+                JOIN Floors f ON rc.FloorId = f.Id
+                JOIN Runs r ON f.RunId = r.Id
+                {where}
+                GROUP BY rc.RelicId, f.RunId
+            )
             SELECT
-                rc.RelicId,
-                SUM(CASE WHEN rc.WasPicked = 1 THEN 1 ELSE 0 END) AS TimesPicked,
-                SUM(CASE WHEN rc.WasPicked = 0 THEN 1 ELSE 0 END) AS TimesSkipped,
-                SUM(CASE WHEN rc.WasPicked = 1 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
-                SUM(CASE WHEN rc.WasPicked = 0 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
-            FROM RelicChoices rc
-            JOIN Floors f ON rc.FloorId = f.Id
-            JOIN Runs r ON f.RunId = r.Id
-            {where}
-            GROUP BY rc.RelicId
+                RelicId,
+                SUM(EverPicked) AS TimesPicked,
+                SUM(1 - EverPicked) AS TimesSkipped,
+                SUM(CASE WHEN EverPicked = 1 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
+                SUM(CASE WHEN EverPicked = 0 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
+            FROM RunRelic
+            GROUP BY RelicId
             """;
 
         var rows = _connection.Query(sql, parameters).ToList();

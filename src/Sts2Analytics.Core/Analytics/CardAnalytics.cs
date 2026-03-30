@@ -19,17 +19,26 @@ public class CardAnalytics
         var (where, parameters) = BuildWhereClause(filter);
 
         var sql = $"""
+            WITH RunCard AS (
+                SELECT
+                    CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END AS CardId,
+                    f.RunId,
+                    MAX(cc.WasPicked) AS EverPicked,
+                    r.Win
+                FROM CardChoices cc
+                JOIN Floors f ON cc.FloorId = f.Id
+                JOIN Runs r ON f.RunId = r.Id
+                {where}
+                GROUP BY CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END, f.RunId
+            )
             SELECT
-                CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END AS CardId,
-                SUM(CASE WHEN cc.WasPicked = 1 THEN 1 ELSE 0 END) AS TimesPicked,
-                SUM(CASE WHEN cc.WasPicked = 0 THEN 1 ELSE 0 END) AS TimesSkipped,
-                SUM(CASE WHEN cc.WasPicked = 1 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
-                SUM(CASE WHEN cc.WasPicked = 0 AND r.Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
-            FROM CardChoices cc
-            JOIN Floors f ON cc.FloorId = f.Id
-            JOIN Runs r ON f.RunId = r.Id
-            {where}
-            GROUP BY CASE WHEN cc.UpgradeLevel > 0 THEN cc.CardId || '+' || cc.UpgradeLevel ELSE cc.CardId END
+                CardId,
+                SUM(EverPicked) AS TimesPicked,
+                SUM(1 - EverPicked) AS TimesSkipped,
+                SUM(CASE WHEN EverPicked = 1 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenPicked,
+                SUM(CASE WHEN EverPicked = 0 AND Win = 1 THEN 1 ELSE 0 END) AS WinsWhenSkipped
+            FROM RunCard
+            GROUP BY CardId
             """;
 
         var rows = _connection.Query(sql, parameters).ToList();
