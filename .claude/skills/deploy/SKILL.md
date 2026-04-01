@@ -23,21 +23,15 @@ rm -f "$GAME_DIR/.deploy_test"
 echo "=== Building mod ==="
 dotnet build src/Sts2Analytics.Mod -c Release
 
-echo "=== Syncing shared run data ==="
-DATA_REPO="$HOME/projects/spire-oracle-data"
-if [ -d "$DATA_REPO/.git" ]; then
-    git -C "$DATA_REPO" pull --ff-only -q
-else
-    git clone git@github.com:TomPlt/spire-oracle-data.git "$DATA_REPO"
-fi
+echo "=== Exporting fresh overlay data ==="
+gh workflow run export.yml --repo TomPlt/spire-oracle-data
+echo "Waiting for export workflow..."
+sleep 5
+RUN_ID=$(gh run list --repo TomPlt/spire-oracle-data --workflow=export.yml --limit 1 --json databaseId --jq '.[0].databaseId')
+gh run watch "$RUN_ID" --repo TomPlt/spire-oracle-data --exit-status
 
-echo "=== Importing run data ==="
-for player_dir in "$DATA_REPO"/runs/*/; do
-    [ -d "$player_dir" ] && dotnet run --project src/Sts2Analytics.Cli -- import "$player_dir"
-done
-
-echo "=== Exporting mod overlay data ==="
-dotnet run --project src/Sts2Analytics.Cli -- export --mod --output mods/SpireOracle/overlay_data.json
+echo "=== Downloading latest overlay data ==="
+gh release download latest --repo TomPlt/spire-oracle-data --pattern overlay_data.json --dir mods/SpireOracle/ --clobber
 
 echo "=== Deploying to game ==="
 cp src/Sts2Analytics.Mod/bin/Release/net9.0/SpireOracle.dll mods/SpireOracle/

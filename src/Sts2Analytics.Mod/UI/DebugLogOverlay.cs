@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using SpireOracle.Data;
 
 namespace SpireOracle.UI;
 
@@ -101,6 +102,18 @@ public static class DebugLogOverlay
         title.HorizontalAlignment = HorizontalAlignment.Right;
         _vbox.AddChild(title);
 
+        // Data info subtitle
+        var dataInfo = BuildDataInfoText();
+        if (dataInfo != null)
+        {
+            var subtitle = new Label();
+            subtitle.Text = dataInfo;
+            subtitle.AddThemeFontSizeOverride("font_size", 11);
+            subtitle.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.55f));
+            subtitle.HorizontalAlignment = HorizontalAlignment.Right;
+            _vbox.AddChild(subtitle);
+        }
+
         _vbox.AddChild(new HSeparator());
 
         _panel.AddChild(_vbox);
@@ -132,14 +145,36 @@ public static class DebugLogOverlay
         _visible = false;
     }
 
+    private static string? BuildDataInfoText()
+    {
+        if (!DataLoader.IsLoaded) return null;
+        var parts = new List<string>();
+        if (DataLoader.ExportedAt != null)
+        {
+            if (DateTime.TryParse(DataLoader.ExportedAt, null, System.Globalization.DateTimeStyles.RoundtripKind, out var dt))
+                parts.Add(dt.ToString("yyyy-MM-dd HH:mm"));
+            else
+                parts.Add(DataLoader.ExportedAt);
+        }
+        if (DataLoader.TotalRuns > 0)
+            parts.Add($"{DataLoader.TotalRuns} runs");
+        return parts.Count > 0 ? string.Join(" — ", parts) : null;
+    }
+
     private static void RefreshContent()
     {
         if (_vbox == null || !GodotObject.IsInstanceValid(_vbox)) return;
 
-        // Remove old log lines (keep title + separator)
-        while (_vbox.GetChildCount() > 2)
+        // Remove old log lines (keep title + optional subtitle + separator)
+        var headerCount = 0;
+        for (int i = 0; i < _vbox.GetChildCount(); i++)
         {
-            var child = _vbox.GetChild(2);
+            headerCount++;
+            if (_vbox.GetChild(i) is HSeparator) break;
+        }
+        while (_vbox.GetChildCount() > headerCount)
+        {
+            var child = _vbox.GetChild(headerCount);
             _vbox.RemoveChild(child);
             child.QueueFree();
         }

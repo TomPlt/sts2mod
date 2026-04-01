@@ -12,6 +12,12 @@ public partial class MapIntelPanel : PanelContainer
     private int _currentAct = -1;
     private string? _currentActName;
 
+    // Rotating win streak display
+    private Label? _streakLabel;
+    private Timer? _streakTimer;
+    private List<(string Player, string CharName, int Streak)> _streakEntries = new();
+    private int _streakIndex;
+
     public MapIntelPanel()
     {
         Name = "SpireOracleMapIntel";
@@ -95,7 +101,8 @@ public partial class MapIntelPanel : PanelContainer
                 var charStat = p.ByCharacter?.Find(c => c.Character == character);
                 if (charStat != null)
                 {
-                    AddStatRow($"  {p.Name}", $"{charStat.WinRate:P0} ({charStat.Wins}/{charStat.Runs})",
+                    var streakText = charStat.MaxWinStreak > 0 ? $"  \ud83d\udd25{charStat.MaxWinStreak}" : "";
+                    AddStatRow($"  {p.Name}", $"{charStat.WinRate:P0} ({charStat.Wins}/{charStat.Runs}){streakText}",
                         charStat.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f), 16);
                 }
                 else
@@ -104,6 +111,35 @@ public partial class MapIntelPanel : PanelContainer
                         p.WinRate >= 0.5 ? new Color(0.3f, 0.85f, 0.3f) : new Color(0.95f, 0.85f, 0.2f), 16);
                 }
             }
+
+            // Rotating win streak display
+            _streakEntries.Clear();
+            foreach (var p in players)
+            {
+                if (p.ByCharacter == null) continue;
+                foreach (var c in p.ByCharacter)
+                {
+                    if (c.MaxWinStreak <= 0) continue;
+                    _streakEntries.Add((p.Name, c.Character.Replace("CHARACTER.", ""), c.MaxWinStreak));
+                }
+            }
+            if (_streakEntries.Count > 0)
+            {
+                AddSeparator();
+                _streakLabel = new Label();
+                _streakLabel.AddThemeFontSizeOverride("font_size", 16);
+                _streakIndex = 0;
+                UpdateStreakLabel();
+                _content.AddChild(_streakLabel);
+
+                _streakTimer?.QueueFree();
+                _streakTimer = new Timer();
+                _streakTimer.WaitTime = 3.0;
+                _streakTimer.Autostart = true;
+                _streakTimer.Timeout += OnStreakRotate;
+                AddChild(_streakTimer);
+            }
+
             AddSeparator();
         }
 
@@ -332,6 +368,24 @@ public partial class MapIntelPanel : PanelContainer
         var sep = new HSeparator();
         sep.AddThemeConstantOverride("separation", 4);
         _content.AddChild(sep);
+    }
+
+    private void OnStreakRotate()
+    {
+        if (_streakEntries.Count == 0) return;
+        _streakIndex = (_streakIndex + 1) % _streakEntries.Count;
+        UpdateStreakLabel();
+    }
+
+    private void UpdateStreakLabel()
+    {
+        if (_streakLabel == null || _streakEntries.Count == 0) return;
+        var (player, charName, streak) = _streakEntries[_streakIndex];
+        _streakLabel.Text = $"\ud83d\udd25 Best Win Streak: {player} \u2014 {charName} \u2014 {streak}";
+        var isCurrentChar = _currentCharacter != null
+            && _currentCharacter.Replace("CHARACTER.", "") == charName;
+        _streakLabel.AddThemeColorOverride("font_color",
+            isCurrentChar ? new Color(0.83f, 0.33f, 0.16f) : new Color(0.95f, 0.65f, 0.1f));
     }
 
     private void AddNoDataLabel()

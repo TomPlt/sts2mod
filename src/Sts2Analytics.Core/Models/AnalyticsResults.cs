@@ -77,10 +77,11 @@ public record ModAncientStats(
 
 public record AncientCharRating(double Rating, double Rd, int Games);
 
-public record PlayerCharWinRate(string Character, int Runs, int Wins, double WinRate);
+public record PlayerCharWinRate(string Character, int Runs, int Wins, double WinRate,
+    int MaxWinStreak = 0);
 
 public record PlayerRunCount(string Name, int Runs, int Wins, double WinRate,
-    List<PlayerCharWinRate>? ByCharacter = null);
+    List<PlayerCharWinRate>? ByCharacter = null, int MaxWinStreak = 0);
 
 public record ModOverlayData(
     int Version, string ExportedAt, double SkipElo,

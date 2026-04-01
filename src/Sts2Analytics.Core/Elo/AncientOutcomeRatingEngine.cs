@@ -92,6 +92,7 @@ public class AncientOutcomeRatingEngine
                     {
                         matchups[s.TextKey].Add((p.TextKey, runWon ? 0.0 : 0.5));
                     }
+
                 }
 
                 var contexts = new[]

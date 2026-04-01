@@ -25,7 +25,12 @@ public static class DataLoader
     private static Dictionary<string, List<int>>? _damageDistributions;
     private static List<PlayerRunCount>? _playerRunCounts;
 
+    private static string? _exportedAt;
+    private static int _totalRuns;
+
     public static bool IsLoaded => _cards != null;
+    public static string? ExportedAt => _exportedAt;
+    public static int TotalRuns => _totalRuns;
     public static double SkipElo => _skipElo;
 
     public static double GetSkipElo(string? characterContext = null, int? actIndex = null)
@@ -102,6 +107,7 @@ public static class DataLoader
                 return false;
             }
 
+            _exportedAt = data.ExportedAt;
             _skipElo = data.SkipElo;
             _skipEloByAct = data.SkipEloByAct;
             _skipOutcomeElo = data.SkipOutcomeElo;
@@ -144,6 +150,8 @@ public static class DataLoader
             _encounterRatings = data.EncounterRatings ?? new Dictionary<string, PoolRating>();
             _damageDistributions = data.DamageDistributions ?? new Dictionary<string, List<int>>();
             _playerRunCounts = data.PlayerRunCounts ?? new List<PlayerRunCount>();
+            _totalRuns = 0;
+            foreach (var p in _playerRunCounts) _totalRuns += p.Runs;
             DebugLogOverlay.Log($"[SpireOracle] Loaded {_encounterPools.Count} pool ratings, {_encounterRatings.Count} encounter ratings, {_damageDistributions.Count} damage distributions, {_playerRunCounts.Count} players");
 
             // Load reference data (events, encounters per act)

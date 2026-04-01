@@ -17,6 +17,12 @@ public class OutcomeRatingEngine
         _connection = connection;
     }
 
+    public void ResetAll()
+    {
+        _connection.Execute("DELETE FROM OutcomeGlicko2History");
+        _connection.Execute("DELETE FROM OutcomeGlicko2Ratings");
+    }
+
     public void ProcessAllRuns()
     {
         var unprocessedRunIds = _connection.Query<long>("""
@@ -96,8 +102,8 @@ public class OutcomeRatingEngine
                         }
                         else
                         {
-                            // Pick not validated — skipped card wins
-                            matchups.Add((pickedCard, skippedCard, 0.0, 1.0));
+                            // Pick failed — penalize picked, but skipped is unproven
+                            matchups.Add((pickedCard, skippedCard, 0.0, 0.5));
                         }
                     }
 

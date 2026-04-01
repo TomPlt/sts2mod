@@ -345,6 +345,7 @@ public static class ExportCommand
 
         // Process outcome ratings (pick preference + run outcome)
         var outcomeEngine = new OutcomeRatingEngine(conn);
+        outcomeEngine.ResetAll();
         outcomeEngine.ProcessAllRuns();
         var outcomeAnalytics = new OutcomeGlicko2Analytics(conn);
         var allOutcomeRatings = outcomeAnalytics.GetRatings();
@@ -790,6 +791,59 @@ public static class ExportCommand
             FROM Runs WHERE Source != '' GROUP BY Source, Character ORDER BY Source, Runs DESC
             """).ToList();
 
+        // Compute win streaks per player per character
+        var streakRows = conn.Query("""
+            SELECT Source, Character, Win FROM Runs WHERE Source != '' AND Ascension >= 10 ORDER BY Source, Character, Id
+            """).ToList();
+        var winStreaks = new Dictionary<(string Source, string Character), int>();
+        var playerOverallStreaks = new Dictionary<string, int>();
+        {
+            // Per-character streaks
+            string? prevSource = null, prevChar = null;
+            int streak = 0, maxStreak = 0;
+            foreach (var r in streakRows)
+            {
+                var source = (string)r.Source;
+                var character = (string)r.Character;
+                if (source != prevSource || character != prevChar)
+                {
+                    if (prevSource != null && prevChar != null)
+                        winStreaks[(prevSource, prevChar)] = Math.Max(maxStreak, streak);
+                    prevSource = source;
+                    prevChar = character;
+                    streak = 0;
+                    maxStreak = 0;
+                }
+                if ((long)r.Win == 1) { streak++; maxStreak = Math.Max(maxStreak, streak); }
+                else streak = 0;
+            }
+            if (prevSource != null && prevChar != null)
+                winStreaks[(prevSource, prevChar)] = Math.Max(maxStreak, streak);
+
+            // Per-player overall streaks (across all characters, ordered by Id)
+            var overallRows = conn.Query("""
+                SELECT Source, Win FROM Runs WHERE Source != '' AND Ascension >= 10 ORDER BY Source, Id
+                """).ToList();
+            string? prevSrc = null;
+            streak = 0; maxStreak = 0;
+            foreach (var r in overallRows)
+            {
+                var source = (string)r.Source;
+                if (source != prevSrc)
+                {
+                    if (prevSrc != null)
+                        playerOverallStreaks[prevSrc] = Math.Max(maxStreak, streak);
+                    prevSrc = source;
+                    streak = 0;
+                    maxStreak = 0;
+                }
+                if ((long)r.Win == 1) { streak++; maxStreak = Math.Max(maxStreak, streak); }
+                else streak = 0;
+            }
+            if (prevSrc != null)
+                playerOverallStreaks[prevSrc] = Math.Max(maxStreak, streak);
+        }
+
         var playerRunCounts = conn.Query("""
             SELECT Source, COUNT(*) as Runs, SUM(CASE WHEN Win = 1 THEN 1 ELSE 0 END) as Wins
             FROM Runs WHERE Source != '' GROUP BY Source ORDER BY Runs DESC
@@ -805,12 +859,14 @@ public static class ExportCommand
                         (string)cr.Character,
                         (int)(long)cr.Runs,
                         (int)(long)cr.Wins,
-                        (long)cr.Runs > 0 ? (double)(long)cr.Wins / (long)cr.Runs : 0))
+                        (long)cr.Runs > 0 ? (double)(long)cr.Wins / (long)cr.Runs : 0,
+                        winStreaks.GetValueOrDefault((name, (string)cr.Character))))
                     .OrderByDescending(cr => cr.Runs)
                     .ToList();
                 return new PlayerRunCount(name, runs, wins,
                     runs > 0 ? (double)wins / runs : 0,
-                    byChar.Count > 0 ? byChar : null);
+                    byChar.Count > 0 ? byChar : null,
+                    playerOverallStreaks.GetValueOrDefault(name));
             })
             .ToList();
 
