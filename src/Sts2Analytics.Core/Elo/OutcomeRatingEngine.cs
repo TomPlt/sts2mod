@@ -5,8 +5,9 @@ namespace Sts2Analytics.Core.Elo;
 
 /// <summary>
 /// Glicko-2 engine where matchup scores depend on run outcome.
-/// Picked+Won beats Skipped (1.0/0.0). Picked+Lost loses to Skipped (0.0/1.0).
-/// All-skipped+Lost is a draw vs SKIP (0.5). All-skipped+Won: SKIP wins (0.0).
+/// Picked+Won beats Skipped (1.0/0.0). Picked+Lost is a draw vs Skipped (0.5/0.5).
+/// Picked+Lost loses to SKIP (0.0/1.0). All-skipped+Lost is a draw vs SKIP (0.5).
+/// All-skipped+Won: SKIP wins (1.0/0.0).
 /// </summary>
 public class OutcomeRatingEngine
 {
@@ -102,8 +103,8 @@ public class OutcomeRatingEngine
                         }
                         else
                         {
-                            // Pick failed — penalize picked, but skipped is unproven
-                            matchups.Add((pickedCard, skippedCard, 0.0, 0.5));
+                            // Pick failed — inconclusive draw (don't know if skipped was better)
+                            matchups.Add((pickedCard, skippedCard, 0.5, 0.5));
                         }
                     }
 
