@@ -49,7 +49,7 @@ public static class ImportCommand
             {
                 Console.WriteLine($"Scanning: {dir}");
                 var source = DetectSource(dir);
-                foreach (var file in Directory.GetFiles(dir, "*.run"))
+                foreach (var file in Directory.GetFiles(dir, "*.run").OrderBy(f => f))
                 {
                     var rawFileName = Path.GetFileName(file);
                     // Prefix source to filename to distinguish co-op runs from different players
