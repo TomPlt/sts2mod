@@ -795,8 +795,8 @@ public static class ExportCommand
         var streakRows = conn.Query("""
             SELECT Source, Character, Win FROM Runs WHERE Source != '' AND Ascension >= 10 ORDER BY Source, Character, Id
             """).ToList();
-        var winStreaks = new Dictionary<(string Source, string Character), int>();
-        var playerOverallStreaks = new Dictionary<string, int>();
+        var winStreaks = new Dictionary<(string Source, string Character), (int Max, int Current)>();
+        var playerOverallStreaks = new Dictionary<string, (int Max, int Current)>();
         {
             // Per-character streaks
             string? prevSource = null, prevChar = null;
@@ -808,7 +808,7 @@ public static class ExportCommand
                 if (source != prevSource || character != prevChar)
                 {
                     if (prevSource != null && prevChar != null)
-                        winStreaks[(prevSource, prevChar)] = Math.Max(maxStreak, streak);
+                        winStreaks[(prevSource, prevChar)] = (Math.Max(maxStreak, streak), streak);
                     prevSource = source;
                     prevChar = character;
                     streak = 0;
@@ -818,7 +818,7 @@ public static class ExportCommand
                 else streak = 0;
             }
             if (prevSource != null && prevChar != null)
-                winStreaks[(prevSource, prevChar)] = Math.Max(maxStreak, streak);
+                winStreaks[(prevSource, prevChar)] = (Math.Max(maxStreak, streak), streak);
 
             // Per-player overall streaks (across all characters, ordered by Id)
             var overallRows = conn.Query("""
@@ -832,7 +832,7 @@ public static class ExportCommand
                 if (source != prevSrc)
                 {
                     if (prevSrc != null)
-                        playerOverallStreaks[prevSrc] = Math.Max(maxStreak, streak);
+                        playerOverallStreaks[prevSrc] = (Math.Max(maxStreak, streak), streak);
                     prevSrc = source;
                     streak = 0;
                     maxStreak = 0;
@@ -841,7 +841,7 @@ public static class ExportCommand
                 else streak = 0;
             }
             if (prevSrc != null)
-                playerOverallStreaks[prevSrc] = Math.Max(maxStreak, streak);
+                playerOverallStreaks[prevSrc] = (Math.Max(maxStreak, streak), streak);
         }
 
         var playerRunCounts = conn.Query("""
@@ -855,18 +855,23 @@ public static class ExportCommand
                 var wins = (int)(long)r.Wins;
                 var byChar = playerCharRows
                     .Where(cr => (string)cr.Source == name)
-                    .Select(cr => new PlayerCharWinRate(
-                        (string)cr.Character,
-                        (int)(long)cr.Runs,
-                        (int)(long)cr.Wins,
-                        (long)cr.Runs > 0 ? (double)(long)cr.Wins / (long)cr.Runs : 0,
-                        winStreaks.GetValueOrDefault((name, (string)cr.Character))))
+                    .Select(cr =>
+                    {
+                        var s = winStreaks.GetValueOrDefault((name, (string)cr.Character));
+                        return new PlayerCharWinRate(
+                            (string)cr.Character,
+                            (int)(long)cr.Runs,
+                            (int)(long)cr.Wins,
+                            (long)cr.Runs > 0 ? (double)(long)cr.Wins / (long)cr.Runs : 0,
+                            s.Max, s.Current);
+                    })
                     .OrderByDescending(cr => cr.Runs)
                     .ToList();
+                var overall = playerOverallStreaks.GetValueOrDefault(name);
                 return new PlayerRunCount(name, runs, wins,
                     runs > 0 ? (double)wins / runs : 0,
                     byChar.Count > 0 ? byChar : null,
-                    playerOverallStreaks.GetValueOrDefault(name));
+                    overall.Max, overall.Current);
             })
             .ToList();
 

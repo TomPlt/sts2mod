@@ -30,6 +30,12 @@ public static class InputPatch
             return;
         }
 
+        if (keyEvent.Keycode == Key.F7)
+        {
+            PlayerStatsOverlay.Toggle();
+            return;
+        }
+
         if (!DataLoader.IsLoaded) return;
 
         if (keyEvent.Keycode == Key.F4)

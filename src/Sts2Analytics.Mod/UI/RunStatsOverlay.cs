@@ -173,6 +173,30 @@ public static class RunStatsOverlay
               WHERE a1.ActionType='CARD_PLAYED' AND c.RunId=@runId
               GROUP BY a1.SourceId HAVING total > 0 ORDER BY total DESC LIMIT 10", runId);
 
+        // Play counts per card (for per-play calculations)
+        var allPlayCounts = LiveRunDb.QueryTopStats(
+            @"SELECT a.SourceId, COUNT(*)
+              FROM CombatActions a JOIN Turns t ON a.TurnId=t.Id JOIN Combats c ON t.CombatId=c.Id
+              WHERE c.RunId=@runId AND a.ActionType='CARD_PLAYED'
+              GROUP BY a.SourceId", runId);
+        var playCounts = allPlayCounts.ToDictionary(p => p.label, p => p.value);
+
+        // Per-play damage (total dmg / plays), sorted desc
+        var dmgPerPlay = topDamage
+            .Where(d => playCounts.ContainsKey(d.label) && playCounts[d.label] > 0)
+            .Select(d => (d.label, value: d.value / playCounts[d.label]))
+            .OrderByDescending(d => d.value)
+            .Take(10)
+            .ToList();
+
+        // Per-play block (total block / plays), sorted desc
+        var blkPerPlay = topBlock
+            .Where(b => playCounts.ContainsKey(b.label) && playCounts[b.label] > 0)
+            .Select(b => (b.label, value: b.value / playCounts[b.label]))
+            .OrderByDescending(b => b.value)
+            .Take(10)
+            .ToList();
+
         // Summary line
         var combats = combatCount.Count > 0 ? combatCount[0].value : 0;
         var turns = turnCount.Count > 0 ? turnCount[0].value : 0;
@@ -186,6 +210,13 @@ public static class RunStatsOverlay
         summary.AddThemeColorOverride("font_color", new Color(0.7f, 0.7f, 0.75f));
         summary.HorizontalAlignment = HorizontalAlignment.Center;
         vbox.AddChild(summary);
+
+        // Per-play bar columns
+        var perPlayCols = new HBoxContainer();
+        perPlayCols.AddThemeConstantOverride("separation", 30);
+        AddBarColumn(perPlayCols, "Dmg / Play", dmgPerPlay, new Color(0.85f, 0.25f, 0.2f), " dmg");
+        AddBarColumn(perPlayCols, "Block / Play", blkPerPlay, new Color(0.2f, 0.5f, 0.85f), " blk");
+        vbox.AddChild(perPlayCols);
 
         // Aggregate bar columns
         var cols = new HBoxContainer();

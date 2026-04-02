@@ -105,7 +105,8 @@ public record PlayerCharWinRate(
     [property: JsonPropertyName("runs")] int Runs,
     [property: JsonPropertyName("wins")] int Wins,
     [property: JsonPropertyName("winRate")] double WinRate,
-    [property: JsonPropertyName("maxWinStreak")] int MaxWinStreak = 0);
+    [property: JsonPropertyName("maxWinStreak")] int MaxWinStreak = 0,
+    [property: JsonPropertyName("currentWinStreak")] int CurrentWinStreak = 0);
 
 public record PlayerRunCount(
     [property: JsonPropertyName("name")] string Name,
@@ -113,7 +114,8 @@ public record PlayerRunCount(
     [property: JsonPropertyName("wins")] int Wins,
     [property: JsonPropertyName("winRate")] double WinRate,
     [property: JsonPropertyName("byCharacter")] List<PlayerCharWinRate>? ByCharacter = null,
-    [property: JsonPropertyName("maxWinStreak")] int MaxWinStreak = 0);
+    [property: JsonPropertyName("maxWinStreak")] int MaxWinStreak = 0,
+    [property: JsonPropertyName("currentWinStreak")] int CurrentWinStreak = 0);
 
 public record OverlayData(
     [property: JsonPropertyName("version")] int Version,
