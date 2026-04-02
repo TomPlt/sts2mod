@@ -218,28 +218,63 @@ public class ModEntry
     }
 
     private static System.Threading.Timer? _refreshTimer;
+    private static int _refreshAttempt;
 
     private static void ScheduleDataRefresh()
     {
-        // CI takes ~3-4 minutes to rebuild. Try at 4min, then retry at 6min if unchanged.
         _refreshTimer?.Dispose();
-        DebugLogOverlay.Log("[SpireOracle] Will refresh overlay data in ~4 minutes (waiting for CI)");
+        _refreshAttempt = 0;
+        ScheduleNextRefreshAttempt();
+    }
+
+    private static readonly int[] RefreshDelaysMs = { 4 * 60 * 1000, 6 * 60 * 1000, 9 * 60 * 1000 };
+
+    private static void ScheduleNextRefreshAttempt()
+    {
+        if (_refreshAttempt >= RefreshDelaysMs.Length) return;
+
+        var delayMs = RefreshDelaysMs[_refreshAttempt];
+        var delayMin = delayMs / 60000;
+        DebugLogOverlay.Log($"[SpireOracle] Will refresh overlay data in ~{delayMin} minutes (attempt {_refreshAttempt + 1}/{RefreshDelaysMs.Length})");
+
+        _refreshTimer?.Dispose();
         _refreshTimer = new System.Threading.Timer(async _ =>
         {
             try
             {
-                if (_modPath != null)
+                if (_modPath == null) return;
+
+                var beforeModified = File.Exists(Path.Combine(_modPath, "overlay_data.json"))
+                    ? File.GetLastWriteTimeUtc(Path.Combine(_modPath, "overlay_data.json"))
+                    : DateTime.MinValue;
+
+                DebugLogOverlay.Log("[SpireOracle] Downloading updated overlay data...");
+                await CloudSync.DownloadLatestData(_modPath);
+
+                var afterModified = File.Exists(Path.Combine(_modPath, "overlay_data.json"))
+                    ? File.GetLastWriteTimeUtc(Path.Combine(_modPath, "overlay_data.json"))
+                    : DateTime.MinValue;
+
+                if (afterModified <= beforeModified)
                 {
-                    DebugLogOverlay.Log("[SpireOracle] Downloading updated overlay data...");
-                    await CloudSync.DownloadLatestData(_modPath);
-                    // WatchDataFile will auto-reload via file change event
+                    _refreshAttempt++;
+                    if (_refreshAttempt < RefreshDelaysMs.Length)
+                    {
+                        DebugLogOverlay.Log("[SpireOracle] Overlay data unchanged, will retry...");
+                        ScheduleNextRefreshAttempt();
+                    }
+                    else
+                    {
+                        DebugLogOverlay.Log("[SpireOracle] Overlay data unchanged after all retries");
+                    }
                 }
+                // else: file changed — WatchDataFile will auto-reload
             }
             catch (Exception ex)
             {
                 DebugLogOverlay.LogErr($"[SpireOracle] Refresh failed: {ex.Message}");
             }
-        }, null, 4 * 60 * 1000, System.Threading.Timeout.Infinite);
+        }, null, delayMs, System.Threading.Timeout.Infinite);
     }
 
     private static void WatchDataFile(string modPath)
