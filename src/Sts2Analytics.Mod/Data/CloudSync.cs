@@ -81,11 +81,14 @@ public static class CloudSync
             var release = JsonSerializer.Deserialize<JsonElement>(releaseResponse);
 
             string? downloadUrl = null;
+            string? assetUpdatedAt = null;
             foreach (var asset in release.GetProperty("assets").EnumerateArray())
             {
                 if (asset.GetProperty("name").GetString() == "overlay_data.json")
                 {
                     downloadUrl = asset.GetProperty("url").GetString();
+                    assetUpdatedAt = asset.TryGetProperty("updated_at", out var upd)
+                        ? upd.GetString() : null;
                     break;
                 }
             }
@@ -96,16 +99,14 @@ public static class CloudSync
                 return;
             }
 
-            // Check if the release is newer than what we have locally
+            // Check if the asset is newer than what we have locally
             var outputPath = Path.Combine(modPath, "overlay_data.json");
-            var releaseUpdatedAt = release.TryGetProperty("published_at", out var pub)
-                ? pub.GetString() : null;
-            if (releaseUpdatedAt != null && File.Exists(outputPath))
+            if (assetUpdatedAt != null && File.Exists(outputPath))
             {
                 var localModified = File.GetLastWriteTimeUtc(outputPath);
-                if (DateTime.TryParse(releaseUpdatedAt, out var releaseDate) && releaseDate < localModified)
+                if (DateTime.TryParse(assetUpdatedAt, out var assetDate) && assetDate < localModified)
                 {
-                    DebugLogOverlay.Log("[SpireOracle] Local overlay data is newer than release, skipping download");
+                    DebugLogOverlay.Log("[SpireOracle] Local overlay data is newer than asset, skipping download");
                     return;
                 }
             }
